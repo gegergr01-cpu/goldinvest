@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
-const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gaming BM";
+const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
 
 export async function generateMetadata() {
   const t = await getTranslations('StoreLocator');

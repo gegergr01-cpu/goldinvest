@@ -9,21 +9,21 @@ import Image from "next/image";
 export default function DesignHeaderForm({ initialSettings }: { initialSettings: Record<string, string> }) {
   const tSettings = useTranslations('AdminSettings');
   const router = useRouter();
-  
+
   const [shopCardStyle, setShopCardStyle] = useState(initialSettings.SHOP_CARD_STYLE || 'design2');
   const [shopCardBorderColor, setShopCardBorderColor] = useState(initialSettings.SHOP_CARD_BORDER_COLOR || '#e5e7eb');
   const [themeColor, setThemeColor] = useState(initialSettings.THEME_COLOR || '#c2410c');
   const [headerAnnouncement, setHeaderAnnouncement] = useState(initialSettings.HEADER_ANNOUNCEMENT || 'Welcome to our store!');
   const [searchPlaceholder, setSearchPlaceholder] = useState(initialSettings.SEARCH_PLACEHOLDER || 'Search products...');
   const [headerSupportPhone, setHeaderSupportPhone] = useState(initialSettings.HEADER_SUPPORT_PHONE ?? '+08 9229 8228');
-  const [headerSupportEmail, setHeaderSupportEmail] = useState(initialSettings.HEADER_SUPPORT_EMAIL ?? 'support@mystore.com');
+  const [headerSupportEmail, setHeaderSupportEmail] = useState(initialSettings.HEADER_SUPPORT_EMAIL ?? 'info@goldsilversinvest.com');
   const [topBarBgColor, setTopBarBgColor] = useState(initialSettings.TOP_BAR_BG_COLOR || '#ffffff');
   const [topBarTextColor, setTopBarTextColor] = useState(initialSettings.TOP_BAR_TEXT_COLOR || '#4b5563');
   const [showStoreLocator, setShowStoreLocator] = useState(initialSettings.SHOW_STORE_LOCATOR !== 'false');
-  
+
   const [headerLogoImage, setHeaderLogoImage] = useState(initialSettings.HEADER_LOGO_IMAGE || '');
   const [faviconImage, setFaviconImage] = useState(initialSettings.FAVICON_IMAGE || '');
-  
+
   const [showHeaderLogoModal, setShowHeaderLogoModal] = useState(false);
   const [showFaviconModal, setShowFaviconModal] = useState(false);
 
@@ -33,7 +33,7 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     await updateSettingsBatch({
       SHOP_CARD_STYLE: shopCardStyle,
       SHOP_CARD_BORDER_COLOR: shopCardBorderColor,
@@ -123,7 +123,7 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
       </div>
 
       {showHeaderLogoModal && (
-        <MediaPickerModal 
+        <MediaPickerModal
           onClose={() => setShowHeaderLogoModal(false)}
           onSelect={(url) => {
             setHeaderLogoImage(url);
@@ -133,7 +133,7 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
       )}
 
       {showFaviconModal && (
-        <MediaPickerModal 
+        <MediaPickerModal
           onClose={() => setShowFaviconModal(false)}
           onSelect={(url) => {
             setFaviconImage(url);

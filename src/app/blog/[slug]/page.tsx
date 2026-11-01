@@ -80,7 +80,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   });
 
   const baseUrl = SITE_URL;
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gaming BM';
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold Silver Invest';
 
   const articleSchema = {
     '@context': 'https://schema.org',

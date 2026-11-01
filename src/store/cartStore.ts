@@ -42,9 +42,9 @@ export const useCartStore = create<CartStore>()(
         const addItemLogic = (itemToAdd: CartItem) => {
           const existingIdx = newItems.findIndex((i) => i.id === itemToAdd.id);
           if (existingIdx !== -1) {
-            newItems[existingIdx] = { 
-              ...newItems[existingIdx], 
-              quantity: newItems[existingIdx].quantity + itemToAdd.quantity 
+            newItems[existingIdx] = {
+              ...newItems[existingIdx],
+              quantity: newItems[existingIdx].quantity + itemToAdd.quantity
             };
           } else {
             newItems.push(itemToAdd);
@@ -60,9 +60,9 @@ export const useCartStore = create<CartStore>()(
         set({ items: newItems });
       },
       removeItem: (id) =>
-        set((state) => ({ 
+        set((state) => ({
           // Retirer l'item et aussi tous les items qui étaient forcés par celui-ci
-          items: state.items.filter((i) => i.id !== id && i.forcedByItemId !== id) 
+          items: state.items.filter((i) => i.id !== id && i.forcedByItemId !== id)
         })),
       updateQuantity: (id, quantity) =>
         set((state) => ({
@@ -75,7 +75,7 @@ export const useCartStore = create<CartStore>()(
       getTotalPrice: () => get().items.reduce((total, item) => total + item.price * item.quantity, 0),
     }),
     {
-      name: 'mystore-cart',
+      name: 'goldsilverinvest-cart',
       partialize: (state) => ({ items: state.items, coupon: state.coupon }),
     }
   )

@@ -1,6 +1,6 @@
 {
   "Frontend": {
-    "welcome": "Bienvenido a Gaming BM",
+    "welcome": "Bienvenido a Gold Silver Invest",
     "shop": "Comprar ahora",
     "cart": "Tu carrito"
   },
@@ -432,7 +432,7 @@
     "newsletter_placeholder": "Introduce tu correo...",
     "call_us": "Llámanos ahora",
     "email": "Correo",
-    "copyright": "© 2026 Gaming BM Todos los derechos reservados."
+    "copyright": "© 2026 Gold Silver Invest Todos los derechos reservados."
   },
   "Messages": {
     "success": "Acción exitosa",
@@ -571,7 +571,7 @@
     "logging_in": "Iniciando sesión..."
   },
   "AdminLayout": {
-    "title": "Gaming BM Admin",
+    "title": "Gold Silver Invest Admin",
     "dashboard": "Panel de control",
     "products": "Productos",
     "categories": "Categorías",

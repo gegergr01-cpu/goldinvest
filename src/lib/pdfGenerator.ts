@@ -27,7 +27,7 @@ const formatPaymentMethod = (method: string) => {
 export async function generateInvoicePDF(order: any): Promise<Buffer> {
   // Fetch store logo and name from DB
   let logoBuffer: Buffer | null = null;
-  let storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gaming BM';
+  let storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold Silver Invest';
   
   try {
     const settingsDb = await prisma.setting.findMany({

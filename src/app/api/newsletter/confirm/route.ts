@@ -39,8 +39,8 @@ export async function GET(request: Request) {
     }
 
     const settings = await getSettings();
-    const receiverEmail = settings.CONTACT_RECEIVER_EMAIL || 'info@gamingbm.com';
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gaming BM';
+    const receiverEmail = settings.CONTACT_RECEIVER_EMAIL || 'info@goldsilversinvest.com';
+    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold Silver Invest';
 
     // 1. Send notification to admin
     await sendEmail({
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
     await sendNewsletterWelcomeEmail(email).catch(console.error);
 
     // 3. Redirect back to site with a success message
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.gamingbm.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com';
     return NextResponse.redirect(`${baseUrl}/?newsletter=success`);
   } catch (err) {
     console.error('Confirm newsletter error:', err);

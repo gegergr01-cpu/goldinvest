@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import NotFoundPageForm from '@/components/admin/settings/NotFoundPageForm';
 
 export const metadata = {
-  title: '404 page Settings | Gaming BM Admin',
+  title: '404 page Settings | Gold Silver Invest Admin',
 };
 
 export default async function NotFoundPageSettingsPage() {

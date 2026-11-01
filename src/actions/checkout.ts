@@ -31,13 +31,13 @@ export async function validateCoupon(code: string) {
       return { error: "This coupon code is no longer active." };
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       coupon: {
         code: coupon.code,
         type: coupon.type,
         value: coupon.value
-      } 
+      }
     };
   } catch (error) {
     console.error("Coupon validation error:", error);
@@ -61,7 +61,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
     const shippingMethodId = formData.get('shippingMethod') as string;
     const shipToDifferentAddress = formData.get('shipToDifferentAddress') === 'on';
     const shippingCountry = formData.get('shippingCountry') as string;
-    
+
     const effectiveCountry = shipToDifferentAddress ? shippingCountry : country;
 
     // ===== INPUT VALIDATION (never trust the client) =====
@@ -123,7 +123,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
     }
 
     const shippingRate = validZone.methods[0].rate;
-    
+
     // ===== SERVER-SIDE PRICE VERIFICATION =====
     // Never trust client-provided prices. Fetch real prices from database.
     const productIds = [...new Set(cartItems.map((item: any) => item.productId as string))];
@@ -195,7 +195,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
     // Round to 2 decimal places to avoid floating point issues
     const verifiedTotal = Math.round(serverTotal * 100) / 100;
 
-    
+
     // Find or link user
     const supabase = await createClient();
     const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -258,7 +258,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
     const allSettings = await prisma.setting.findMany();
     const settingsMap = allSettings.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
     const storeCurrencyCode = settingsMap.currency || 'EUR';
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.gamingbm.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.goldsilversinvest.com';
 
     // Helper to determine the best active fallback payment method
     const getFallbackPayment = () => {
@@ -415,11 +415,11 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
       });
 
       return { success: true, orderId: order.id, redirectUrl: session.url };
-    } 
+    }
     else if (paymentMethod === 'PAYPAL') {
       const paypalClientId = settingsMap['PAYPAL_CLIENT_ID'];
       const paypalSecret = settingsMap['PAYPAL_SECRET'];
-      
+
       const auth = Buffer.from(`${paypalClientId}:${paypalSecret}`).toString('base64');
       const tokenRes = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
         method: 'POST',
@@ -429,7 +429,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
-      
+
       const tokenData = await tokenRes.json();
       if (!tokenData.access_token) {
         return { error: "PayPal authentication error. Check the keys in Admin." };
@@ -456,21 +456,21 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
           }
         })
       });
-      
+
       const orderData = await orderRes.json();
       const approveLink = orderData.links?.find((l: any) => l.rel === 'approve');
-      
+
       if (approveLink) {
         return { success: true, orderId: order.id, redirectUrl: approveLink.href };
       } else {
         return { error: "Unable to create PayPal payment session." };
       }
-    } 
+    }
     else {
       // BANK_TRANSFER — Finalize immediately (no online payment to confirm)
       const { finalizeOrder } = await import('@/lib/orderFinalizer');
       finalizeOrder(order.id).catch(e => console.error('Bank transfer finalization failed', e));
-      
+
       return { success: true, orderId: order.id, redirectUrl: '/checkout/success?orderId=' + order.id };
     }
 

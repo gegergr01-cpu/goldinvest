@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import TaxesForm from '@/components/admin/settings/TaxesForm';
 
 export const metadata = {
-  title: 'Taxes and VAT Settings | Gaming BM Admin',
+  title: 'Taxes and VAT Settings | Gold Silver Invest Admin',
 };
 
 export default async function TaxesSettingsPage() {

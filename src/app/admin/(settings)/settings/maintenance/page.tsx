@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import MaintenanceForm from '@/components/admin/settings/MaintenanceForm';
 
 export const metadata = {
-  title: 'Maintenance mode Settings | Gaming BM Admin',
+  title: 'Maintenance mode Settings | Gold Silver Invest Admin',
 };
 
 export default async function MaintenanceSettingsPage() {

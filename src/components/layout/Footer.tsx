@@ -38,9 +38,9 @@ type FooterProps = {
   contactSlug?: string;
 };
 
-export default function Footer({ 
-  supportPhone = '+08 9229 8228', 
-  supportEmail = 'info@gamingbm.com',
+export default function Footer({
+  supportPhone = '+08 9229 8228',
+  supportEmail = 'info@goldsilversinvest.com',
   footerBgColor = '#278a54',
   footerTextColor = '#ffffff',
   footerHeadingColor = '#ffffff',
@@ -74,15 +74,15 @@ export default function Footer({
   const t = useTranslations('Footer');
 
   return (
-    <footer 
-      className="font-sans pt-16 pb-12 relative" 
+    <footer
+      className="font-sans pt-16 pb-12 relative"
       style={{ backgroundColor: footerBgColor, color: footerTextColor }}
     >
       <div className="max-w-[1400px] mx-auto px-6 w-full">
-        
+
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
-          
+
           {/* Column 1: Info */}
           <div className="lg:col-span-1">
             <div className="mb-6 flex items-center">
@@ -95,11 +95,11 @@ export default function Footer({
                 </>
               )}
             </div>
-            
+
             <p className="text-sm mb-8 leading-relaxed opacity-90">
               {footerDescription}
             </p>
-            
+
             <div className="space-y-4 text-sm opacity-90">
               {footerShowAddress && footerAddress1 && (
                 <div className="flex items-start">

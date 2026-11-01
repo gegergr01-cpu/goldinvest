@@ -12,8 +12,8 @@ export default function NavigationForm({ initialSettings }: { initialSettings: R
   const [mobileAboutDesc, setMobileAboutDesc] = useState(initialSettings.MOBILE_ABOUT_DESC || 'Welcome to our store. We sell the best products in town.');
   const [mobileContactAddress, setMobileContactAddress] = useState(initialSettings.MOBILE_CONTACT_ADDRESS ?? '123 Main St');
   const [mobileContactPhone, setMobileContactPhone] = useState(initialSettings.MOBILE_CONTACT_PHONE ?? '+1 234 567 890');
-  const [mobileContactEmail, setMobileContactEmail] = useState(initialSettings.MOBILE_CONTACT_EMAIL ?? 'contact@example.com');
-  const [mobileContactWebsite, setMobileContactWebsite] = useState(initialSettings.MOBILE_CONTACT_WEBSITE ?? 'www.example.com');
+  const [mobileContactEmail, setMobileContactEmail] = useState(initialSettings.MOBILE_CONTACT_EMAIL ?? 'info@goldsilversinvest.com');
+  const [mobileContactWebsite, setMobileContactWebsite] = useState(initialSettings.MOBILE_CONTACT_WEBSITE ?? 'www.goldsilversinvest.com');
   
   const [loginText, setLoginText] = useState(initialSettings.LOGIN_TEXT || '');
   const [myAccountText, setMyAccountText] = useState(initialSettings.MY_ACCOUNT_TEXT || '');

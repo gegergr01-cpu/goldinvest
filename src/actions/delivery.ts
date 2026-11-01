@@ -8,16 +8,16 @@ import { requireAdmin } from '@/lib/auth';
 async function geocodeCity(city: string, country: string): Promise<{ lat: number, lng: number } | null> {
   const query = encodeURIComponent(`${city}, ${country}`);
   const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`;
-  
+
   try {
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Gaming BM-Tracking-System/1.0',
+        'User-Agent': 'Gold Silver Invest-Tracking-System/1.0',
       },
     });
-    
+
     if (!res.ok) return null;
-    
+
     const data = await res.json();
     if (data && data.length > 0 && data[0].lat && data[0].lon) {
       return {
@@ -34,11 +34,11 @@ async function geocodeCity(city: string, country: string): Promise<{ lat: number
 
 // Update basic delivery information (Origin, Destination, Tracking)
 export async function updateOrderTracking(
-  orderId: string, 
-  trackingNumber: string, 
-  originCity: string, 
-  originCountry: string, 
-  destinationAddress: string, 
+  orderId: string,
+  trackingNumber: string,
+  originCity: string,
+  originCountry: string,
+  destinationAddress: string,
   destinationCountry: string
 ) {
   await requireAdmin();
@@ -88,7 +88,7 @@ export async function updateOrderTracking(
 export async function addDeliveryPosition(orderId: string, city: string, country: string, note?: string) {
   await requireAdmin();
   const coords = await geocodeCity(city, country);
-  
+
   if (!coords) {
     throw new Error(`Unable to find coordinates for ${city}, ${country}`);
   }

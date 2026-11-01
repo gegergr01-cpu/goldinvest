@@ -30,8 +30,8 @@ export default function RobotsForm({ initialSettings }: { initialSettings: Recor
   const [error, setError] = useState('');
 
   const siteUrl = typeof window !== 'undefined'
-    ? (process.env.NEXT_PUBLIC_SITE_URL || 'https://mystore.com')
-    : 'https://mystore.com';
+    ? (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com')
+    : 'https://www.goldsilversinvest.com';
 
   // Generate the robots.txt preview
   const robotsPreview = useMemo(() => {
@@ -149,11 +149,10 @@ export default function RobotsForm({ initialSettings }: { initialSettings: Recor
               return (
                 <div
                   key={path}
-                  className={`flex items-center justify-between px-4 py-2.5 rounded-md border ${
-                    isDefault
+                  className={`flex items-center justify-between px-4 py-2.5 rounded-md border ${isDefault
                       ? 'bg-gray-50 border-gray-200'
                       : 'bg-white border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-3">
                     <code className="text-sm font-mono text-gray-800">{path}</code>

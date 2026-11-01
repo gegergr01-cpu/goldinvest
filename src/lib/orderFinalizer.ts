@@ -67,7 +67,7 @@ export async function finalizeOrder(orderId: string) {
       (acc, s) => ({ ...acc, [s.key]: s.value }),
       {} as Record<string, string>
     );
-    const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@gamingbm.com';
+    const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@goldsilversinvest.com';
 
     // 3. Send emails (non-blocking)
     try {
@@ -90,7 +90,7 @@ export async function finalizeOrder(orderId: string) {
     // 4. Stock decrement inside a Prisma interactive transaction (race-condition safe)
     try {
       const threshold = parseInt(settingsMap['LOW_STOCK_THRESHOLD'] || '5', 10);
-      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.gamingbm.com';
+      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.goldsilversinvest.com';
       const { sendLowStockAlertEmail } = await import('@/lib/mailer');
 
       await prisma.$transaction(async (tx) => {

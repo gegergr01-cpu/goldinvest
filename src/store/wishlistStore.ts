@@ -26,7 +26,7 @@ export const useWishlistStore = create<WishlistStore>()(
       setIsOpen: (isOpen) => set({ isOpen }),
     }),
     {
-      name: 'mystore-wishlist',
+      name: 'goldsilverinvest-wishlist',
       partialize: (state) => ({ items: state.items }), // Only persist items, not isOpen
     }
   )

@@ -8,7 +8,7 @@ const isUuid = (str: string) =>
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gaming BM";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
   const rawSlug = resolvedParams.slug;
   const decodedSlug = decodeURIComponent(rawSlug);
 
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       OR: orConditions,
     },
   });
-  
+
   if (!category) {
     return {
       title: `Category not found - ${storeName}`,
@@ -58,7 +58,7 @@ export default async function ProductCategoryPage({
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  
+
   const rawSlug = resolvedParams.slug;
   const decodedSlug = decodeURIComponent(rawSlug);
 
@@ -81,14 +81,14 @@ export default async function ProductCategoryPage({
   }
 
   // If searchParams explicitly specifies category, respect it. Otherwise, default to this category's slug.
-  const activeCategory = resolvedSearchParams.category !== undefined 
-    ? resolvedSearchParams.category 
+  const activeCategory = resolvedSearchParams.category !== undefined
+    ? resolvedSearchParams.category
     : (category.slug || decodedSlug);
 
   const newSearchParams = Promise.resolve({
     ...resolvedSearchParams,
     category: activeCategory
   });
-  
+
   return <ShopPage searchParams={newSearchParams} />;
 }
