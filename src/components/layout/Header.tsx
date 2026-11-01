@@ -327,14 +327,6 @@ export default function Header({
               )}
             </button>
 
-            {/* "Mon compte" GOLD CTA BUTTON */}
-            <button
-              onClick={handleAccountClick}
-              className="hidden sm:inline-flex items-center justify-center bg-[#b38a42] hover:bg-[#9f7933] text-white text-xs md:text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
-            >
-              <span>{myAccountText || 'Mon compte'}</span>
-            </button>
-
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

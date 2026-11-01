@@ -15,19 +15,19 @@ interface MetalData {
 }
 
 export async function GET() {
-  // Default reliable fallback values
+  // Default reliable fallback values aligned with current market rates
   let goldData: MetalData = {
-    priceOz: 2720.45,
-    priceGram: 87.46,
-    priceFormatted: '2 720,45 €',
+    priceOz: 3471.70,
+    priceGram: 111.62,
+    priceFormatted: '3 471,70 €',
     change: '+0,42%',
     isPositive: true,
   };
 
   let silverData: MetalData = {
-    priceOz: 32.17,
-    priceGram: 1.03,
-    priceFormatted: '32,17 €',
+    priceOz: 44.11,
+    priceGram: 1.42,
+    priceFormatted: '44,11 €',
     change: '+1,12%',
     isPositive: true,
   };
