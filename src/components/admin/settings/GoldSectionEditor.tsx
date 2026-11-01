@@ -11,6 +11,293 @@ interface GoldSectionEditorProps {
   onDelete?: () => void;
 }
 
+type ElementorTab = 'content' | 'style' | 'advanced';
+
+// -------------------------------------------------------------
+// REUSABLE ELEMENTOR-STYLE UI COMPONENTS
+// -------------------------------------------------------------
+
+// Accordion section with ▾ / ▸ arrow
+function ElementorAccordion({
+  title,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-b border-gray-200">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between py-3 px-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer text-left select-none"
+      >
+        <span className="text-xs font-bold text-gray-800 flex items-center gap-2">
+          <svg
+            className={`w-3.5 h-3.5 text-gray-600 transition-transform duration-150 ${isOpen ? 'rotate-90' : ''}`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M6 4l8 6-8 6V4z" />
+          </svg>
+          {title}
+        </span>
+      </button>
+      {isOpen && (
+        <div className="p-4 pt-1 pb-5 space-y-4 bg-white">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// 4-box Spacing input (Haut, Droite, Bas, Gauche) with link chain
+function Elementor4BoxInput({
+  label,
+  baseKey,
+  settings,
+  onChange,
+}: {
+  label: string;
+  baseKey: string;
+  settings: Record<string, any>;
+  onChange: (key: string, value: any) => void;
+}) {
+  const [isLinked, setIsLinked] = useState(true);
+
+  const top = settings[`${baseKey}_top`] ?? '';
+  const right = settings[`${baseKey}_right`] ?? '';
+  const bottom = settings[`${baseKey}_bottom`] ?? '';
+  const left = settings[`${baseKey}_left`] ?? '';
+
+  const handleChange = (pos: 'top' | 'right' | 'bottom' | 'left', val: string) => {
+    if (isLinked) {
+      onChange(`${baseKey}_top`, val);
+      onChange(`${baseKey}_right`, val);
+      onChange(`${baseKey}_bottom`, val);
+      onChange(`${baseKey}_left`, val);
+    } else {
+      onChange(`${baseKey}_${pos}`, val);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-medium text-gray-600">{label}</label>
+        <span className="text-[10px] text-gray-400">px</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div className="grid grid-cols-4 gap-1 flex-1">
+          <div className="text-center">
+            <input
+              type="number"
+              value={top}
+              onChange={(e) => handleChange('top', e.target.value)}
+              className="w-full border border-gray-300 rounded px-1 py-1 text-xs text-center outline-none focus:border-gray-500"
+              placeholder="0"
+            />
+            <span className="text-[9px] text-gray-400 block mt-0.5">Haut</span>
+          </div>
+          <div className="text-center">
+            <input
+              type="number"
+              value={right}
+              onChange={(e) => handleChange('right', e.target.value)}
+              className="w-full border border-gray-300 rounded px-1 py-1 text-xs text-center outline-none focus:border-gray-500"
+              placeholder="0"
+            />
+            <span className="text-[9px] text-gray-400 block mt-0.5">Droite</span>
+          </div>
+          <div className="text-center">
+            <input
+              type="number"
+              value={bottom}
+              onChange={(e) => handleChange('bottom', e.target.value)}
+              className="w-full border border-gray-300 rounded px-1 py-1 text-xs text-center outline-none focus:border-gray-500"
+              placeholder="0"
+            />
+            <span className="text-[9px] text-gray-400 block mt-0.5">Bas</span>
+          </div>
+          <div className="text-center">
+            <input
+              type="number"
+              value={left}
+              onChange={(e) => handleChange('left', e.target.value)}
+              className="w-full border border-gray-300 rounded px-1 py-1 text-xs text-center outline-none focus:border-gray-500"
+              placeholder="0"
+            />
+            <span className="text-[9px] text-gray-400 block mt-0.5">Gauche</span>
+          </div>
+        </div>
+
+        {/* Chain icon button */}
+        <button
+          type="button"
+          onClick={() => setIsLinked(!isLinked)}
+          className={`w-7 h-7 rounded border flex items-center justify-center transition-colors ${
+            isLinked ? 'bg-gray-100 border-gray-300 text-gray-700' : 'bg-white border-gray-200 text-gray-400'
+          }`}
+          title={isLinked ? 'Dissocier les valeurs' : 'Lier les valeurs'}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Elementor Image Box with visual thumbnail, Edit & Hover Corbeille (Trash)
+function ElementorImageBox({
+  label,
+  value,
+  onPick,
+  onRemove,
+  showCheckboxKey,
+  showCheckboxLabel,
+  showCheckboxVal = true,
+  onCheckboxChange,
+}: {
+  label: string;
+  value?: string;
+  onPick: () => void;
+  onRemove: () => void;
+  showCheckboxKey?: string;
+  showCheckboxLabel?: string;
+  showCheckboxVal?: boolean;
+  onCheckboxChange?: (val: boolean) => void;
+}) {
+  const hasImage = Boolean(value && typeof value === 'string' && value.trim() !== '');
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-semibold text-gray-700">{label}</label>
+        {hasImage && (
+          <span className="text-[10px] text-gray-400">Survoler pour supprimer</span>
+        )}
+      </div>
+
+      {hasImage ? (
+        <div className="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-900 aspect-video max-h-40 w-full shadow-xs">
+          {/* Crisp image preview without dimming unless hovered */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            className="w-full h-full object-cover transition duration-200 group-hover:scale-105"
+            alt={label}
+          />
+
+          {/* Hover Overlay with trash can and edit button */}
+          <div
+            onClick={onPick}
+            className="absolute inset-0 bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+          >
+            {/* Center Edit button */}
+            <button
+              type="button"
+              onClick={onPick}
+              className="px-3 py-1.5 bg-white/95 hover:bg-white text-gray-800 text-xs font-semibold rounded-md shadow-md flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              <span>Modifier</span>
+            </button>
+
+            {/* Trash icon (corbeille) top-right on hover */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+              className="absolute top-2 right-2 w-7 h-7 rounded-md bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md transition-all hover:scale-110 active:scale-95 cursor-pointer"
+              title="Supprimer ce média"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onPick}
+          className="w-full border-2 border-dashed border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100/80 rounded-lg py-5 px-3 flex flex-col items-center justify-center gap-1.5 transition cursor-pointer group"
+        >
+          <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-gray-600 group-hover:border-gray-300 shadow-xs transition">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span className="text-[11px] font-medium text-gray-600 group-hover:text-gray-900">
+            Choisir une image
+          </span>
+        </button>
+      )}
+
+      {showCheckboxKey && onCheckboxChange && (
+        <div className="flex items-center gap-2 mt-1">
+          <input
+            type="checkbox"
+            id={showCheckboxKey}
+            checked={showCheckboxVal}
+            onChange={(e) => onCheckboxChange(e.target.checked)}
+            className="rounded text-orange-600 focus:ring-orange-500 cursor-pointer w-3.5 h-3.5"
+          />
+          <label htmlFor={showCheckboxKey} className="text-[11px] text-gray-600 cursor-pointer select-none">
+            {showCheckboxLabel || 'Afficher l\'image'}
+          </label>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Color picker row with swatch
+function ElementorColorRow({
+  label,
+  value,
+  onChange,
+  defaultColor = '#ffffff',
+}: {
+  label: string;
+  value?: string;
+  onChange: (val: string) => void;
+  defaultColor?: string;
+}) {
+  const color = value || defaultColor;
+
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-xs text-gray-600 font-medium">{label}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] font-mono text-gray-400 uppercase">{color}</span>
+        <div className="relative w-7 h-7 rounded border border-gray-300 shadow-sm overflow-hidden cursor-pointer">
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer border-0 p-0"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------------------------------------------------
+// MAIN COMPONENT: GOLD SECTION EDITOR (ELEMENTOR ARCHITECTURE)
+// -------------------------------------------------------------
 export default function GoldSectionEditor({
   section,
   previewMode = 'desktop',
@@ -19,9 +306,27 @@ export default function GoldSectionEditor({
   goBack,
   onDelete,
 }: GoldSectionEditorProps) {
-  // Independent collapsible accordions (Content on top, Design below)
-  const [openContent, setOpenContent] = useState(true);
-  const [openDesign, setOpenDesign] = useState(false);
+  // 3 Elementor Tabs: Contenu | Style | Avancé
+  const [activeTab, setActiveTab] = useState<ElementorTab>('content');
+
+  // Accordion open/close states
+  const [accordions, setAccordions] = useState<Record<string, boolean>>({
+    general: true,
+    media: true,
+    action: true,
+    titleStyle: true,
+    subTitleStyle: false,
+    imageStyle: false,
+    buttonStyle: false,
+    boxStyle: false,
+    layoutAdvanced: true,
+    responsive: false,
+    customCss: false,
+  });
+
+  const toggleAccordion = (key: string) => {
+    setAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const s = section.settings || {};
 
@@ -35,905 +340,729 @@ export default function GoldSectionEditor({
     }
   };
 
-  // Elementor-style typography & text styling controls
-  const renderDesignTextControls = (label: string, baseKey: string, colorKey: string, defaultColor: string) => {
-    const mode = (previewMode || 'desktop').toUpperCase();
-    const sizeKey = `${baseKey}_SIZE_${mode}`;
-    const lhKey = `${baseKey}_LINE_HEIGHT_${mode}`;
-    const lsKey = `${baseKey}_LETTER_SPACING_${mode}`;
-
-    const currentSize = s[sizeKey] ? parseInt(String(s[sizeKey]).replace('px', ''), 10) : (s[`${baseKey}_SIZE`] || 16);
-    const currentLh = s[lhKey] || s[`${baseKey}_LH`] || '';
-    const currentLs = s[lsKey] ? parseInt(String(s[lsKey]).replace('px', ''), 10) : (s[`${baseKey}_LS`] || 0);
-    const currentColor = s[colorKey] || defaultColor;
-
-    return (
-      <div className="mb-5 flex flex-col gap-2">
-        <label className="block text-xs font-medium text-gray-700">{label}</label>
-        <div className="flex flex-wrap items-center gap-3 mt-1">
-          {/* Size */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Taille</span>
-            <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white w-[72px] shrink-0" title="Taille (px)">
-              <input
-                type="number"
-                value={currentSize || ''}
-                onChange={(e) => handleFieldChange(sizeKey, e.target.value + 'px')}
-                className="flex-1 w-full text-center text-[13px] border-0 py-1.5 px-1 outline-none bg-transparent min-w-0"
-                placeholder="16"
-              />
-              <span className="text-[10px] text-gray-500 bg-gray-50 h-8 px-1.5 border-l border-gray-300 flex items-center justify-center shrink-0">px</span>
-            </div>
-          </div>
-
-          {/* Line Height */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Interligne</span>
-            <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white w-[72px] shrink-0" title="Interligne (ex: 1.2)">
-              <input
-                type="number"
-                step="0.1"
-                value={currentLh}
-                onChange={(e) => handleFieldChange(lhKey, e.target.value)}
-                className="flex-1 w-full text-center text-[13px] border-0 py-1.5 px-1 outline-none bg-transparent min-w-0"
-                placeholder="LH"
-              />
-              <span className="text-[10px] text-gray-500 bg-gray-50 h-8 px-1.5 border-l border-gray-300 flex items-center justify-center shrink-0">lh</span>
-            </div>
-          </div>
-
-          {/* Letter Spacing */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Espace (lettres)</span>
-            <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white w-[72px] shrink-0" title="Espacement (px)">
-              <input
-                type="number"
-                step="1"
-                value={currentLs || 0}
-                onChange={(e) => handleFieldChange(lsKey, e.target.value + 'px')}
-                className="flex-1 w-full text-center text-[13px] border-0 py-1.5 px-1 outline-none bg-transparent min-w-0"
-                placeholder="0"
-              />
-              <span className="text-[10px] text-gray-500 bg-gray-50 h-8 px-1.5 border-l border-gray-300 flex items-center justify-center shrink-0">px</span>
-            </div>
-          </div>
-
-          {/* Color */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Couleur</span>
-            <div className="relative w-10 h-8 rounded border border-gray-300 overflow-hidden shadow-sm cursor-pointer">
-              <input
-                type="color"
-                value={currentColor}
-                onChange={(e) => handleFieldChange(colorKey, e.target.value)}
-                className="absolute -top-2 -left-2 w-14 h-14 cursor-pointer border-0 p-0"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Background image box with Edit / Remove buttons
-  const renderImageBox = (
-    label: string,
-    fieldKey: string,
-    defaultImage: string,
-    showKey?: string,
-    showLabel?: string
-  ) => {
-    const rawVal = s[fieldKey];
-    const imgVal = typeof rawVal !== 'undefined' ? rawVal : defaultImage;
-    const hasImg = Boolean(imgVal && typeof imgVal === 'string' && imgVal.trim() !== '');
-
-    return (
-      <div className="mb-4">
-        <label className="block text-sm font-semibold text-red-700 mb-2">{label}</label>
-        <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center relative min-h-[120px] transition hover:bg-gray-100 overflow-hidden">
-          {hasImg ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imgVal}
-                className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-60"
-                alt=""
-              />
-              <div className="relative z-10 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => triggerUpload(fieldKey)}
-                  className="bg-white text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm border hover:bg-gray-50 cursor-pointer"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFieldChange(fieldKey, '')}
-                  className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm hover:bg-red-600 cursor-pointer"
-                >
-                  Remove
-                </button>
-              </div>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => triggerUpload(fieldKey)}
-              className="flex flex-col items-center text-gray-500 hover:text-gray-600 transition cursor-pointer"
-            >
-              <svg className="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="text-xs font-medium">Add an image</span>
-            </button>
-          )}
-        </div>
-
-        {showKey && (
-          <div className="flex items-center gap-2 mt-2">
-            <input
-              type="checkbox"
-              id={`${showKey}_${section.id}`}
-              checked={s[showKey] !== 'false'}
-              onChange={(e) => handleFieldChange(showKey, e.target.checked ? 'true' : 'false')}
-              className="rounded text-orange-600 focus:ring-orange-500 cursor-pointer"
-            />
-            <label htmlFor={`${showKey}_${section.id}`} className="text-xs text-gray-600 cursor-pointer">
-              {showLabel || 'Show image'}
-            </label>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full">
-      {/* HEADER */}
-      <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between bg-gray-50">
-        <div className="flex items-center gap-3">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full select-none">
+
+      {/* TOP HEADER */}
+      <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between bg-gray-50">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={goBack}
-            className="text-gray-500 hover:text-gray-800 transition p-1.5 hover:bg-gray-200 rounded-full cursor-pointer"
-            title="Retour à la liste des sections"
+            className="text-gray-500 hover:text-gray-800 transition p-1 hover:bg-gray-200 rounded-full cursor-pointer"
+            title="Retour à la liste"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div>
-            <h3 className="font-bold text-gray-900 leading-tight">
+            <h3 className="font-bold text-xs sm:text-sm text-gray-900 leading-tight">
               {section.name || section.type}
             </h3>
-            <span className="text-xs font-semibold text-[#8c6414] bg-[#fbf0b9] px-2.5 py-0.5 rounded-full inline-block mt-0.5">
+            <span className="text-[10px] font-semibold text-[#8c6414] bg-[#fbf0b9] px-2 py-0.2 rounded-full inline-block mt-0.5">
               {section.type}
             </span>
           </div>
         </div>
       </div>
 
-      {/* BODY CONTENT : ELEMENTOR-STYLE ACCORDIONS (STACKED VERTICALLY) */}
-      <div className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 bg-gray-50/30">
+      {/* ELEMENTOR 3 TABS (CONTENU / STYLE / AVANCÉ) */}
+      <div className="grid grid-cols-3 border-b border-gray-200 bg-white">
+        <button
+          type="button"
+          onClick={() => setActiveTab('content')}
+          className={`py-2.5 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all border-b-2 cursor-pointer ${
+            activeTab === 'content'
+              ? 'border-gray-900 text-gray-900 bg-gray-50/50'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          <span>Contenu</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('style')}
+          className={`py-2.5 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all border-b-2 cursor-pointer ${
+            activeTab === 'style'
+              ? 'border-gray-900 text-gray-900 bg-gray-50/50'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM4 10a6 6 0 006 6v-12a6 6 0 00-6 6z" clipRule="evenodd" />
+          </svg>
+          <span>Style</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('advanced')}
+          className={`py-2.5 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all border-b-2 cursor-pointer ${
+            activeTab === 'advanced'
+              ? 'border-gray-900 text-gray-900 bg-gray-50/50'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Avancé</span>
+        </button>
+      </div>
+
+      {/* CONTENT AREA */}
+      <div className="flex-1 overflow-y-auto">
 
         {/* ============================================================ */}
-        {/* 1. CONTENT SETTINGS ACCORDION */}
+        {/* TAB 1: CONTENU */}
         {/* ============================================================ */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setOpenContent(!openContent)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer text-left"
-          >
-            <span className="font-semibold text-sm text-gray-800">Content Settings</span>
-            <svg
-              className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${openContent ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {activeTab === 'content' && (
+          <div>
+            {/* Accordion 1: Général */}
+            <ElementorAccordion
+              title="Général"
+              isOpen={accordions.general}
+              onToggle={() => toggleAccordion('general')}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {openContent && (
-            <div className="p-4 border-t border-gray-200 space-y-4">
-
-              {/* SPECIFIC CONTENT FIELDS BY SECTION TYPE */}
-
-              {/* A. GOLD HERO */}
               {section.type === 'GoldHero' && (
                 <>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Category / Tagline (texte or)
+                      Mots mis en valeur (couleur or)
                     </label>
                     <input
                       type="text"
                       value={s.highlight ?? "valeur sûre"}
                       onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
-                      placeholder="valeur sûre"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
                     <input
                       type="text"
                       value={s.title ?? "Investissez dans la valeur sûre"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
-                      placeholder="Investissez dans la valeur sûre"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle / badge</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
                     <textarea
                       rows={2}
                       value={s.subtitle ?? "Pièces d'or, lingots d'or et d'argent au meilleur prix"}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
-                      placeholder="Pièces d'or, lingots d'or..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Button Text</label>
-                    <input
-                      type="text"
-                      value={s.btnText ?? "Découvrir notre gamme"}
-                      onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Button Link</label>
-                    <input
-                      type="text"
-                      value={s.btnUrl ?? "/shop"}
-                      onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
-                      placeholder="/shop"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                 </>
               )}
 
-              {/* B. REASSURANCE BAR */}
-              {section.type === 'ReassuranceBar' && (
-                <div className="space-y-4">
-                  {[1, 2, 3, 4].map((num) => {
-                    const defTitles = ['Qualité garantie', 'Prix compétitifs', 'Livraison rapide', 'Service client réactif'];
-                    const defDescs = ['Des produits certifiés et authentiques', 'Un excellent rapport qualité-prix', 'Partout en Europe', 'Notre équipe à votre écoute'];
-                    return (
-                      <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                        <span className="text-xs font-bold text-gray-800 block">Avantage #{num}</span>
-                        <input
-                          type="text"
-                          value={s[`item${num}_title`] ?? defTitles[num - 1]}
-                          onChange={(e) => handleFieldChange(`item${num}_title`, e.target.value)}
-                          placeholder="Titre"
-                          className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-orange-500 bg-white"
-                        />
-                        <input
-                          type="text"
-                          value={s[`item${num}_desc`] ?? defDescs[num - 1]}
-                          onChange={(e) => handleFieldChange(`item${num}_desc`, e.target.value)}
-                          placeholder="Description"
-                          className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs text-gray-600 outline-none focus:border-orange-500 bg-white"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* C. SELECTION GRID */}
               {section.type === 'SelectionGrid' && (
-                <div className="space-y-4">
+                <>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Category / Tagline</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
                     <input
                       type="text"
                       value={s.badge ?? "Notre sélection"}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre</label>
                     <input
                       type="text"
                       value={s.title ?? "Or & Argent"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
-
-                  <div className="border-t pt-3 space-y-3">
-                    <span className="text-xs font-bold text-gray-800 block">Les 4 Cartes de Produits</span>
-                    {[1, 2, 3, 4].map((num) => {
-                      const defTitles = ["Pièces d'or", "Lingots d'or", "Lingots d'argent", "Pièces d'argent"];
-                      const defDescs = ["Un patrimoine intemporel", "Une valeur sûre", "Investir autrement", "Un investissement accessible"];
-                      const defImgs = ["/images/gold-coins.jpg", "/images/gold-bars.jpg", "/images/silver-bars.jpg", "/images/silver-coins.jpg"];
-                      const defUrls = ["/shop?category=pieces-dor", "/shop?category=lingots-dor", "/shop?category=lingots-dargent", "/shop?category=pieces-dargent"];
-
-                      return (
-                        <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                          <span className="text-xs font-bold text-gray-800 block">Carte #{num}</span>
-                          <div className="grid grid-cols-2 gap-2">
-                            <input
-                              type="text"
-                              value={s[`card${num}_title`] ?? defTitles[num - 1]}
-                              onChange={(e) => handleFieldChange(`card${num}_title`, e.target.value)}
-                              placeholder="Titre"
-                              className="border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500 bg-white"
-                            />
-                            <input
-                              type="text"
-                              value={s[`card${num}_desc`] ?? defDescs[num - 1]}
-                              onChange={(e) => handleFieldChange(`card${num}_desc`, e.target.value)}
-                              placeholder="Description"
-                              className="border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500 bg-white"
-                            />
-                          </div>
-
-                          {renderImageBox(`Image Carte #${num}`, `card${num}_img`, defImgs[num - 1])}
-
-                          <input
-                            type="text"
-                            value={s[`card${num}_url`] ?? defUrls[num - 1]}
-                            onChange={(e) => handleFieldChange(`card${num}_url`, e.target.value)}
-                            placeholder="Lien /shop?category=..."
-                            className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-orange-500 bg-white"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                </>
               )}
 
-              {/* D. WHY CHOOSE US */}
               {section.type === 'WhyChooseUs' && (
-                <div className="space-y-4">
+                <>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Category / Tagline</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
                     <input
                       type="text"
                       value={s.badge ?? "Pourquoi — nous choisir ?"}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre</label>
                     <input
                       type="text"
                       value={s.title ?? "Votre partenaire de confiance"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle / badge</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={s.subtitle ?? "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise."}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Text</label>
-                      <input
-                        type="text"
-                        value={s.btnText ?? "En savoir plus"}
-                        onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Link</label>
-                      <input
-                        type="text"
-                        value={s.btnUrl ?? "/about"}
-                        onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-3 space-y-2">
-                    <span className="text-xs font-bold text-gray-800 block">Les 4 Piliers</span>
-                    {[1, 2, 3, 4].map((num) => {
-                      const defTitles = ['Produits certifiés', 'Transparence totale', 'Accompagnement personnalisé', 'Livraison sécurisée'];
-                      const defDescs = ['Authenticité garantie', 'Des prix clairs', 'Une équipe à votre écoute', 'Dans toute l’Europe'];
-                      return (
-                        <div key={num} className="grid grid-cols-2 gap-2 bg-gray-50 p-2 rounded border border-gray-200">
-                          <input
-                            type="text"
-                            value={s[`pillar${num}_title`] ?? defTitles[num - 1]}
-                            onChange={(e) => handleFieldChange(`pillar${num}_title`, e.target.value)}
-                            placeholder="Titre pilier"
-                            className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-orange-500 bg-white"
-                          />
-                          <input
-                            type="text"
-                            value={s[`pillar${num}_desc`] ?? defDescs[num - 1]}
-                            onChange={(e) => handleFieldChange(`pillar${num}_desc`, e.target.value)}
-                            placeholder="Description"
-                            className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-orange-500 bg-white"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                </>
               )}
 
-              {/* E. PRECIOUS METALS TICKER */}
-              {section.type === 'PreciousMetalsTicker' && (
-                <div className="space-y-4">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Mode des cours
-                      </span>
-                      <select
-                        value={s.mode || 'auto'}
-                        onChange={(e) => handleFieldChange('mode', e.target.value)}
-                        className="border border-emerald-300 rounded px-2 py-1 text-xs font-semibold bg-white text-emerald-900 outline-none"
-                      >
-                        <option value="auto">Automatique (En direct)</option>
-                        <option value="manual">Manuel (Fixe)</option>
-                      </select>
-                    </div>
-                    <p className="text-[11px] text-emerald-700">
-                      {s.mode !== 'manual'
-                        ? '✨ Les cours réels de l’or et de l’argent sont actualisés en temps réel depuis les marchés en Euros.'
-                        : '⚙️ Mode manuel : définissez les montants personnalisés ci-dessous.'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                    <input
-                      type="text"
-                      value={s.title ?? "Cours des métaux précieux"}
-                      onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle / badge</label>
-                    <input
-                      type="text"
-                      value={s.subtitle ?? "Actualisé en temps réel"}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
-                    />
-                  </div>
-
-                  {s.mode === 'manual' && (
-                    <div className="grid grid-cols-2 gap-2 bg-amber-50/50 p-2.5 rounded border border-amber-200">
-                      <input
-                        type="text"
-                        value={s.gold_price ?? "€ 2 720,45"}
-                        onChange={(e) => handleFieldChange('gold_price', e.target.value)}
-                        placeholder="Prix Or"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs bg-white"
-                      />
-                      <input
-                        type="text"
-                        value={s.gold_change ?? "+0,42%"}
-                        onChange={(e) => handleFieldChange('gold_change', e.target.value)}
-                        placeholder="Var. Or"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs bg-white"
-                      />
-                      <input
-                        type="text"
-                        value={s.silver_price ?? "€ 32,17"}
-                        onChange={(e) => handleFieldChange('silver_price', e.target.value)}
-                        placeholder="Prix Argent"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs bg-white"
-                      />
-                      <input
-                        type="text"
-                        value={s.silver_change ?? "+1,12%"}
-                        onChange={(e) => handleFieldChange('silver_change', e.target.value)}
-                        placeholder="Var. Argent"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs bg-white"
-                      />
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Text</label>
-                      <input
-                        type="text"
-                        value={s.btnText ?? "Voir les cours en détail"}
-                        onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Link</label>
-                      <input
-                        type="text"
-                        value={s.btnUrl ?? "/shop"}
-                        onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* F. CTA BANNER */}
               {section.type === 'CtaBanner' && (
-                <div className="space-y-4">
+                <>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre de la bannière</label>
                     <input
                       type="text"
                       value={s.title ?? "Investissez dès aujourd’hui"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle / badge</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
                     <textarea
                       rows={2}
                       value={s.subtitle ?? "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent."}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Text</label>
-                      <input
-                        type="text"
-                        value={s.btnText ?? "Découvrir notre gamme"}
-                        onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Button Link</label>
-                      <input
-                        type="text"
-                        value={s.btnUrl ?? "/shop"}
-                        onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500"
-                      />
+                </>
+              )}
+
+              {section.type === 'PreciousMetalsTicker' && (
+                <>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded p-2.5 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-emerald-900 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Mode de flux
+                      </span>
+                      <select
+                        value={s.mode || 'auto'}
+                        onChange={(e) => handleFieldChange('mode', e.target.value)}
+                        className="border border-emerald-300 rounded px-2 py-0.5 text-xs bg-white text-emerald-900 outline-none"
+                      >
+                        <option value="auto">Automatique (En direct)</option>
+                        <option value="manual">Manuel</option>
+                      </select>
                     </div>
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre</label>
+                    <input
+                      type="text"
+                      value={s.title ?? "Cours des métaux précieux"}
+                      onChange={(e) => handleFieldChange('title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
+                    <input
+                      type="text"
+                      value={s.subtitle ?? "Actualisé en temps réel"}
+                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                </>
+              )}
+
+              {section.type === 'ReassuranceBar' && (
+                <div className="space-y-3">
+                  {[1, 2, 3, 4].map((num) => (
+                    <div key={num} className="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
+                      <span className="text-[11px] font-bold text-gray-700 block">Avantage #{num}</span>
+                      <input
+                        type="text"
+                        value={s[`item${num}_title`] ?? ''}
+                        onChange={(e) => handleFieldChange(`item${num}_title`, e.target.value)}
+                        placeholder="Titre"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                      />
+                      <input
+                        type="text"
+                        value={s[`item${num}_desc`] ?? ''}
+                        onChange={(e) => handleFieldChange(`item${num}_desc`, e.target.value)}
+                        placeholder="Description"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none text-gray-600"
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
 
-              {/* G. TESTIMONIALS */}
               {section.type === 'Testimonials' && (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Category / Tagline</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
                     <input
                       type="text"
                       value={s.badge ?? "Ils nous font confiance"}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-orange-500"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
-
-                  <div className="space-y-3 pt-2">
-                    {[1, 2, 3].map((num) => {
-                      const defNames = ['Thomas D.', 'Sophie M.', 'Pierre L.'];
-                      const defQuotes = [
-                        '« Service impeccable et livraison rapide. Je recommande vivement ! »',
-                        '« Des prix très compétitifs et une équipe très professionnelle. »',
-                        '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »'
-                      ];
-
-                      return (
-                        <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                          <span className="text-xs font-bold text-gray-800 block">Avis #{num}</span>
-                          <input
-                            type="text"
-                            value={s[`review${num}_name`] ?? defNames[num - 1]}
-                            onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
-                            placeholder="Nom du client"
-                            className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500 bg-white"
-                          />
-                          <textarea
-                            rows={2}
-                            value={s[`review${num}_text`] ?? defQuotes[num - 1]}
-                            onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
-                            placeholder="Témoignage"
-                            className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-orange-500 bg-white"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-            </div>
-          )}
-        </div>
-
-        {/* ============================================================ */}
-        {/* 2. DESIGN SETTINGS ACCORDION (STACKED DIRECTLY UNDERNEATH) */}
-        {/* ============================================================ */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setOpenDesign(!openDesign)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer text-left"
-          >
-            <span className="font-semibold text-sm text-gray-800">Design Settings</span>
-            <svg
-              className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${openDesign ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {openDesign && (
-            <div className="p-4 border-t border-gray-200 space-y-6">
-
-              {/* BACKGROUND IMAGE WITH EDIT / REMOVE BUTTONS */}
-              {(section.type === 'GoldHero' || section.type === 'CtaBanner') && (
-                <div>
-                  {renderImageBox(
-                    'Background image',
-                    section.type === 'CtaBanner' ? 'image' : 'bgImage',
-                    section.type === 'CtaBanner' ? '/images/gold-banner-cta.jpg' : '/images/hero-bg-luxury.jpg',
-                    'SHOW_BG_IMAGE',
-                    'Show background image'
-                  )}
-
-                  {s.SHOW_BG_IMAGE !== 'false' && (
-                    <div className="mt-3">
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Dark Overlay</label>
-                      <select
-                        value={s.BG_OVERLAY || '40'}
-                        onChange={(e) => handleFieldChange('BG_OVERLAY', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500 px-3 py-2 bg-white outline-none cursor-pointer"
-                      >
-                        <option value="0">None (0%)</option>
-                        <option value="20">Light (20%)</option>
-                        <option value="40">Medium (40%)</option>
-                        <option value="60">Dark (60%)</option>
-                        <option value="80">Very Dark (80%)</option>
-                      </select>
+                  {[1, 2, 3].map((num) => (
+                    <div key={num} className="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
+                      <span className="text-[11px] font-bold text-gray-700 block">Avis client #{num}</span>
+                      <input
+                        type="text"
+                        value={s[`review${num}_name`] ?? ''}
+                        onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
+                        placeholder="Nom client"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                      />
+                      <textarea
+                        rows={2}
+                        value={s[`review${num}_text`] ?? ''}
+                        onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
+                        placeholder="Témoignage"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none text-gray-600"
+                      />
                     </div>
-                  )}
+                  ))}
                 </div>
               )}
+            </ElementorAccordion>
 
-              {/* MAIN IMAGE (PRODUCT / HERO VISUAL) */}
-              {section.type === 'GoldHero' && (
-                renderImageBox(
-                  'Main image (Product)',
-                  'image',
-                  '/images/hero-gold-silver.jpg',
-                  'SHOW_MAIN_IMAGE',
-                  'Show main image'
-                )
-              )}
-
-              {/* STYLES & ALIGNEMENT (3X3 GRID) */}
-              <div className="border-t pt-5">
-                <h4 className="text-sm font-semibold text-gray-800 mb-4">Styles & Alignement</h4>
-
-                {/* Position (3x3 Grid) */}
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-2">Position du Contenu</label>
-                  <div className="grid grid-cols-3 gap-1 w-[88px] h-[88px] bg-gray-100 p-1.5 rounded-lg border border-gray-200 shadow-inner">
-                    {['top', 'center', 'bottom'].map((v) =>
-                      ['left', 'center', 'right'].map((h) => {
-                        const currentV = s.CONTENT_VALIGN || 'center';
-                        const currentH = s.CONTENT_ALIGN || 'left';
-                        const isSelected = currentV === v && currentH === h;
-
-                        let title = '';
-                        if (v === 'top') title = 'Haut ';
-                        if (v === 'center') title = 'Milieu ';
-                        if (v === 'bottom') title = 'Bas ';
-                        if (h === 'left') title += 'Gauche';
-                        if (h === 'center') title += 'Centre';
-                        if (h === 'right') title += 'Droite';
-
-                        return (
-                          <button
-                            key={`${v}-${h}`}
-                            type="button"
-                            onClick={() => {
-                              handleFieldChange('CONTENT_VALIGN', v);
-                              handleFieldChange('CONTENT_ALIGN', h);
-                            }}
-                            className={`rounded-[4px] transition-all flex items-center justify-center cursor-pointer ${
-                              isSelected
-                                ? 'bg-orange-500 shadow-md ring-1 ring-orange-600 ring-inset'
-                                : 'bg-white border border-gray-200 hover:bg-orange-50'
-                            }`}
-                            title={title}
-                          >
-                            <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
-                          </button>
-                        );
-                      })
-                    )}
-                  </div>
-                  <p className="text-[10px] text-gray-500 mt-1">Gère l&apos;alignement horizontal et vertical</p>
-                </div>
-
-                {/* Style du Bouton (CTA) */}
-                {(section.type === 'GoldHero' || section.type === 'WhyChooseUs' || section.type === 'CtaBanner' || section.type === 'PreciousMetalsTicker') && (
-                  <div className="mb-4">
-                    <label className="block text-xs font-medium text-gray-700 mb-2">Style du Bouton (CTA)</label>
-                    <select
-                      value={s.BTN_STYLE || 'pill'}
-                      onChange={(e) => handleFieldChange('BTN_STYLE', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500 px-3 py-2 bg-white outline-none cursor-pointer"
-                    >
-                      <option value="pill">Pilule (Très arrondi)</option>
-                      <option value="rounded">Arrondi léger</option>
-                      <option value="square">Carré</option>
-                    </select>
-                  </div>
-                )}
-
-                {/* Style des Badges */}
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-2">Style des Badges</label>
-                  <select
-                    value={s.BADGE_STYLE || 'gold'}
-                    onChange={(e) => handleFieldChange('BADGE_STYLE', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500 px-3 py-2 bg-white outline-none cursor-pointer"
-                  >
-                    <option value="gold">Doré Élégant (Gold)</option>
-                    <option value="light">Badge Clair (Effet verre)</option>
-                    <option value="dark">Badge Sombre (Effet verre)</option>
-                    <option value="none">Texte simple (Sans badge)</option>
-                  </select>
-                </div>
-
-                {/* Background Overlay Type */}
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-2">Background Overlay</label>
-                  <select
-                    value={s.OVERLAY_TYPE || 'grad-t'}
-                    onChange={(e) => handleFieldChange('OVERLAY_TYPE', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500 px-3 py-2 bg-white outline-none cursor-pointer"
-                  >
-                    <option value="grad-t">Dégradé Bas ➔ Haut</option>
-                    <option value="grad-r">Dégradé Gauche ➔ Droite</option>
-                    <option value="solid">Couleur Unie</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* TYPOGRAPHY & COLORS */}
-              <div className="border-t pt-5">
-                <h4 className="text-sm font-semibold text-gray-800 mb-4">Typography & Colors</h4>
-
+            {/* Accordion 2: Images & Médias */}
+            {(section.type === 'GoldHero' || section.type === 'CtaBanner' || section.type === 'SelectionGrid') && (
+              <ElementorAccordion
+                title="Images & Médias"
+                isOpen={accordions.media}
+                onToggle={() => toggleAccordion('media')}
+              >
                 {section.type === 'GoldHero' && (
                   <>
-                    {renderDesignTextControls('Category / Tagline (texte or)', 'CATEGORY', 'CATEGORY_COLOR', '#c59a3f')}
-                    {renderDesignTextControls('Title', 'TITLE', 'TITLE_COLOR', '#ffffff')}
-                    {renderDesignTextControls('Subtitle', 'SUBTITLE', 'SUBTITLE_COLOR', '#d1d5db')}
-                    {renderDesignTextControls('Button', 'BTN', 'BTN_TEXT_COLOR', '#000000')}
-                  </>
-                )}
+                    <ElementorImageBox
+                      label="Image Principale (Hero)"
+                      value={s.image ?? '/images/hero-gold-silver.jpg'}
+                      onPick={() => triggerUpload('image')}
+                      onRemove={() => handleFieldChange('image', '')}
+                      showCheckboxKey="SHOW_MAIN_IMAGE"
+                      showCheckboxLabel="Afficher l'image principale"
+                      showCheckboxVal={s.SHOW_MAIN_IMAGE !== 'false'}
+                      onCheckboxChange={(val) => handleFieldChange('SHOW_MAIN_IMAGE', val ? 'true' : 'false')}
+                    />
 
-                {section.type === 'SelectionGrid' && (
-                  <>
-                    {renderDesignTextControls('Badge', 'BADGE', 'BADGE_COLOR', '#c59a3f')}
-                    {renderDesignTextControls('Title', 'TITLE', 'TITLE_COLOR', '#111827')}
-                  </>
-                )}
-
-                {section.type === 'WhyChooseUs' && (
-                  <>
-                    {renderDesignTextControls('Badge', 'BADGE', 'BADGE_COLOR', '#c59a3f')}
-                    {renderDesignTextControls('Title', 'TITLE', 'TITLE_COLOR', '#ffffff')}
-                    {renderDesignTextControls('Subtitle', 'SUBTITLE', 'SUBTITLE_COLOR', '#d1d5db')}
-                    {renderDesignTextControls('Button', 'BTN', 'BTN_TEXT_COLOR', '#000000')}
-                  </>
-                )}
-
-                {section.type === 'PreciousMetalsTicker' && (
-                  <>
-                    {renderDesignTextControls('Title', 'TITLE', 'TITLE_COLOR', '#111827')}
-                    {renderDesignTextControls('Subtitle', 'SUBTITLE', 'SUBTITLE_COLOR', '#6b7280')}
-                    {renderDesignTextControls('Button', 'BTN', 'BTN_TEXT_COLOR', '#374151')}
+                    <ElementorImageBox
+                      label="Image d'arrière-plan (BG)"
+                      value={s.bgImage ?? '/images/hero-bg-luxury.jpg'}
+                      onPick={() => triggerUpload('bgImage')}
+                      onRemove={() => handleFieldChange('bgImage', '')}
+                      showCheckboxKey="SHOW_BG_IMAGE"
+                      showCheckboxLabel="Afficher l'image d'arrière-plan"
+                      showCheckboxVal={s.SHOW_BG_IMAGE !== 'false'}
+                      onCheckboxChange={(val) => handleFieldChange('SHOW_BG_IMAGE', val ? 'true' : 'false')}
+                    />
                   </>
                 )}
 
                 {section.type === 'CtaBanner' && (
-                  <>
-                    {renderDesignTextControls('Title', 'TITLE', 'TITLE_COLOR', '#ffffff')}
-                    {renderDesignTextControls('Subtitle', 'SUBTITLE', 'SUBTITLE_COLOR', '#e5e7eb')}
-                    {renderDesignTextControls('Button', 'BTN', 'BTN_TEXT_COLOR', '#000000')}
-                  </>
+                  <ElementorImageBox
+                    label="Image de fond (Bannière)"
+                    value={s.image ?? '/images/gold-banner-cta.jpg'}
+                    onPick={() => triggerUpload('image')}
+                    onRemove={() => handleFieldChange('image', '')}
+                  />
                 )}
 
-                {section.type === 'Testimonials' && (
-                  <>
-                    {renderDesignTextControls('Badge', 'BADGE', 'BADGE_COLOR', '#c59a3f')}
-                  </>
-                )}
-              </div>
-
-              {/* BACKGROUND COLORS (BLOCK & BUTTON) */}
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <div>
-                  <label className="block text-[11px] font-medium mb-1 text-gray-500">Block Background</label>
-                  <div className="relative w-full h-10 rounded-md overflow-hidden border border-gray-300 shadow-sm cursor-pointer">
-                    <input
-                      type="color"
-                      value={s.BG_COLOR || s.bgColor || (section.type === 'GoldHero' || section.type === 'WhyChooseUs' ? '#0a0a0a' : '#ffffff')}
-                      onChange={(e) => {
-                        handleFieldChange('BG_COLOR', e.target.value);
-                        handleFieldChange('bgColor', e.target.value);
-                      }}
-                      className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer border-0 p-0"
-                    />
+                {section.type === 'SelectionGrid' && (
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4].map((num) => (
+                      <div key={num} className="p-2 border border-gray-200 rounded-lg bg-gray-50 space-y-2">
+                        <span className="text-[11px] font-bold text-gray-700 block">Carte #{num}</span>
+                        <input
+                          type="text"
+                          value={s[`card${num}_title`] ?? ''}
+                          onChange={(e) => handleFieldChange(`card${num}_title`, e.target.value)}
+                          placeholder="Titre catégorie"
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                        />
+                        <ElementorImageBox
+                          label={`Visuel Carte #${num}`}
+                          value={s[`card${num}_img`]}
+                          onPick={() => triggerUpload(`card${num}_img`)}
+                          onRemove={() => handleFieldChange(`card${num}_img`, '')}
+                        />
+                        <input
+                          type="text"
+                          value={s[`card${num}_url`] ?? ''}
+                          onChange={(e) => handleFieldChange(`card${num}_url`, e.target.value)}
+                          placeholder="/shop?category=..."
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                        />
+                      </div>
+                    ))}
                   </div>
+                )}
+              </ElementorAccordion>
+            )}
+
+            {/* Accordion 3: Bouton d'action (CTA) */}
+            {(section.type === 'GoldHero' || section.type === 'WhyChooseUs' || section.type === 'CtaBanner' || section.type === 'PreciousMetalsTicker') && (
+              <ElementorAccordion
+                title="Bouton d'action (CTA)"
+                isOpen={accordions.action}
+                onToggle={() => toggleAccordion('action')}
+              >
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnText ?? "Découvrir notre gamme"}
+                    onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-medium mb-1 text-gray-500">Button Background</label>
-                  <div className="relative w-full h-10 rounded-md overflow-hidden border border-gray-300 shadow-sm cursor-pointer">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Lien de redirection (URL)</label>
+                  <div className="flex items-center gap-1">
                     <input
-                      type="color"
-                      value={s.BTN_BG_COLOR || s.btnBgColor || '#c59a3f'}
-                      onChange={(e) => {
-                        handleFieldChange('BTN_BG_COLOR', e.target.value);
-                        handleFieldChange('btnBgColor', e.target.value);
-                      }}
-                      className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer border-0 p-0"
+                      type="text"
+                      value={s.btnUrl ?? "/shop"}
+                      onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                      className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                      placeholder="/shop"
                     />
+                    <div className="p-2 border border-gray-300 rounded bg-gray-50 text-gray-500" title="Paramètres de lien">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ElementorAccordion>
+            )}
+          </div>
+        )}
 
-              {/* REDIRECT LINK (URL) */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Redirect link (URL)</label>
+        {/* ============================================================ */}
+        {/* TAB 2: STYLE */}
+        {/* ============================================================ */}
+        {activeTab === 'style' && (
+          <div>
+            {/* Title Style */}
+            <ElementorAccordion
+              title="Title Style"
+              isOpen={accordions.titleStyle}
+              onToggle={() => toggleAccordion('titleStyle')}
+            >
+              <ElementorColorRow
+                label="Color"
+                value={s.TITLE_COLOR}
+                onChange={(val) => handleFieldChange('TITLE_COLOR', val)}
+                defaultColor="#ffffff"
+              />
+
+              {/* Slider Size */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600 font-medium">Size (Taille)</span>
+                  <span className="text-xs font-mono text-gray-700">{s.TITLE_SIZE || '48'}px</span>
+                </div>
                 <input
-                  type="text"
-                  value={s.btnUrl || s.LINK || '/shop'}
-                  onChange={(e) => {
-                    handleFieldChange('btnUrl', e.target.value);
-                    handleFieldChange('LINK', e.target.value);
-                  }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none text-gray-700"
-                  placeholder="/shop"
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={s.TITLE_SIZE || 48}
+                  onChange={(e) => handleFieldChange('TITLE_SIZE', e.target.value)}
+                  className="w-full accent-gray-800"
                 />
               </div>
 
-            </div>
-          )}
-        </div>
+              {/* Alignement Grille 3x3 */}
+              <div className="pt-2">
+                <span className="text-xs text-gray-600 font-medium block mb-1.5">Alignement du Titre</span>
+                <div className="grid grid-cols-3 gap-1 w-[80px] h-[80px] bg-gray-100 p-1.5 rounded-lg border border-gray-200">
+                  {['top', 'center', 'bottom'].map((v) =>
+                    ['left', 'center', 'right'].map((h) => {
+                      const isSelected = (s.CONTENT_VALIGN || 'center') === v && (s.CONTENT_ALIGN || 'left') === h;
+                      return (
+                        <button
+                          key={`${v}-${h}`}
+                          type="button"
+                          onClick={() => {
+                            handleFieldChange('CONTENT_VALIGN', v);
+                            handleFieldChange('CONTENT_ALIGN', h);
+                          }}
+                          className={`rounded transition-all flex items-center justify-center cursor-pointer ${
+                            isSelected
+                              ? 'bg-orange-500 shadow-sm ring-1 ring-orange-600'
+                              : 'bg-white border border-gray-200 hover:bg-orange-50'
+                          }`}
+                        >
+                          <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </ElementorAccordion>
+
+            {/* Sub Title Style */}
+            <ElementorAccordion
+              title="Sub Title Style"
+              isOpen={accordions.subTitleStyle}
+              onToggle={() => toggleAccordion('subTitleStyle')}
+            >
+              <ElementorColorRow
+                label="Color"
+                value={s.SUBTITLE_COLOR}
+                onChange={(val) => handleFieldChange('SUBTITLE_COLOR', val)}
+                defaultColor="#d1d5db"
+              />
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600 font-medium">Size</span>
+                  <span className="text-xs font-mono text-gray-700">{s.SUBTITLE_SIZE || '18'}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="12"
+                  max="32"
+                  value={s.SUBTITLE_SIZE || 18}
+                  onChange={(e) => handleFieldChange('SUBTITLE_SIZE', e.target.value)}
+                  className="w-full accent-gray-800"
+                />
+              </div>
+            </ElementorAccordion>
+
+            {/* Button Settings */}
+            <ElementorAccordion
+              title="Button Settings"
+              isOpen={accordions.buttonStyle}
+              onToggle={() => toggleAccordion('buttonStyle')}
+            >
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Style de forme (CTA)</label>
+                <select
+                  value={s.BTN_STYLE || 'pill'}
+                  onChange={(e) => handleFieldChange('BTN_STYLE', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none cursor-pointer"
+                >
+                  <option value="pill">Pilule (Très arrondi)</option>
+                  <option value="rounded">Arrondi classique</option>
+                  <option value="square">Carré</option>
+                </select>
+              </div>
+
+              <ElementorColorRow
+                label="Button Background"
+                value={s.BTN_BG_COLOR || s.btnBgColor}
+                onChange={(val) => {
+                  handleFieldChange('BTN_BG_COLOR', val);
+                  handleFieldChange('btnBgColor', val);
+                }}
+                defaultColor="#c59a3f"
+              />
+
+              <ElementorColorRow
+                label="Button Text Color"
+                value={s.BTN_TEXT_COLOR || s.btnTextColor}
+                onChange={(val) => {
+                  handleFieldChange('BTN_TEXT_COLOR', val);
+                  handleFieldChange('btnTextColor', val);
+                }}
+                defaultColor="#000000"
+              />
+
+              <Elementor4BoxInput
+                label="Padding du Bouton"
+                baseKey="btn_padding"
+                settings={s}
+                onChange={handleFieldChange}
+              />
+            </ElementorAccordion>
+
+            {/* Box Style (Section Background & Overlays) */}
+            <ElementorAccordion
+              title="Box Style"
+              isOpen={accordions.boxStyle}
+              onToggle={() => toggleAccordion('boxStyle')}
+            >
+              <ElementorColorRow
+                label="Block Background"
+                value={s.BG_COLOR || s.bgColor}
+                onChange={(val) => {
+                  handleFieldChange('BG_COLOR', val);
+                  handleFieldChange('bgColor', val);
+                }}
+                defaultColor={section.type === 'GoldHero' || section.type === 'WhyChooseUs' ? '#0a0a0a' : '#ffffff'}
+              />
+
+              {(section.type === 'GoldHero' || section.type === 'CtaBanner') && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Filtre Sombre (Dark Overlay)</label>
+                  <select
+                    value={s.BG_OVERLAY || '40'}
+                    onChange={(e) => handleFieldChange('BG_OVERLAY', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none cursor-pointer"
+                  >
+                    <option value="0">None (0%)</option>
+                    <option value="20">Light (20%)</option>
+                    <option value="40">Medium (40%)</option>
+                    <option value="60">Dark (60%)</option>
+                    <option value="80">Very Dark (80%)</option>
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Type de Dégradé</label>
+                <select
+                  value={s.OVERLAY_TYPE || 'grad-t'}
+                  onChange={(e) => handleFieldChange('OVERLAY_TYPE', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none cursor-pointer"
+                >
+                  <option value="grad-t">Dégradé Bas ➔ Haut</option>
+                  <option value="grad-r">Dégradé Gauche ➔ Droite</option>
+                  <option value="solid">Couleur Unie</option>
+                </select>
+              </div>
+            </ElementorAccordion>
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* TAB 3: AVANCÉ */}
+        {/* ============================================================ */}
+        {activeTab === 'advanced' && (
+          <div>
+            {/* Mise en page */}
+            <ElementorAccordion
+              title="Mise en page"
+              isOpen={accordions.layoutAdvanced}
+              onToggle={() => toggleAccordion('layoutAdvanced')}
+            >
+              <Elementor4BoxInput
+                label="Marge externe (Margin)"
+                baseKey="margin"
+                settings={s}
+                onChange={handleFieldChange}
+              />
+
+              <Elementor4BoxInput
+                label="Marge interne (Padding)"
+                baseKey="padding"
+                settings={s}
+                onChange={handleFieldChange}
+              />
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Largeur</label>
+                <select
+                  value={s.layoutWidth || 'default'}
+                  onChange={(e) => handleFieldChange('layoutWidth', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none cursor-pointer"
+                >
+                  <option value="default">Par défaut (Plein écran)</option>
+                  <option value="boxed">Encadré (Conteneur centré)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Index-Z</label>
+                <input
+                  type="number"
+                  value={s.zIndex ?? ''}
+                  onChange={(e) => handleFieldChange('zIndex', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-gray-500"
+                  placeholder="10"
+                />
+              </div>
+            </ElementorAccordion>
+
+            {/* Réactivité */}
+            <ElementorAccordion
+              title="Visibilité & Réactivité"
+              isOpen={accordions.responsive}
+              onToggle={() => toggleAccordion('responsive')}
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-700 font-medium">Masquer sur Desktop</span>
+                  <input
+                    type="checkbox"
+                    checked={s.hideDesktop === 'true'}
+                    onChange={(e) => handleFieldChange('hideDesktop', e.target.checked ? 'true' : 'false')}
+                    className="rounded text-orange-600 focus:ring-orange-500 cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-700 font-medium">Masquer sur Tablette</span>
+                  <input
+                    type="checkbox"
+                    checked={s.hideTablet === 'true'}
+                    onChange={(e) => handleFieldChange('hideTablet', e.target.checked ? 'true' : 'false')}
+                    className="rounded text-orange-600 focus:ring-orange-500 cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-700 font-medium">Masquer sur Mobile</span>
+                  <input
+                    type="checkbox"
+                    checked={s.hideMobile === 'true'}
+                    onChange={(e) => handleFieldChange('hideMobile', e.target.checked ? 'true' : 'false')}
+                    className="rounded text-orange-600 focus:ring-orange-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+            </ElementorAccordion>
+
+            {/* Attributs CSS */}
+            <ElementorAccordion
+              title="Attributs & Classes CSS"
+              isOpen={accordions.customCss}
+              onToggle={() => toggleAccordion('customCss')}
+            >
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">ID de CSS</label>
+                <input
+                  type="text"
+                  value={s.cssId ?? ''}
+                  onChange={(e) => handleFieldChange('cssId', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-gray-500"
+                  placeholder="mon-id-section"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Classes CSS</label>
+                <input
+                  type="text"
+                  value={s.cssClass ?? ''}
+                  onChange={(e) => handleFieldChange('cssClass', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-gray-500"
+                  placeholder="ma-classe-custom"
+                />
+              </div>
+            </ElementorAccordion>
+          </div>
+        )}
 
       </div>
 
-      {/* DELETE SECTION BUTTON AT BOTTOM (FROM SCREENSHOT) */}
+      {/* DELETE SECTION BUTTON AT BOTTOM */}
       {onDelete && (
         <div className="p-3 bg-gray-50 border-t border-gray-200 flex justify-center">
           <button

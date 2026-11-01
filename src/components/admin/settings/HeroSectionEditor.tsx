@@ -185,17 +185,19 @@ export default function HeroSectionEditor({ section, previewMode, updateSectionS
 
             <div className="mt-4">
               <label className="block text-xs font-semibold text-gray-700 mb-2">Slide 2 Product Image</label>
-              <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center relative min-h-[120px] transition hover:bg-gray-100">
+              <div className="relative group border border-gray-200 bg-gray-50 rounded-xl overflow-hidden min-h-[120px] transition">
                 {section.settings['STYLE2_HERO_1_SLIDE2_IMAGE'] ? (
-                  <>
-                    <Image width={800} height={800} src={section.settings['STYLE2_HERO_1_SLIDE2_IMAGE']} className="absolute inset-0 w-full h-full object-contain p-2 rounded-xl" alt="" />
-                    <div className="relative z-10 flex gap-2 opacity-0 hover:opacity-100 bg-white/80 p-2 rounded-lg transition">
-                      <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE')} className="bg-white text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm border">Edit</button>
-                      <button type="button" onClick={() => updateSectionSettings(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE', '')} className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm">Remove</button>
+                  <div className="relative aspect-video max-h-40 w-full bg-gray-900">
+                    <Image width={800} height={800} src={section.settings['STYLE2_HERO_1_SLIDE2_IMAGE']} className="w-full h-full object-contain p-2" alt="" />
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE')} className="px-3 py-1.5 bg-white text-gray-800 text-xs font-semibold rounded-md shadow hover:bg-gray-50 cursor-pointer">Modifier</button>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); updateSectionSettings(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE', ''); }} className="absolute top-2 right-2 w-7 h-7 bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center justify-center shadow transition hover:scale-110 cursor-pointer" title="Supprimer ce média">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
                     </div>
-                  </>
+                  </div>
                 ) : (
-                  <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE')} className="flex flex-col items-center text-gray-500 hover:text-gray-600 transition">
+                  <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_IMAGE')} className="w-full py-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-600 transition">
                     <svg className="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
                     <span className="text-xs font-medium">Add Slide 2 Image</span>
                   </button>
@@ -205,17 +207,19 @@ export default function HeroSectionEditor({ section, previewMode, updateSectionS
 
             <div className="mt-4">
               <label className="block text-xs font-semibold text-gray-700 mb-2">Slide 2 Background Image (Optional)</label>
-              <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center relative min-h-[120px] transition hover:bg-gray-100">
+              <div className="relative group border border-gray-200 bg-gray-50 rounded-xl overflow-hidden min-h-[120px] transition">
                 {section.settings['STYLE2_HERO_1_SLIDE2_BG_IMAGE'] ? (
-                  <>
-                    <Image width={800} height={800} src={section.settings['STYLE2_HERO_1_SLIDE2_BG_IMAGE']} className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-60" alt="" />
-                    <div className="relative z-10 flex gap-2">
-                      <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE')} className="bg-white text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm border">Edit</button>
-                      <button type="button" onClick={() => updateSectionSettings(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE', '')} className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm">Remove</button>
+                  <div className="relative aspect-video max-h-40 w-full bg-gray-900">
+                    <Image width={800} height={800} src={section.settings['STYLE2_HERO_1_SLIDE2_BG_IMAGE']} className="w-full h-full object-cover" alt="" />
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE')} className="px-3 py-1.5 bg-white text-gray-800 text-xs font-semibold rounded-md shadow hover:bg-gray-50 cursor-pointer">Modifier</button>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); updateSectionSettings(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE', ''); }} className="absolute top-2 right-2 w-7 h-7 bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center justify-center shadow transition hover:scale-110 cursor-pointer" title="Supprimer ce média">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
                     </div>
-                  </>
+                  </div>
                 ) : (
-                  <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE')} className="flex flex-col items-center text-gray-500 hover:text-gray-600 transition">
+                  <button type="button" onClick={() => handleUpload(section.id, 'STYLE2_HERO_1_SLIDE2_BG_IMAGE')} className="w-full py-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-600 transition">
                     <svg className="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
                     <span className="text-xs font-medium">Add Slide 2 Background Image</span>
                   </button>
@@ -237,17 +241,19 @@ export default function HeroSectionEditor({ section, previewMode, updateSectionS
         {/* Background Image */}
         <div>
           <label className="block text-sm font-semibold text-red-700 mb-2">Background image</label>
-          <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center relative min-h-[120px] transition hover:bg-gray-100">
+          <div className="relative group border border-gray-200 bg-gray-50 rounded-xl overflow-hidden min-h-[120px] transition">
             {section.settings[`${prefix}_BG_IMAGE`] ? (
-              <>
-                <Image width={800} height={800} src={section.settings[`${prefix}_BG_IMAGE`]} className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50" alt="" />
-                <div className="relative z-10 flex gap-2">
-                  <button type="button" onClick={() => handleUpload(section.id, `${prefix}_BG_IMAGE`)} className="bg-white text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm border">Edit</button>
-                  <button type="button" onClick={() => updateSectionSettings(section.id, `${prefix}_BG_IMAGE`, '')} className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm">Remove</button>
+              <div className="relative aspect-video max-h-40 w-full bg-gray-900">
+                <Image width={800} height={800} src={section.settings[`${prefix}_BG_IMAGE`]} className="w-full h-full object-cover" alt="" />
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button type="button" onClick={() => handleUpload(section.id, `${prefix}_BG_IMAGE`)} className="px-3 py-1.5 bg-white text-gray-800 text-xs font-semibold rounded-md shadow hover:bg-gray-50 cursor-pointer">Modifier</button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); updateSectionSettings(section.id, `${prefix}_BG_IMAGE`, ''); }} className="absolute top-2 right-2 w-7 h-7 bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center justify-center shadow transition hover:scale-110 cursor-pointer" title="Supprimer ce média">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
                 </div>
-              </>
+              </div>
             ) : (
-              <button type="button" onClick={() => handleUpload(section.id, `${prefix}_BG_IMAGE`)} className="flex flex-col items-center text-gray-500 hover:text-gray-600 transition">
+              <button type="button" onClick={() => handleUpload(section.id, `${prefix}_BG_IMAGE`)} className="w-full py-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-600 transition">
                 <svg className="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
                 <span className="text-xs font-medium">Add an image</span>
               </button>
@@ -278,17 +284,19 @@ export default function HeroSectionEditor({ section, previewMode, updateSectionS
         {/* Main Image */}
         <div>
           <label className="block text-sm font-semibold text-red-700 mb-2">Main image (Product)</label>
-          <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center relative min-h-[120px] transition hover:bg-gray-100">
+          <div className="relative group border border-gray-200 bg-gray-50 rounded-xl overflow-hidden min-h-[120px] transition">
             {section.settings[`${prefix}_IMAGE`] ? (
-              <>
-                <Image width={800} height={800} src={section.settings[`${prefix}_IMAGE`]} className="absolute inset-0 w-full h-full object-contain p-2 rounded-xl" alt="" />
-                <div className="relative z-10 flex gap-2 opacity-0 hover:opacity-100 bg-white/80 p-2 rounded-lg transition">
-                  <button type="button" onClick={() => handleUpload(section.id, `${prefix}_IMAGE`)} className="bg-white text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm border">Edit</button>
-                  <button type="button" onClick={() => updateSectionSettings(section.id, `${prefix}_IMAGE`, '')} className="bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm">Remove</button>
+              <div className="relative aspect-video max-h-40 w-full bg-gray-900">
+                <Image width={800} height={800} src={section.settings[`${prefix}_IMAGE`]} className="w-full h-full object-contain p-2" alt="" />
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button type="button" onClick={() => handleUpload(section.id, `${prefix}_IMAGE`)} className="px-3 py-1.5 bg-white text-gray-800 text-xs font-semibold rounded-md shadow hover:bg-gray-50 cursor-pointer">Modifier</button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); updateSectionSettings(section.id, `${prefix}_IMAGE`, ''); }} className="absolute top-2 right-2 w-7 h-7 bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center justify-center shadow transition hover:scale-110 cursor-pointer" title="Supprimer ce média">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
                 </div>
-              </>
+              </div>
             ) : (
-              <button type="button" onClick={() => handleUpload(section.id, `${prefix}_IMAGE`)} className="flex flex-col items-center text-gray-500 hover:text-gray-600 transition">
+              <button type="button" onClick={() => handleUpload(section.id, `${prefix}_IMAGE`)} className="w-full py-6 flex flex-col items-center justify-center text-gray-500 hover:text-gray-600 transition">
                 <svg className="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
                 <span className="text-xs font-medium">Add an image</span>
               </button>
