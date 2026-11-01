@@ -12,6 +12,12 @@ interface GoldHeroProps {
     btnText?: string;
     btnUrl?: string;
     image?: string;
+    bgImage?: string;
+    bgColor?: string;
+    bgOpacity?: string | number;
+    highlightColor?: string;
+    btnBgColor?: string;
+    btnTextColor?: string;
   };
 }
 
@@ -22,6 +28,12 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const btnText = config?.btnText || 'Découvrir notre gamme';
   const btnUrl = config?.btnUrl || '/shop';
   const image = config?.image || '/images/hero-gold-silver.jpg';
+  const bgImage = config?.bgImage || '/images/hero-bg-luxury.jpg';
+  const bgColor = config?.bgColor || '#0a0a0a';
+  const highlightColor = config?.highlightColor || '#c59a3f';
+  const btnBgColor = config?.btnBgColor || '#c59a3f';
+  const btnTextColor = config?.btnTextColor || '#000000';
+  const bgOpacity = typeof config?.bgOpacity !== 'undefined' ? Number(config.bgOpacity) : 0.45;
 
   // If the title contains the highlight text, render with gold span
   const renderTitle = () => {
@@ -30,7 +42,7 @@ export default function GoldHero({ config }: GoldHeroProps) {
       return (
         <>
           {parts[0]}
-          <span className="text-[#c59a3f]">{highlight}</span>
+          <span style={{ color: highlightColor }}>{highlight}</span>
           {parts[1]}
         </>
       );
@@ -39,11 +51,31 @@ export default function GoldHero({ config }: GoldHeroProps) {
   };
 
   return (
-    <section className="relative w-full bg-[#0a0a0a] text-white overflow-hidden">
-      {/* Background radial gradient for subtle luxury warmth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none" />
+    <section 
+      className="relative w-full text-white overflow-hidden transition-colors duration-300"
+      style={{ backgroundColor: bgColor }}
+    >
+      {/* Background Image (BG) */}
+      {bgImage && (
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <Image
+            src={bgImage}
+            alt="Hero Background"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+            style={{ opacity: bgOpacity }}
+          />
+          {/* Subtle dark vignette overlay to blend edges */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60 pointer-events-none" />
+        </div>
+      )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28">
+      {/* Radial gradient warmth */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
           {/* Left Text Column */}
@@ -59,7 +91,8 @@ export default function GoldHero({ config }: GoldHeroProps) {
             <div className="mt-8">
               <Link
                 href={btnUrl}
-                className="inline-flex items-center gap-3 bg-[#c59a3f] hover:bg-[#b08733] text-black font-semibold text-base px-8 py-4 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/25 cursor-pointer group"
+                style={{ backgroundColor: btnBgColor, color: btnTextColor }}
+                className="inline-flex items-center gap-3 font-semibold text-base px-8 py-4 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/25 cursor-pointer group"
               >
                 <span>{btnText}</span>
                 <svg

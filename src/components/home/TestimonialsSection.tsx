@@ -38,8 +38,14 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
     }
   ];
 
+  const bgColor = c.bgColor || '#fcfbf9';
+  const cardBgColor = c.cardBgColor || '#ffffff';
+
   return (
-    <section className="w-full bg-[#fcfbf9] py-16 md:py-24 border-t border-gray-100">
+    <section 
+      className="w-full py-16 md:py-24 border-t border-gray-100 transition-colors duration-300"
+      style={{ backgroundColor: bgColor }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
@@ -58,7 +64,8 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5"
+              style={{ backgroundColor: cardBgColor }}
+              className="rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5"
             >
               {/* Avatar with Initials & Ring */}
               <div className={`w-14 h-14 rounded-full ${review.avatarBg} text-white font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-md ring-2 ring-[#c59a3f]/30`}>

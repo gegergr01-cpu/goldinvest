@@ -45,8 +45,11 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
     }
   ];
 
+  const bgColor = c.bgColor || '#fcfbf9';
+  const cardBgColor = c.cardBgColor || '#151515';
+
   return (
-    <section className="w-full bg-[#fcfbf9] py-16 md:py-24">
+    <section className="w-full py-16 md:py-24 transition-colors duration-300" style={{ backgroundColor: bgColor }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
@@ -68,7 +71,8 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
           {items.map((item) => (
             <div
               key={item.id}
-              className="group bg-[#151515] rounded-2xl overflow-hidden flex flex-col justify-between border border-white/5 hover:border-[#c59a3f]/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
+              style={{ backgroundColor: cardBgColor }}
+              className="group rounded-2xl overflow-hidden flex flex-col justify-between border border-white/5 hover:border-[#c59a3f]/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
             >
               {/* Product Image on Dark Background */}
               <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#222222] to-[#151515] overflow-hidden">

@@ -171,7 +171,20 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
     };
     if (type === 'GoldHero') {
       newSec.name = 'Hero (Investissez dans la valeur sûre)';
-      newSec.settings = { title: "Investissez dans la valeur sûre", highlight: "valeur sûre", subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", btnText: "Découvrir notre gamme", btnUrl: "/shop", image: "/images/hero-gold-silver.jpg" };
+      newSec.settings = { 
+        title: "Investissez dans la valeur sûre", 
+        highlight: "valeur sûre", 
+        subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
+        btnText: "Découvrir notre gamme", 
+        btnUrl: "/shop", 
+        image: "/images/hero-gold-silver.jpg",
+        bgImage: "/images/hero-bg-luxury.jpg",
+        bgColor: "#0a0a0a",
+        bgOpacity: 0.45,
+        highlightColor: "#c59a3f",
+        btnBgColor: "#c59a3f",
+        btnTextColor: "#000000"
+      };
     } else if (type === 'ReassuranceBar') {
       newSec.name = 'Barre de réassurance (4 avantages)';
       newSec.settings = { item1_title: 'Qualité garantie', item1_desc: 'Des produits certifiés et authentiques', item2_title: 'Prix compétitifs', item2_desc: 'Un excellent rapport qualité-prix', item3_title: 'Livraison rapide', item3_desc: 'Partout en Europe', item4_title: 'Service client réactif', item4_desc: 'Notre équipe à votre écoute' };
@@ -183,7 +196,20 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       newSec.settings = { badge: "Pourquoi — nous choisir ?", title: "Votre partenaire de confiance" };
     } else if (type === 'PreciousMetalsTicker') {
       newSec.name = 'Cours des métaux précieux (Widget)';
-      newSec.settings = { title: "Cours des métaux précieux", gold_price: "€ 2 720,45", gold_change: "+0,42%", silver_price: "€ 32,17", silver_change: "+1,12%" };
+      newSec.settings = { 
+        mode: "auto",
+        title: "Cours des métaux précieux", 
+        subtitle: "Actualisé en temps réel",
+        defaultUnit: "oz",
+        showCharts: true,
+        bgColor: "#fcfbf9",
+        gold_price: "€ 2 720,45", 
+        gold_change: "+0,42%", 
+        silver_price: "€ 32,17", 
+        silver_change: "+1,12%",
+        btnText: "Voir les cours en détail",
+        btnUrl: "/shop"
+      };
     } else if (type === 'CtaBanner') {
       newSec.name = 'Bannière CTA (Investissez dès aujourd’hui)';
       newSec.settings = { title: "Investissez dès aujourd’hui", btnText: "Découvrir notre gamme", image: "/images/gold-banner-cta.jpg" };

@@ -56,8 +56,13 @@ export default function ReassuranceBar({ config }: ReassuranceBarProps) {
     }
   ];
 
+  const bgColor = c.bgColor || '#ffffff';
+
   return (
-    <section className="w-full bg-white border-y border-gray-100 py-8 md:py-10 shadow-sm relative z-20">
+    <section 
+      className="w-full border-y border-gray-100 py-8 md:py-10 shadow-sm relative z-20 transition-colors duration-300"
+      style={{ backgroundColor: bgColor }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 divide-y sm:divide-y-0 lg:divide-x divide-gray-100">
           {items.map((item, idx) => (

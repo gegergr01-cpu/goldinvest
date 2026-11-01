@@ -35,7 +35,13 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
       btnText: "Découvrir notre gamme", 
       btnUrl: "/shop", 
-      image: "/images/hero-gold-silver.jpg" 
+      image: "/images/hero-gold-silver.jpg",
+      bgImage: "/images/hero-bg-luxury.jpg",
+      bgColor: "#0a0a0a",
+      bgOpacity: 0.45,
+      highlightColor: "#c59a3f",
+      btnBgColor: "#c59a3f",
+      btnTextColor: "#000000"
     } 
   },
   { 
@@ -107,8 +113,12 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
     name: 'Cours des métaux précieux (Widget)', 
     enabled: true, 
     settings: { 
+      mode: "auto",
       title: "Cours des métaux précieux", 
       subtitle: "Actualisé en temps réel",
+      defaultUnit: "oz",
+      showCharts: true,
+      bgColor: "#fcfbf9",
       gold_price: "€ 2 720,45", 
       gold_change: "+0,42%", 
       silver_price: "€ 32,17", 

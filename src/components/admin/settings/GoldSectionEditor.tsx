@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 
 interface GoldSectionEditorProps {
   section: any;
@@ -9,6 +8,78 @@ interface GoldSectionEditorProps {
   updateSectionSettings: (id: string, keyOrUpdates: string | Record<string, any>, value?: any) => void;
   handleUpload?: (id: string, key: string) => void;
   goBack: () => void;
+}
+
+// Reusable Visual Image Picker (NO raw text input field!)
+interface ImagePickerFieldProps {
+  label: string;
+  value?: string;
+  onPick: () => void;
+  onClear: () => void;
+  helperText?: string;
+}
+
+function ImagePickerField({ label, value, onPick, onClear, helperText }: ImagePickerFieldProps) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-xs font-semibold text-gray-700">{label}</label>
+      {helperText && <p className="text-[11px] text-gray-500">{helperText}</p>}
+
+      {value ? (
+        <div className="relative rounded-xl border border-gray-200 bg-gray-900 p-2 overflow-hidden shadow-sm flex items-center gap-3">
+          {/* Thumbnail preview */}
+          <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-black flex-shrink-0 border border-white/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={value}
+              alt={label}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex-1 flex flex-col sm:flex-row gap-2">
+            <button
+              type="button"
+              onClick={onPick}
+              className="px-3 py-1.5 bg-[#c59a3f] hover:bg-[#b08733] text-black font-semibold text-xs rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1.5"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Changer l&apos;image</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClear}
+              className="px-2.5 py-1.5 bg-white/10 hover:bg-red-500/20 text-gray-300 hover:text-red-400 text-xs rounded-lg transition-colors flex items-center justify-center gap-1 border border-white/10"
+              title="Supprimer l'image"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Retirer</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onPick}
+          className="w-full border-2 border-dashed border-gray-300 hover:border-[#c59a3f] rounded-xl p-4 text-center transition-all bg-gray-50 hover:bg-amber-50/40 group flex flex-col items-center justify-center gap-2 cursor-pointer"
+        >
+          <div className="w-9 h-9 rounded-full bg-gray-100 group-hover:bg-[#c59a3f]/15 text-gray-500 group-hover:text-[#c59a3f] flex items-center justify-center transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-700 group-hover:text-gray-900">
+            Choisir une image dans la médiathèque
+          </span>
+        </button>
+      )}
+    </div>
+  );
 }
 
 export default function GoldSectionEditor({
@@ -23,6 +94,12 @@ export default function GoldSectionEditor({
 
   const handleFieldChange = (key: string, value: any) => {
     updateSectionSettings(section.id, key, value);
+  };
+
+  const triggerUpload = (fieldKey: string) => {
+    if (handleUpload) {
+      handleUpload(section.id, fieldKey);
+    }
   };
 
   return (
@@ -51,109 +128,232 @@ export default function GoldSectionEditor({
         </div>
       </div>
 
-      {/* BODY */}
-      <div className="p-5 flex-1 overflow-y-auto space-y-5">
-        
-        {/* 1. GOLD HERO EDITOR */}
+      {/* TWO TABS: CONTENU / DESIGN */}
+      <div className="grid grid-cols-2 border-b border-gray-200 bg-white">
+        <button
+          type="button"
+          onClick={() => setOpenTab('content')}
+          className={`py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all border-b-2 ${
+            openTab === 'content'
+              ? 'border-[#c59a3f] text-gray-900 bg-amber-50/20'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          <svg className="w-4 h-4 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span>Paramètres Contenu</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setOpenTab('design')}
+          className={`py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all border-b-2 ${
+            openTab === 'design'
+              ? 'border-[#c59a3f] text-gray-900 bg-amber-50/20'
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          <svg className="w-4 h-4 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          <span>Paramètres Design</span>
+        </button>
+      </div>
+
+      {/* BODY CONTENT */}
+      <div className="p-5 flex-1 overflow-y-auto space-y-6">
+
+        {/* ============================================================ */}
+        {/* 1. GOLD HERO */}
+        {/* ============================================================ */}
         {section.type === 'GoldHero' && (
-          <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
-              💡 Vous pouvez personnaliser le titre principal, le sous-titre, le bouton d’action et l’image de fond des lingots.
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Titre principal</label>
-              <input
-                type="text"
-                value={s.title ?? "Investissez dans la valeur sûre"}
-                onChange={(e) => handleFieldChange('title', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                placeholder="Investissez dans la valeur sûre"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
-              <input
-                type="text"
-                value={s.highlight ?? "valeur sûre"}
-                onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                placeholder="valeur sûre"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
-              <textarea
-                rows={2}
-                value={s.subtitle ?? "Pièces d'or, lingots d'or et d'argent au meilleur prix"}
-                onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                placeholder="Pièces d'or, lingots d'or et d'argent au meilleur prix"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+          openTab === 'content' ? (
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Titre principal</label>
                 <input
                   type="text"
-                  value={s.btnText ?? "Découvrir notre gamme"}
-                  onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                  value={s.title ?? "Investissez dans la valeur sûre"}
+                  onChange={(e) => handleFieldChange('title', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnUrl ?? "/shop"}
-                  onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Image du Hero</label>
-              <div className="flex items-center gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
                 <input
                   type="text"
-                  value={s.image ?? "/images/hero-gold-silver.jpg"}
-                  onChange={(e) => handleFieldChange('image', e.target.value)}
+                  value={s.highlight ?? "valeur sûre"}
+                  onChange={(e) => handleFieldChange('highlight', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
                 />
-                {handleUpload && (
-                  <button
-                    type="button"
-                    onClick={() => handleUpload(section.id, 'image')}
-                    className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-lg shrink-0"
-                  >
-                    Médiathèque
-                  </button>
-                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
+                <textarea
+                  rows={2}
+                  value={s.subtitle ?? "Pièces d'or, lingots d'or et d'argent au meilleur prix"}
+                  onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnText ?? "Découvrir notre gamme"}
+                    onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnUrl ?? "/shop"}
+                    onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+              </div>
+
+              {/* IMAGE PRINCIPALE DU HERO (Foreground visual) */}
+              <ImagePickerField
+                label="Image principale du Hero (visuel lingots / pièces de droite)"
+                value={s.image ?? "/images/hero-gold-silver.jpg"}
+                onPick={() => triggerUpload('image')}
+                onClear={() => handleFieldChange('image', '')}
+                helperText="L'image principale présentée à droite dans la section Hero."
+              />
+
+              {/* IMAGE DE FOND DU HERO (Background visual) */}
+              <ImagePickerField
+                label="Image de fond du Hero (Background)"
+                value={s.bgImage ?? "/images/hero-bg-luxury.jpg"}
+                onPick={() => triggerUpload('bgImage')}
+                onClear={() => handleFieldChange('bgImage', '')}
+                helperText="Texture ou ambiance sombre de luxe affichée en arrière-plan."
+              />
+            </div>
+          ) : (
+            /* HERO DESIGN SETTINGS */
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#0a0a0a"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#0a0a0a"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Opacité de l&apos;image de fond (BG)</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={typeof s.bgOpacity !== 'undefined' ? s.bgOpacity : 0.45}
+                  onChange={(e) => handleFieldChange('bgOpacity', parseFloat(e.target.value))}
+                  className="w-full accent-[#c59a3f]"
+                />
+                <div className="flex justify-between text-[11px] text-gray-500 mt-1">
+                  <span>0% (Discrète)</span>
+                  <span className="font-bold text-gray-800">{Math.round((typeof s.bgOpacity !== 'undefined' ? s.bgOpacity : 0.45) * 100)}%</span>
+                  <span>100% (Visible)</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;accentuation (Or)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.highlightColor || "#c59a3f"}
+                    onChange={(e) => handleFieldChange('highlightColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.highlightColor || "#c59a3f"}
+                    onChange={(e) => handleFieldChange('highlightColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Fond du bouton</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
+                    />
+                    <input
+                      type="text"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
+                    />
+                    <input
+                      type="text"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )
         )}
 
-        {/* 2. REASSURANCE BAR EDITOR */}
+        {/* ============================================================ */}
+        {/* 2. REASSURANCE BAR */}
+        {/* ============================================================ */}
         {section.type === 'ReassuranceBar' && (
-          <div className="space-y-5">
-            {[1, 2, 3, 4].map((num) => {
-              const defTitles = ['Qualité garantie', 'Prix compétitifs', 'Livraison rapide', 'Service client réactif'];
-              const defDescs = ['Des produits certifiés et authentiques', 'Un excellent rapport qualité-prix', 'Partout en Europe', 'Notre équipe à votre écoute'];
-              return (
-                <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                  <span className="text-xs font-bold text-gray-800 block">Avantage #{num}</span>
-                  <div>
+          openTab === 'content' ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((num) => {
+                const defTitles = ['Qualité garantie', 'Prix compétitifs', 'Livraison rapide', 'Service client réactif'];
+                const defDescs = ['Des produits certifiés et authentiques', 'Un excellent rapport qualité-prix', 'Partout en Europe', 'Notre équipe à votre écoute'];
+                return (
+                  <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
+                    <span className="text-xs font-bold text-gray-800 block">Avantage #{num}</span>
                     <input
                       type="text"
                       value={s[`item${num}_title`] ?? defTitles[num - 1]}
                       onChange={(e) => handleFieldChange(`item${num}_title`, e.target.value)}
                       placeholder="Titre"
-                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs font-medium outline-none focus:border-[#c59a3f] mb-1.5"
+                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs font-medium outline-none focus:border-[#c59a3f]"
                     />
                     <input
                       type="text"
@@ -163,360 +363,654 @@ export default function GoldSectionEditor({
                       className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs text-gray-600 outline-none focus:border-[#c59a3f]"
                     />
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#ffffff"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#ffffff"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          )
         )}
 
-        {/* 3. SELECTION GRID EDITOR */}
+        {/* ============================================================ */}
+        {/* 3. SELECTION GRID */}
+        {/* ============================================================ */}
         {section.type === 'SelectionGrid' && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-3">
+          openTab === 'content' ? (
+            <div className="space-y-5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Sur-titre</label>
+                  <input
+                    type="text"
+                    value={s.badge ?? "Notre sélection"}
+                    onChange={(e) => handleFieldChange('badge', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Titre de la section</label>
+                  <input
+                    type="text"
+                    value={s.title ?? "Or & Argent"}
+                    onChange={(e) => handleFieldChange('title', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+              </div>
+
+              {[1, 2, 3, 4].map((num) => {
+                const defTitles = ["Pièces d'or", "Lingots d'or", "Lingots d'argent", "Pièces d'argent"];
+                const defDescs = ["Un patrimoine intemporel", "Une valeur sûre", "Investir autrement", "Un investissement accessible"];
+                const defImgs = ["/images/gold-coins.jpg", "/images/gold-bars.jpg", "/images/silver-bars.jpg", "/images/silver-coins.jpg"];
+                const defUrls = ["/shop?category=pieces-dor", "/shop?category=lingots-dor", "/shop?category=lingots-dargent", "/shop?category=pieces-dargent"];
+
+                return (
+                  <div key={num} className="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+                    <span className="text-xs font-bold text-gray-800 block">Carte #{num}</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={s[`card${num}_title`] ?? defTitles[num - 1]}
+                        onChange={(e) => handleFieldChange(`card${num}_title`, e.target.value)}
+                        placeholder="Titre de la catégorie"
+                        className="border border-gray-300 rounded px-2 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                      <input
+                        type="text"
+                        value={s[`card${num}_desc`] ?? defDescs[num - 1]}
+                        onChange={(e) => handleFieldChange(`card${num}_desc`, e.target.value)}
+                        placeholder="Description"
+                        className="border border-gray-300 rounded px-2 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
+
+                    {/* SÉLECTEUR D'IMAGE SANS INPUT URL */}
+                    <ImagePickerField
+                      label={`Image de la Carte #${num}`}
+                      value={s[`card${num}_img`] ?? defImgs[num - 1]}
+                      onPick={() => triggerUpload(`card${num}_img`)}
+                      onClear={() => handleFieldChange(`card${num}_img`, '')}
+                    />
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-600 mb-0.5">Lien de redirection</label>
+                      <input
+                        type="text"
+                        value={s[`card${num}_url`] ?? defUrls[num - 1]}
+                        onChange={(e) => handleFieldChange(`card${num}_url`, e.target.value)}
+                        placeholder="/shop?category=..."
+                        className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan de la section</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Fond des cartes produits</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.cardBgColor || "#151515"}
+                    onChange={(e) => handleFieldChange('cardBgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.cardBgColor || "#151515"}
+                    onChange={(e) => handleFieldChange('cardBgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* ============================================================ */}
+        {/* 4. WHY CHOOSE US */}
+        {/* ============================================================ */}
+        {section.type === 'WhyChooseUs' && (
+          openTab === 'content' ? (
+            <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Sur-titre</label>
                 <input
                   type="text"
-                  value={s.badge ?? "Notre sélection"}
+                  value={s.badge ?? "Pourquoi — nous choisir ?"}
                   onChange={(e) => handleFieldChange('badge', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Titre principal</label>
+                <input
+                  type="text"
+                  value={s.title ?? "Votre partenaire de confiance"}
+                  onChange={(e) => handleFieldChange('title', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                <textarea
+                  rows={2}
+                  value={s.subtitle ?? "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise."}
+                  onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnText ?? "En savoir plus"}
+                    onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnUrl ?? "/about"}
+                    onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-3">
+                <span className="text-xs font-bold text-gray-800 block mb-3">Les 4 Piliers</span>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4].map((num) => {
+                    const defTitles = ['Produits certifiés', 'Transparence totale', 'Accompagnement personnalisé', 'Livraison sécurisée'];
+                    const defDescs = ['Authenticité garantie', 'Des prix clairs', 'Une équipe à votre écoute', 'Dans toute l’Europe'];
+                    return (
+                      <div key={num} className="grid grid-cols-2 gap-2 bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+                        <input
+                          type="text"
+                          value={s[`pillar${num}_title`] ?? defTitles[num - 1]}
+                          onChange={(e) => handleFieldChange(`pillar${num}_title`, e.target.value)}
+                          placeholder="Titre pilier"
+                          className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                        />
+                        <input
+                          type="text"
+                          value={s[`pillar${num}_desc`] ?? defDescs[num - 1]}
+                          onChange={(e) => handleFieldChange(`pillar${num}_desc`, e.target.value)}
+                          placeholder="Description pilier"
+                          className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#0d0d0d"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#0d0d0d"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Fond du bouton</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
+                    />
+                    <input
+                      type="text"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
+                    />
+                    <input
+                      type="text"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* ============================================================ */}
+        {/* 5. PRECIOUS METALS TICKER */}
+        {/* ============================================================ */}
+        {section.type === 'PreciousMetalsTicker' && (
+          openTab === 'content' ? (
+            <div className="space-y-4">
+              {/* Dynamic Live Ticker Mode Selector */}
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Mode des cours de l&apos;Or & de l&apos;Argent
+                  </span>
+                  <select
+                    value={s.mode || 'auto'}
+                    onChange={(e) => handleFieldChange('mode', e.target.value)}
+                    className="border border-emerald-300 rounded-lg px-2.5 py-1 text-xs font-semibold bg-white text-emerald-900 outline-none focus:border-emerald-500"
+                  >
+                    <option value="auto">Automatique (En direct)</option>
+                    <option value="manual">Manuel (Fixe)</option>
+                  </select>
+                </div>
+                {s.mode !== 'manual' ? (
+                  <p className="text-[11px] text-emerald-700 leading-relaxed">
+                    ✨ <strong>Cours réels en temps réel :</strong> Les prix du Lingot / Once d&apos;or et d&apos;argent sont automatiquement synchronisés avec les marchés financiers en Euros (€).
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-amber-700 leading-relaxed">
+                    ⚙️ <strong>Mode Manuel activé :</strong> Vous pouvez définir des valeurs fixes personnalisées ci-dessous.
+                  </p>
+                )}
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Titre de la section</label>
                 <input
                   type="text"
-                  value={s.title ?? "Or & Argent"}
+                  value={s.title ?? "Cours des métaux précieux"}
                   onChange={(e) => handleFieldChange('title', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
                 />
               </div>
-            </div>
 
-            {[1, 2, 3, 4].map((num) => {
-              const defTitles = ["Pièces d'or", "Lingots d'or", "Lingots d'argent", "Pièces d'argent"];
-              const defDescs = ["Un patrimoine intemporel", "Une valeur sûre", "Investir autrement", "Un investissement accessible"];
-              const defImgs = ["/images/gold-coins.jpg", "/images/gold-bars.jpg", "/images/silver-bars.jpg", "/images/silver-coins.jpg"];
-              const defUrls = ["/shop?category=pieces-dor", "/shop?category=lingots-dor", "/shop?category=lingots-dargent", "/shop?category=pieces-dargent"];
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
+                <input
+                  type="text"
+                  value={s.subtitle ?? "Actualisé en temps réel"}
+                  onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
 
-              return (
-                <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                  <span className="text-xs font-bold text-gray-800 block">Carte #{num}</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={s[`card${num}_title`] ?? defTitles[num - 1]}
-                      onChange={(e) => handleFieldChange(`card${num}_title`, e.target.value)}
-                      placeholder="Titre de la catégorie"
-                      className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
-                    />
-                    <input
-                      type="text"
-                      value={s[`card${num}_desc`] ?? defDescs[num - 1]}
-                      onChange={(e) => handleFieldChange(`card${num}_desc`, e.target.value)}
-                      placeholder="Description"
-                      className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
-                    />
+              {/* Show manual override fields only if mode is manual */}
+              {s.mode === 'manual' && (
+                <>
+                  <div className="grid grid-cols-2 gap-3 bg-amber-50/50 p-3 rounded-lg border border-amber-200/60">
+                    <div>
+                      <label className="block text-xs font-bold text-amber-900 mb-1">Cours Or (€)</label>
+                      <input
+                        type="text"
+                        value={s.gold_price ?? "€ 2 720,45"}
+                        onChange={(e) => handleFieldChange('gold_price', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-amber-900 mb-1">Variation Or (%)</label>
+                      <input
+                        type="text"
+                        value={s.gold_change ?? "+0,42%"}
+                        onChange={(e) => handleFieldChange('gold_change', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+
+                  <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-800 mb-1">Cours Argent (€)</label>
+                      <input
+                        type="text"
+                        value={s.silver_price ?? "€ 32,17"}
+                        onChange={(e) => handleFieldChange('silver_price', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-800 mb-1">Variation Argent (%)</label>
+                      <input
+                        type="text"
+                        value={s.silver_change ?? "+1,12%"}
+                        onChange={(e) => handleFieldChange('silver_change', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnText ?? "Voir les cours en détail"}
+                    onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnUrl ?? "/shop"}
+                    onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Afficher les graphiques de tendance (Sparklines)</label>
+                <select
+                  value={s.showCharts !== false && s.showCharts !== 'false' ? 'true' : 'false'}
+                  onChange={(e) => handleFieldChange('showCharts', e.target.value === 'true')}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-xs outline-none focus:border-[#c59a3f]"
+                >
+                  <option value="true">Oui, afficher les graphiques</option>
+                  <option value="false">Non, masquer les graphiques</option>
+                </select>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* ============================================================ */}
+        {/* 6. CTA BANNER */}
+        {/* ============================================================ */}
+        {section.type === 'CtaBanner' && (
+          openTab === 'content' ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Titre de la bannière</label>
+                <input
+                  type="text"
+                  value={s.title ?? "Investissez dès aujourd’hui"}
+                  onChange={(e) => handleFieldChange('title', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
+                <textarea
+                  rows={2}
+                  value={s.subtitle ?? "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent."}
+                  onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnText ?? "Découvrir notre gamme"}
+                    onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
+                  <input
+                    type="text"
+                    value={s.btnUrl ?? "/shop"}
+                    onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
+                  />
+                </div>
+              </div>
+
+              {/* SÉLECTEUR D'IMAGE VISUEL */}
+              <ImagePickerField
+                label="Image de fond de la bannière"
+                value={s.image ?? "/images/gold-banner-cta.jpg"}
+                onPick={() => triggerUpload('image')}
+                onClear={() => handleFieldChange('image', '')}
+                helperText="L'image de lingots dorés affichée sous la bannière."
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Fond du bouton</label>
+                  <div className="flex items-center gap-2">
                     <input
-                      type="text"
-                      value={s[`card${num}_img`] ?? defImgs[num - 1]}
-                      onChange={(e) => handleFieldChange(`card${num}_img`, e.target.value)}
-                      placeholder="Image URL"
-                      className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                      type="color"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
                     />
                     <input
                       type="text"
-                      value={s[`card${num}_url`] ?? defUrls[num - 1]}
-                      onChange={(e) => handleFieldChange(`card${num}_url`, e.target.value)}
-                      placeholder="Lien"
-                      className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                      value={s.btnBgColor || "#c59a3f"}
+                      onChange={(e) => handleFieldChange('btnBgColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
                     />
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5"
+                    />
+                    <input
+                      type="text"
+                      value={s.btnTextColor || "#000000"}
+                      onChange={(e) => handleFieldChange('btnTextColor', e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs font-mono w-24 uppercase"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
         )}
 
-        {/* 4. WHY CHOOSE US EDITOR */}
-        {section.type === 'WhyChooseUs' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Sur-titre</label>
-              <input
-                type="text"
-                value={s.badge ?? "Pourquoi — nous choisir ?"}
-                onChange={(e) => handleFieldChange('badge', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Titre principal</label>
-              <input
-                type="text"
-                value={s.title ?? "Votre partenaire de confiance"}
-                onChange={(e) => handleFieldChange('title', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-              <textarea
-                rows={2}
-                value={s.subtitle ?? "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise."}
-                onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+        {/* ============================================================ */}
+        {/* 7. TESTIMONIALS */}
+        {/* ============================================================ */}
+        {section.type === 'Testimonials' && (
+          openTab === 'content' ? (
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Sur-titre</label>
                 <input
                   type="text"
-                  value={s.btnText ?? "En savoir plus"}
-                  onChange={(e) => handleFieldChange('btnText', e.target.value)}
+                  value={s.badge ?? "Ils nous font confiance"}
+                  onChange={(e) => handleFieldChange('badge', e.target.value)}
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnUrl ?? "/about"}
-                  onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-            </div>
 
-            <div className="border-t border-gray-200 pt-3">
-              <span className="text-xs font-bold text-gray-800 block mb-3">Les 4 Piliers</span>
-              <div className="space-y-3">
-                {[1, 2, 3, 4].map((num) => {
-                  const defTitles = ['Produits certifiés', 'Transparence totale', 'Accompagnement personnalisé', 'Livraison sécurisée'];
-                  const defDescs = ['Authenticité garantie', 'Des prix clairs', 'Une équipe à votre écoute', 'Dans toute l’Europe'];
+              <div className="space-y-3 pt-2">
+                {[1, 2, 3].map((num) => {
+                  const defNames = ['Thomas D.', 'Sophie M.', 'Pierre L.'];
+                  const defQuotes = [
+                    '« Service impeccable et livraison rapide. Je recommande vivement ! »',
+                    '« Des prix très compétitifs et une équipe très professionnelle. »',
+                    '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »'
+                  ];
+
                   return (
-                    <div key={num} className="grid grid-cols-2 gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                    <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
+                      <span className="text-xs font-bold text-gray-800 block">Avis #{num}</span>
                       <input
                         type="text"
-                        value={s[`pillar${num}_title`] ?? defTitles[num - 1]}
-                        onChange={(e) => handleFieldChange(`pillar${num}_title`, e.target.value)}
-                        placeholder="Titre pilier"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                        value={s[`review${num}_name`] ?? defNames[num - 1]}
+                        onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
+                        placeholder="Nom du client"
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
                       />
-                      <input
-                        type="text"
-                        value={s[`pillar${num}_desc`] ?? defDescs[num - 1]}
-                        onChange={(e) => handleFieldChange(`pillar${num}_desc`, e.target.value)}
-                        placeholder="Description pilier"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-[#c59a3f]"
+                      <textarea
+                        rows={2}
+                        value={s[`review${num}_text`] ?? defQuotes[num - 1]}
+                        onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
+                        placeholder="Témoignage"
+                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
                       />
                     </div>
                   );
                 })}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* 5. PRECIOUS METALS TICKER EDITOR */}
-        {section.type === 'PreciousMetalsTicker' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Titre</label>
-              <input
-                type="text"
-                value={s.title ?? "Cours des métaux précieux"}
-                onChange={(e) => handleFieldChange('title', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 bg-amber-50/50 p-3 rounded-lg border border-amber-200/60">
+          ) : (
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-amber-900 mb-1">Cours de l’Or (€)</label>
-                <input
-                  type="text"
-                  value={s.gold_price ?? "€ 2 720,45"}
-                  onChange={(e) => handleFieldChange('gold_price', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
-                />
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur d&apos;arrière-plan</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.bgColor || "#fcfbf9"}
+                    onChange={(e) => handleFieldChange('bgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-amber-900 mb-1">Variation Or (%)</label>
-                <input
-                  type="text"
-                  value={s.gold_change ?? "+0,42%"}
-                  onChange={(e) => handleFieldChange('gold_change', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
-                />
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Couleur des cartes de témoignages</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={s.cardBgColor || "#ffffff"}
+                    onChange={(e) => handleFieldChange('cardBgColor', e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={s.cardBgColor || "#ffffff"}
+                    onChange={(e) => handleFieldChange('cardBgColor', e.target.value)}
+                    className="border border-gray-300 rounded px-2.5 py-1.5 text-xs font-mono w-28 uppercase"
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">Cours de l’Argent (€)</label>
-                <input
-                  type="text"
-                  value={s.silver_price ?? "€ 32,17"}
-                  onChange={(e) => handleFieldChange('silver_price', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">Variation Argent (%)</label>
-                <input
-                  type="text"
-                  value={s.silver_change ?? "+1,12%"}
-                  onChange={(e) => handleFieldChange('silver_change', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnText ?? "Voir les cours en détail"}
-                  onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnUrl ?? "/shop"}
-                  onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 6. CTA BANNER EDITOR */}
-        {section.type === 'CtaBanner' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Titre de la bannière</label>
-              <input
-                type="text"
-                value={s.title ?? "Investissez dès aujourd’hui"}
-                onChange={(e) => handleFieldChange('title', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
-              <textarea
-                rows={2}
-                value={s.subtitle ?? "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent."}
-                onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Texte du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnText ?? "Découvrir notre gamme"}
-                  onChange={(e) => handleFieldChange('btnText', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Lien du bouton</label>
-                <input
-                  type="text"
-                  value={s.btnUrl ?? "/shop"}
-                  onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Image de fond</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={s.image ?? "/images/gold-banner-cta.jpg"}
-                  onChange={(e) => handleFieldChange('image', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-                />
-                {handleUpload && (
-                  <button
-                    type="button"
-                    onClick={() => handleUpload(section.id, 'image')}
-                    className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded shrink-0"
-                  >
-                    Médiathèque
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 7. TESTIMONIALS SECTION EDITOR */}
-        {section.type === 'Testimonials' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Sur-titre</label>
-              <input
-                type="text"
-                value={s.badge ?? "Ils nous font confiance"}
-                onChange={(e) => handleFieldChange('badge', e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#c59a3f]"
-              />
-            </div>
-
-            <div className="space-y-3 pt-2">
-              {[1, 2, 3].map((num) => {
-                const defNames = ['Thomas D.', 'Sophie M.', 'Pierre L.'];
-                const defQuotes = [
-                  '« Service impeccable et livraison rapide. Je recommande vivement ! »',
-                  '« Des prix très compétitifs et une équipe très professionnelle. »',
-                  '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »'
-                ];
-
-                return (
-                  <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
-                    <span className="text-xs font-bold text-gray-800 block">Avis #{num}</span>
-                    <input
-                      type="text"
-                      value={s[`review${num}_name`] ?? defNames[num - 1]}
-                      onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
-                      placeholder="Nom du client"
-                      className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-[#c59a3f]"
-                    />
-                    <textarea
-                      rows={2}
-                      value={s[`review${num}_text`] ?? defQuotes[num - 1]}
-                      onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
-                      placeholder="Témoignage"
-                      className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-[#c59a3f]"
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          )
         )}
 
       </div>
     </div>
   );
 }
-

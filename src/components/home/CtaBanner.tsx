@@ -16,9 +16,12 @@ export default function CtaBanner({ config }: CtaBannerProps) {
   const btnText = c.btnText || 'Découvrir notre gamme';
   const btnUrl = c.btnUrl || '/shop';
   const image = c.image || '/images/gold-banner-cta.jpg';
+  const bgColor = c.bgColor || '#fcfbf9';
+  const btnBgColor = c.btnBgColor || '#c59a3f';
+  const btnTextColor = c.btnTextColor || '#000000';
 
   return (
-    <section className="w-full bg-[#fcfbf9] py-6 md:py-10">
+    <section className="w-full py-6 md:py-10 transition-colors duration-300" style={{ backgroundColor: bgColor }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 min-h-[160px] md:min-h-[190px] flex items-center">
           
@@ -47,7 +50,8 @@ export default function CtaBanner({ config }: CtaBannerProps) {
             <div className="flex-shrink-0">
               <Link 
                 href={btnUrl} 
-                className="inline-flex items-center gap-3 bg-[#c59a3f] hover:bg-[#b08733] text-black font-semibold text-sm sm:text-base px-8 py-3.5 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/30 group cursor-pointer"
+                style={{ backgroundColor: btnBgColor, color: btnTextColor }}
+                className="inline-flex items-center gap-3 font-semibold text-sm sm:text-base px-8 py-3.5 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/30 group cursor-pointer"
               >
                 <span>{btnText}</span>
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

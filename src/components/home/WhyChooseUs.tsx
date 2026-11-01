@@ -56,8 +56,15 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
     }
   ];
 
+  const bgColor = c.bgColor || '#0d0d0d';
+  const btnBgColor = c.btnBgColor || '#c59a3f';
+  const btnTextColor = c.btnTextColor || '#000000';
+
   return (
-    <section className="relative w-full bg-[#0d0d0d] text-white py-20 md:py-28 overflow-hidden border-t border-white/5">
+    <section 
+      className="relative w-full text-white py-20 md:py-28 overflow-hidden border-t border-white/5 transition-colors duration-300"
+      style={{ backgroundColor: bgColor }}
+    >
       {/* Background golden dust glow effect */}
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#c59a3f]/10 to-transparent pointer-events-none" />
 
@@ -83,7 +90,8 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
             <div className="mt-8">
               <Link 
                 href={btnUrl} 
-                className="inline-flex items-center gap-2 bg-[#c59a3f] hover:bg-[#b08733] text-black font-semibold text-sm md:text-base px-7 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg group cursor-pointer"
+                style={{ backgroundColor: btnBgColor, color: btnTextColor }}
+                className="inline-flex items-center gap-2 font-semibold text-sm md:text-base px-7 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg group cursor-pointer"
               >
                 <span>{btnText}</span>
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
