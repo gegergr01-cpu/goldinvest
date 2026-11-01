@@ -4,7 +4,40 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function GoldHero() {
+interface GoldHeroProps {
+  config?: {
+    title?: string;
+    highlight?: string;
+    subtitle?: string;
+    btnText?: string;
+    btnUrl?: string;
+    image?: string;
+  };
+}
+
+export default function GoldHero({ config }: GoldHeroProps) {
+  const title = config?.title || 'Investissez dans la valeur sûre';
+  const highlight = config?.highlight || 'valeur sûre';
+  const subtitle = config?.subtitle || "Pièces d'or, lingots d'or et d'argent au meilleur prix";
+  const btnText = config?.btnText || 'Découvrir notre gamme';
+  const btnUrl = config?.btnUrl || '/shop';
+  const image = config?.image || '/images/hero-gold-silver.jpg';
+
+  // If the title contains the highlight text, render with gold span
+  const renderTitle = () => {
+    if (highlight && title.includes(highlight)) {
+      const parts = title.split(highlight);
+      return (
+        <>
+          {parts[0]}
+          <span className="text-[#c59a3f]">{highlight}</span>
+          {parts[1]}
+        </>
+      );
+    }
+    return title;
+  };
+
   return (
     <section className="relative w-full bg-[#0a0a0a] text-white overflow-hidden">
       {/* Background radial gradient for subtle luxury warmth */}
@@ -16,20 +49,19 @@ export default function GoldHero() {
           {/* Left Text Column */}
           <div className="lg:col-span-6 z-10 flex flex-col items-start text-left">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.15]">
-              Investissez dans <br className="hidden sm:inline" />
-              la <span className="text-[#c59a3f]">valeur sûre</span>
+              {renderTitle()}
             </h1>
 
             <p className="mt-5 text-lg sm:text-xl text-gray-300 font-light max-w-lg leading-relaxed">
-              Pièces d'or, lingots d'or et d'argent au meilleur prix
+              {subtitle}
             </p>
 
             <div className="mt-8">
               <Link 
-                href="/shop" 
+                href={btnUrl} 
                 className="inline-flex items-center gap-3 bg-[#c59a3f] hover:bg-[#b08733] text-black font-semibold text-base px-8 py-4 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/25 cursor-pointer group"
               >
-                <span>Découvrir notre gamme</span>
+                <span>{btnText}</span>
                 <svg 
                   className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" 
                   fill="none" 
@@ -46,14 +78,13 @@ export default function GoldHero() {
           <div className="lg:col-span-6 relative flex justify-center items-center">
             <div className="relative w-full max-w-[580px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
               <Image 
-                src="/images/hero-gold-silver.jpg" 
+                src={image} 
                 alt="Lingots d'or et d'argent, pièces Krugerrand et Maple Leaf - Gold Invest"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
               />
-              {/* Subtle luxury edge lighting overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
               <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none" />
             </div>
@@ -64,4 +95,3 @@ export default function GoldHero() {
     </section>
   );
 }
-

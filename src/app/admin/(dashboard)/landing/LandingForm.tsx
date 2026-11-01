@@ -9,9 +9,25 @@ import ProductGridEditor from '@/components/admin/settings/ProductGridEditor';
 import PromoBannersEditor from '@/components/admin/settings/PromoBannersEditor';
 import LatestBlogsEditor from '@/components/admin/settings/LatestBlogsEditor';
 import FullWidthBannerEditor from '@/components/admin/settings/FullWidthBannerEditor';
+import GoldSectionEditor from '@/components/admin/settings/GoldSectionEditor';
 import Cookies from 'js-cookie';
 
-export type SectionType = 'Hero' | 'BestDeals' | 'BestSeller' | 'LatestBlogs' | 'Newsletter' | 'PromoBanners' | 'ProductGrid' | 'FullWidthBanner';
+export type SectionType = 
+  | 'GoldHero' 
+  | 'ReassuranceBar' 
+  | 'SelectionGrid' 
+  | 'WhyChooseUs' 
+  | 'PreciousMetalsTicker' 
+  | 'CtaBanner' 
+  | 'Testimonials'
+  | 'Hero' 
+  | 'BestDeals' 
+  | 'BestSeller' 
+  | 'LatestBlogs' 
+  | 'Newsletter' 
+  | 'PromoBanners' 
+  | 'ProductGrid' 
+  | 'FullWidthBanner';
 
 export interface SectionConfig {
   id: string;
@@ -21,13 +37,131 @@ export interface SectionConfig {
   settings: any;
 }
 
-const DEFAULT_SECTIONS: SectionConfig[] = [
-  { id: 'sec_1', type: 'Hero', name: 'Main Header (Hero)', enabled: true, settings: {} },
-  { id: 'sec_2', type: 'BestDeals', name: "Today's Best Deals", enabled: true, settings: { title: "Today's Best Deals", countdown: '2026-12-31T23:59:59', filterType: 'ON_SALE', categoryId: '' } },
-  { id: 'sec_3', type: 'ProductGrid', name: 'New section (ProductGrid)', enabled: true, settings: { title: "Featured Products", filterType: 'LATEST', categoryId: '' } },
-  { id: 'sec_4', type: 'BestSeller', name: 'Best Sellers', enabled: true, settings: { title: "Best Seller", filterType: 'POPULAR', categoryId: '' } },
-  { id: 'sec_5', type: 'LatestBlogs', name: 'Latest Blog Articles', enabled: true, settings: { title: "Latest Blogs" } },
-  { id: 'sec_6', type: 'Newsletter', name: 'Newsletter Subscription', enabled: true, settings: {} }
+export const DEFAULT_SECTIONS: SectionConfig[] = [
+  { 
+    id: 'sec_gold_hero', 
+    type: 'GoldHero', 
+    name: 'Hero (Investissez dans la valeur sûre)', 
+    enabled: true, 
+    settings: { 
+      title: "Investissez dans la valeur sûre", 
+      highlight: "valeur sûre", 
+      subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
+      btnText: "Découvrir notre gamme", 
+      btnUrl: "/shop", 
+      image: "/images/hero-gold-silver.jpg" 
+    } 
+  },
+  { 
+    id: 'sec_reassurance', 
+    type: 'ReassuranceBar', 
+    name: 'Barre de réassurance (4 avantages)', 
+    enabled: true, 
+    settings: {
+      item1_title: 'Qualité garantie',
+      item1_desc: 'Des produits certifiés et authentiques',
+      item2_title: 'Prix compétitifs',
+      item2_desc: 'Un excellent rapport qualité-prix',
+      item3_title: 'Livraison rapide',
+      item3_desc: 'Partout en Europe',
+      item4_title: 'Service client réactif',
+      item4_desc: 'Notre équipe à votre écoute'
+    } 
+  },
+  { 
+    id: 'sec_selection', 
+    type: 'SelectionGrid', 
+    name: 'Notre sélection (Or & Argent)', 
+    enabled: true, 
+    settings: { 
+      badge: "Notre sélection", 
+      title: "Or & Argent",
+      card1_title: "Pièces d'or",
+      card1_desc: "Un patrimoine intemporel",
+      card1_img: "/images/gold-coins.jpg",
+      card1_url: "/shop?category=pieces-dor",
+      card2_title: "Lingots d'or",
+      card2_desc: "Une valeur sûre",
+      card2_img: "/images/gold-bars.jpg",
+      card2_url: "/shop?category=lingots-dor",
+      card3_title: "Lingots d'argent",
+      card3_desc: "Investir autrement",
+      card3_img: "/images/silver-bars.jpg",
+      card3_url: "/shop?category=lingots-dargent",
+      card4_title: "Pièces d'argent",
+      card4_desc: "Un investissement accessible",
+      card4_img: "/images/silver-coins.jpg",
+      card4_url: "/shop?category=pieces-dargent"
+    } 
+  },
+  { 
+    id: 'sec_why_choose', 
+    type: 'WhyChooseUs', 
+    name: 'Pourquoi nous choisir (Votre partenaire de confiance)', 
+    enabled: true, 
+    settings: { 
+      badge: "Pourquoi — nous choisir ?", 
+      title: "Votre partenaire de confiance",
+      subtitle: "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise.",
+      btnText: "En savoir plus",
+      btnUrl: "/about",
+      pillar1_title: "Produits certifiés",
+      pillar1_desc: "Authenticité garantie",
+      pillar2_title: "Transparence totale",
+      pillar2_desc: "Des prix clairs",
+      pillar3_title: "Accompagnement personnalisé",
+      pillar3_desc: "Une équipe à votre écoute",
+      pillar4_title: "Livraison sécurisée",
+      pillar4_desc: "Dans toute l’Europe"
+    } 
+  },
+  { 
+    id: 'sec_metals_ticker', 
+    type: 'PreciousMetalsTicker', 
+    name: 'Cours des métaux précieux (Widget)', 
+    enabled: true, 
+    settings: { 
+      title: "Cours des métaux précieux", 
+      subtitle: "Actualisé en temps réel",
+      gold_price: "€ 2 720,45", 
+      gold_change: "+0,42%", 
+      silver_price: "€ 32,17", 
+      silver_change: "+1,12%",
+      btnText: "Voir les cours en détail",
+      btnUrl: "/shop"
+    } 
+  },
+  { 
+    id: 'sec_cta_banner', 
+    type: 'CtaBanner', 
+    name: 'Bannière CTA (Investissez dès aujourd’hui)', 
+    enabled: true, 
+    settings: { 
+      title: "Investissez dès aujourd’hui", 
+      subtitle: "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent.",
+      btnText: "Découvrir notre gamme", 
+      btnUrl: "/shop",
+      image: "/images/gold-banner-cta.jpg" 
+    } 
+  },
+  { 
+    id: 'sec_testimonials', 
+    type: 'Testimonials', 
+    name: 'Témoignages (Ils nous font confiance)', 
+    enabled: true, 
+    settings: { 
+      badge: "Ils nous font confiance",
+      review1_name: "Thomas D.",
+      review1_text: "« Service impeccable et livraison rapide. Je recommande vivement ! »",
+      review1_rating: "5",
+      review2_name: "Sophie M.",
+      review2_text: "« Des prix très compétitifs et une équipe très professionnelle. »",
+      review2_rating: "5",
+      review3_name: "Pierre L.",
+      review3_text: "« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »",
+      review3_rating: "5"
+    } 
+  }
 ];
 
 export default function LandingForm({ initialSettings, categories }: { initialSettings: Record<string, string>, categories: any[] }) {
@@ -183,13 +317,34 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       enabled: true,
       settings: {}
     };
-    if (type === 'BestDeals') {
+    if (type === 'GoldHero') {
+      newSec.name = 'Hero (Investissez dans la valeur sûre)';
+      newSec.settings = { title: "Investissez dans la valeur sûre", highlight: "valeur sûre", subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", btnText: "Découvrir notre gamme", btnUrl: "/shop", image: "/images/hero-gold-silver.jpg" };
+    } else if (type === 'ReassuranceBar') {
+      newSec.name = 'Barre de réassurance (4 avantages)';
+      newSec.settings = { item1_title: 'Qualité garantie', item1_desc: 'Des produits certifiés et authentiques', item2_title: 'Prix compétitifs', item2_desc: 'Un excellent rapport qualité-prix', item3_title: 'Livraison rapide', item3_desc: 'Partout en Europe', item4_title: 'Service client réactif', item4_desc: 'Notre équipe à votre écoute' };
+    } else if (type === 'SelectionGrid') {
+      newSec.name = 'Notre sélection (Or & Argent)';
+      newSec.settings = { badge: "Notre sélection", title: "Or & Argent" };
+    } else if (type === 'WhyChooseUs') {
+      newSec.name = 'Pourquoi nous choisir (Votre partenaire de confiance)';
+      newSec.settings = { badge: "Pourquoi — nous choisir ?", title: "Votre partenaire de confiance" };
+    } else if (type === 'PreciousMetalsTicker') {
+      newSec.name = 'Cours des métaux précieux (Widget)';
+      newSec.settings = { title: "Cours des métaux précieux", gold_price: "€ 2 720,45", gold_change: "+0,42%", silver_price: "€ 32,17", silver_change: "+1,12%" };
+    } else if (type === 'CtaBanner') {
+      newSec.name = 'Bannière CTA (Investissez dès aujourd’hui)';
+      newSec.settings = { title: "Investissez dès aujourd’hui", btnText: "Découvrir notre gamme", image: "/images/gold-banner-cta.jpg" };
+    } else if (type === 'Testimonials') {
+      newSec.name = 'Témoignages (Ils nous font confiance)';
+      newSec.settings = { badge: "Ils nous font confiance" };
+    } else if (type === 'BestDeals') {
       newSec.settings = { title: "New Deals", countdown: '2026-12-31T23:59:59', filterType: 'ON_SALE', categoryId: '' };
     } else if (type === 'BestSeller') {
       newSec.settings = { title: "New Selection", filterType: 'POPULAR', categoryId: '' };
     } else if (type === 'ProductGrid') {
       newSec.settings = { 
-        title: "Ride-on Mowers", 
+        title: "Featured Products", 
         filterType: 'LATEST', 
         categoryId: '',
         variant: '1',
@@ -197,8 +352,8 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         btnBgColor: '#ea580c',
         btnTextColor: '#ffffff',
         maxProducts: '12',
-        colsDesktop: '5',
-        colsTablet: '3',
+        colsDesktop: '4',
+        colsTablet: '2',
         colsMobile: '1'
       };
     }
@@ -206,6 +361,25 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
   };
 
   const renderConfig = (section: SectionConfig, inPopup: boolean) => {
+    if ([
+      'GoldHero',
+      'ReassuranceBar',
+      'SelectionGrid',
+      'WhyChooseUs',
+      'PreciousMetalsTicker',
+      'CtaBanner',
+      'Testimonials'
+    ].includes(section.type)) {
+      return (
+        <GoldSectionEditor
+          section={section}
+          previewMode={previewMode}
+          updateSectionSettings={updateSectionSettings}
+          handleUpload={handleUpload}
+          goBack={() => setEditingId(null)}
+        />
+      );
+    }
     if (section.type === 'Newsletter') {
       return (
         <div className="p-4 bg-gray-50 border rounded text-sm text-gray-500">
@@ -354,7 +528,39 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
               </div>
 
               <div className="border-t pt-3">
-                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">{t("add_widget")}</h4>
+                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Sections Gold Silver Invest</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-4">
+                  <button onClick={() => addSection('GoldHero')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                    Hero Or & Argent
+                  </button>
+                  <button onClick={() => addSection('ReassuranceBar')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    4 Avantages
+                  </button>
+                  <button onClick={() => addSection('SelectionGrid')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    Sélection Or & Argent
+                  </button>
+                  <button onClick={() => addSection('WhyChooseUs')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    Partenaire confiance
+                  </button>
+                  <button onClick={() => addSection('PreciousMetalsTicker')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                    Cours Métaux (Ticker)
+                  </button>
+                  <button onClick={() => addSection('CtaBanner')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM3 9h18M3 15h18" /></svg>
+                    Bannière Or (CTA)
+                  </button>
+                  <button onClick={() => addSection('Testimonials')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                    Avis clients (Avis)
+                  </button>
+                </div>
+
+                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Autres sections</h4>
                 <div className="grid grid-cols-3 gap-1.5">
                   <button onClick={() => addSection('Hero')} className="border rounded bg-gray-50 hover:bg-gray-100 p-1.5 text-center text-[10px] flex flex-col items-center gap-1 transition text-gray-600 hover:text-gray-900 hover:border-gray-300">
                     <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>

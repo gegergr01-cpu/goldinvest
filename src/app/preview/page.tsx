@@ -6,41 +6,79 @@ import Newsletter from '@/components/home/Newsletter';
 import PromoBanners from '@/components/home/PromoBanners';
 import ProductGrid from '@/components/home/ProductGrid';
 import FullWidthBanner from '@/components/home/FullWidthBanner';
-import { SectionConfig, SectionType } from '@/app/admin/(dashboard)/landing/LandingForm';
-import PreviewSectionWrapper from '@/components/admin/PreviewSectionWrapper';
-import { cookies } from 'next/headers';
-import { getSettings } from '@/actions/settings';
 
+import GoldHero from '@/components/home/GoldHero';
+import ReassuranceBar from '@/components/home/ReassuranceBar';
+import SelectionGrid from '@/components/home/SelectionGrid';
+import WhyChooseUs from '@/components/home/WhyChooseUs';
+import PreciousMetalsTicker from '@/components/home/PreciousMetalsTicker';
+import CtaBanner from '@/components/home/CtaBanner';
+import TestimonialsSection from '@/components/home/TestimonialsSection';
+
+import { SectionConfig, DEFAULT_SECTIONS } from '@/app/admin/(dashboard)/landing/LandingForm';
+import PreviewSectionWrapper from '@/components/admin/PreviewSectionWrapper';
+import { getSettings } from '@/actions/settings';
 import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PreviewPage() {
   const draftLayoutSetting = await prisma.setting.findUnique({ where: { key: 'PREVIEW_LAYOUT_DRAFT' } });
-  const draftFontSetting = await prisma.setting.findUnique({ where: { key: 'PREVIEW_FONT_DRAFT' } });
   
   let layoutCookieStr = draftLayoutSetting?.value || '';
-  // We can use the draft font if needed later
   
-  let layout: SectionConfig[] = [];
+  let layout: SectionConfig[] = DEFAULT_SECTIONS;
   if (layoutCookieStr) {
     try {
-      layout = JSON.parse(layoutCookieStr);
+      const parsed = JSON.parse(layoutCookieStr);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        layout = parsed;
+      }
     } catch (e) {
       console.error(e);
     }
   } else {
     const settings = await getSettings();
     if (settings.HOMEPAGE_LAYOUT) {
-      layout = JSON.parse(settings.HOMEPAGE_LAYOUT);
+      try {
+        const parsed = JSON.parse(settings.HOMEPAGE_LAYOUT);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          layout = parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 
-  const activeSections = layout.filter(s => s.enabled);
+  const activeSections = layout.filter((s) => s.enabled);
 
   const renderSection = (section: SectionConfig) => {
     let content = null;
     switch (section.type) {
+      case 'GoldHero':
+        content = <GoldHero config={section.settings} />;
+        break;
+      case 'ReassuranceBar':
+        content = <ReassuranceBar config={section.settings} />;
+        break;
+      case 'SelectionGrid':
+        content = <SelectionGrid config={section.settings} />;
+        break;
+      case 'WhyChooseUs':
+        content = <WhyChooseUs config={section.settings} />;
+        break;
+      case 'PreciousMetalsTicker':
+        content = <PreciousMetalsTicker config={section.settings} />;
+        break;
+      case 'CtaBanner':
+        content = <CtaBanner config={section.settings} />;
+        break;
+      case 'Testimonials':
+        content = <TestimonialsSection config={section.settings} />;
+        break;
+
+      // Legacy / alternate sections
       case 'Hero':
         content = <Hero config={section.settings} isPreview={true} sectionId={section.id} />;
         break;
@@ -79,8 +117,10 @@ export default async function PreviewPage() {
   return (
     <div className="min-h-screen bg-white">
       <main>
-        {activeSections.length > 0 ? activeSections.map(renderSection) : (
-          <div className="flex items-center justify-center h-64 text-gray-500">No active sections.</div>
+        {activeSections.length > 0 ? (
+          activeSections.map(renderSection)
+        ) : (
+          <div className="flex items-center justify-center h-64 text-gray-500">Aucune section active.</div>
         )}
       </main>
     </div>

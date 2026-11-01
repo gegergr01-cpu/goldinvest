@@ -3,7 +3,22 @@
 import React from 'react';
 import Link from 'next/link';
 
-export default function PreciousMetalsTicker() {
+interface PreciousMetalsTickerProps {
+  config?: Record<string, string>;
+}
+
+export default function PreciousMetalsTicker({ config }: PreciousMetalsTickerProps) {
+  const c = config || {};
+
+  const title = c.title || 'Cours des métaux précieux';
+  const subtitle = c.subtitle || 'Actualisé en temps réel';
+  const goldPrice = c.gold_price || '€ 2 720,45';
+  const goldChange = c.gold_change || '+0,42%';
+  const silverPrice = c.silver_price || '€ 32,17';
+  const silverChange = c.silver_change || '+1,12%';
+  const btnText = c.btnText || 'Voir les cours en détail';
+  const btnUrl = c.btnUrl || '/shop';
+
   return (
     <section className="w-full bg-[#fcfbf9] py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,9 +33,9 @@ export default function PreciousMetalsTicker() {
             </div>
             <div>
               <span className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
-                Cours des métaux précieux
+                {title}
               </span>
-              <p className="text-xs text-gray-400">Actualisé en temps réel</p>
+              <p className="text-xs text-gray-400">{subtitle}</p>
             </div>
           </div>
 
@@ -35,10 +50,10 @@ export default function PreciousMetalsTicker() {
                 </span>
                 <div className="flex items-baseline gap-2 mt-0.5">
                   <span className="text-lg md:text-xl font-extrabold text-gray-900 font-sans">
-                    € 2 720,45
+                    {goldPrice}
                   </span>
                   <span className="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                    ▲ +0,42%
+                    ▲ {goldChange}
                   </span>
                 </div>
               </div>
@@ -77,10 +92,10 @@ export default function PreciousMetalsTicker() {
                 </span>
                 <div className="flex items-baseline gap-2 mt-0.5">
                   <span className="text-lg md:text-xl font-extrabold text-gray-900 font-sans">
-                    € 32,17
+                    {silverPrice}
                   </span>
                   <span className="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                    ▲ +1,12%
+                    ▲ {silverChange}
                   </span>
                 </div>
               </div>
@@ -114,10 +129,10 @@ export default function PreciousMetalsTicker() {
           {/* CTA Action */}
           <div className="flex-shrink-0">
             <Link 
-              href="/shop" 
+              href={btnUrl} 
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 hover:border-[#c59a3f] text-gray-700 hover:text-[#c59a3f] font-semibold text-xs sm:text-sm transition-all duration-300 hover:bg-[#c59a3f]/5 cursor-pointer"
             >
-              <span>Voir les cours en détail</span>
+              <span>{btnText}</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -129,4 +144,3 @@ export default function PreciousMetalsTicker() {
     </section>
   );
 }
-

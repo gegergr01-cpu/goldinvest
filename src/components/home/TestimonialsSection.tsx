@@ -2,31 +2,39 @@
 
 import React from 'react';
 
-export default function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  config?: Record<string, string>;
+}
+
+export default function TestimonialsSection({ config }: TestimonialsSectionProps) {
+  const c = config || {};
+
+  const badge = c.badge || 'Ils nous font confiance';
+
   const reviews = [
     {
       id: 1,
-      name: 'Thomas D.',
-      text: '« Service impeccable et livraison rapide. Je recommande vivement ! »',
-      rating: 5,
+      name: c.review1_name || 'Thomas D.',
+      text: c.review1_text || '« Service impeccable et livraison rapide. Je recommande vivement ! »',
+      rating: parseInt(c.review1_rating || '5', 10),
       avatarBg: 'bg-emerald-600',
-      initials: 'TD'
+      initials: (c.review1_name || 'Thomas D.').split(' ').map(n => n[0]).join('').slice(0, 2)
     },
     {
       id: 2,
-      name: 'Sophie M.',
-      text: '« Des prix très compétitifs et une équipe très professionnelle. »',
-      rating: 5,
+      name: c.review2_name || 'Sophie M.',
+      text: c.review2_text || '« Des prix très compétitifs et une équipe très professionnelle. »',
+      rating: parseInt(c.review2_rating || '5', 10),
       avatarBg: 'bg-amber-600',
-      initials: 'SM'
+      initials: (c.review2_name || 'Sophie M.').split(' ').map(n => n[0]).join('').slice(0, 2)
     },
     {
       id: 3,
-      name: 'Pierre L.',
-      text: '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »',
-      rating: 5,
+      name: c.review3_name || 'Pierre L.',
+      text: c.review3_text || '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »',
+      rating: parseInt(c.review3_rating || '5', 10),
       avatarBg: 'bg-blue-600',
-      initials: 'PL'
+      initials: (c.review3_name || 'Pierre L.').split(' ').map(n => n[0]).join('').slice(0, 2)
     }
   ];
 
@@ -39,7 +47,7 @@ export default function TestimonialsSection() {
           <div className="inline-flex items-center gap-3">
             <span className="w-8 h-[1px] bg-[#c59a3f]" />
             <span className="text-xs md:text-sm font-semibold tracking-widest text-[#c59a3f] uppercase">
-              Ils nous font confiance
+              {badge}
             </span>
             <span className="w-8 h-[1px] bg-[#c59a3f]" />
           </div>
@@ -61,7 +69,7 @@ export default function TestimonialsSection() {
               <div className="flex flex-col">
                 {/* 5 Gold Stars */}
                 <div className="flex items-center gap-1 text-[#e5a932] mb-1.5">
-                  {[...Array(review.rating)].map((_, i) => (
+                  {[...Array(Math.max(1, Math.min(5, review.rating)))].map((_, i) => (
                     <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
@@ -84,4 +92,3 @@ export default function TestimonialsSection() {
     </section>
   );
 }
-

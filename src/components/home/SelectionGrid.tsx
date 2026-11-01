@@ -4,43 +4,44 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-interface SelectionItem {
-  id: string;
-  title: string;
-  desc: string;
-  image: string;
-  href: string;
+interface SelectionGridProps {
+  config?: Record<string, string>;
 }
 
-export default function SelectionGrid() {
-  const items: SelectionItem[] = [
+export default function SelectionGrid({ config }: SelectionGridProps) {
+  const c = config || {};
+
+  const badge = c.badge || 'Notre sélection';
+  const title = c.title || 'Or & Argent';
+
+  const items = [
     {
-      id: 'pieces-dor',
-      title: "Pièces d'or",
-      desc: 'Un patrimoine intemporel',
-      image: '/images/gold-coins.jpg',
-      href: '/shop?category=pieces-dor'
+      id: 'card1',
+      title: c.card1_title || "Pièces d'or",
+      desc: c.card1_desc || 'Un patrimoine intemporel',
+      image: c.card1_img || '/images/gold-coins.jpg',
+      href: c.card1_url || '/shop?category=pieces-dor'
     },
     {
-      id: 'lingots-dor',
-      title: "Lingots d'or",
-      desc: 'Une valeur sûre',
-      image: '/images/gold-bars.jpg',
-      href: '/shop?category=lingots-dor'
+      id: 'card2',
+      title: c.card2_title || "Lingots d'or",
+      desc: c.card2_desc || 'Une valeur sûre',
+      image: c.card2_img || '/images/gold-bars.jpg',
+      href: c.card2_url || '/shop?category=lingots-dor'
     },
     {
-      id: 'lingots-dargent',
-      title: "Lingots d'argent",
-      desc: 'Investir autrement',
-      image: '/images/silver-bars.jpg',
-      href: '/shop?category=lingots-dargent'
+      id: 'card3',
+      title: c.card3_title || "Lingots d'argent",
+      desc: c.card3_desc || 'Investir autrement',
+      image: c.card3_img || '/images/silver-bars.jpg',
+      href: c.card3_url || '/shop?category=lingots-dargent'
     },
     {
-      id: 'pieces-dargent',
-      title: "Pièces d'argent",
-      desc: 'Un investissement accessible',
-      image: '/images/silver-coins.jpg',
-      href: '/shop?category=pieces-dargent'
+      id: 'card4',
+      title: c.card4_title || "Pièces d'argent",
+      desc: c.card4_desc || 'Un investissement accessible',
+      image: c.card4_img || '/images/silver-coins.jpg',
+      href: c.card4_url || '/shop?category=pieces-dargent'
     }
   ];
 
@@ -53,12 +54,12 @@ export default function SelectionGrid() {
           <div className="inline-flex items-center gap-3">
             <span className="w-8 h-[1px] bg-[#c59a3f]" />
             <span className="text-xs md:text-sm font-semibold tracking-widest text-[#c59a3f] uppercase">
-              Notre sélection
+              {badge}
             </span>
             <span className="w-8 h-[1px] bg-[#c59a3f]" />
           </div>
           <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-gray-900 tracking-tight">
-            Or & Argent
+            {title}
           </h2>
         </div>
 
@@ -113,4 +114,3 @@ export default function SelectionGrid() {
     </section>
   );
 }
-

@@ -2,11 +2,17 @@
 
 import React from 'react';
 
-export default function ReassuranceBar() {
+interface ReassuranceBarProps {
+  config?: Record<string, string>;
+}
+
+export default function ReassuranceBar({ config }: ReassuranceBarProps) {
+  const c = config || {};
+
   const items = [
     {
-      title: 'Qualité garantie',
-      desc: 'Des produits certifiés et authentiques',
+      title: c.item1_title || 'Qualité garantie',
+      desc: c.item1_desc || 'Des produits certifiés et authentiques',
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 3h12l4 6-10 12L2 9l4-6z" />
@@ -16,8 +22,8 @@ export default function ReassuranceBar() {
       )
     },
     {
-      title: 'Prix compétitifs',
-      desc: 'Un excellent rapport qualité-prix',
+      title: c.item2_title || 'Prix compétitifs',
+      desc: c.item2_desc || 'Un excellent rapport qualité-prix',
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <circle cx="12" cy="12" r="10" strokeWidth={1.7} />
@@ -27,8 +33,8 @@ export default function ReassuranceBar() {
       )
     },
     {
-      title: 'Livraison rapide',
-      desc: 'Partout en Europe',
+      title: c.item3_title || 'Livraison rapide',
+      desc: c.item3_desc || 'Partout en Europe',
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M5 8h10v9H5z" />
@@ -39,8 +45,8 @@ export default function ReassuranceBar() {
       )
     },
     {
-      title: 'Service client réactif',
-      desc: 'Notre équipe à votre écoute',
+      title: c.item4_title || 'Service client réactif',
+      desc: c.item4_desc || 'Notre équipe à votre écoute',
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M3 18v-6a9 9 0 0118 0v6" />
@@ -60,9 +66,9 @@ export default function ReassuranceBar() {
                 {item.icon}
               </div>
               <div className="flex flex-col">
-                <h2 className="text-sm md:text-base font-bold text-gray-900 tracking-tight">
+                <h3 className="text-sm md:text-base font-bold text-gray-900 tracking-tight">
                   {item.title}
-                </h2>
+                </h3>
                 <p className="text-xs md:text-sm text-gray-500 mt-0.5 font-normal">
                   {item.desc}
                 </p>
@@ -74,4 +80,3 @@ export default function ReassuranceBar() {
     </section>
   );
 }
-

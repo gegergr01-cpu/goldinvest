@@ -5,36 +5,82 @@ import WhyChooseUs from '@/components/home/WhyChooseUs';
 import PreciousMetalsTicker from '@/components/home/PreciousMetalsTicker';
 import CtaBanner from '@/components/home/CtaBanner';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
-import { getCachedSettings } from '@/lib/cache';
 
-export const revalidate = 3600; // Cache for 1 hour
+import Hero from '@/components/home/Hero';
+import BestDeals from '@/components/home/BestDeals';
+import BestSeller from '@/components/home/BestSeller';
+import LatestBlogs from '@/components/home/LatestBlogs';
+import Newsletter from '@/components/home/Newsletter';
+import PromoBanners from '@/components/home/PromoBanners';
+import ProductGrid from '@/components/home/ProductGrid';
+import FullWidthBanner from '@/components/home/FullWidthBanner';
+
+import { getCachedSettings } from '@/lib/cache';
+import { SectionConfig, DEFAULT_SECTIONS } from '@/app/admin/(dashboard)/landing/LandingForm';
+
+export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
   const settings = await getCachedSettings();
 
+  let layout: SectionConfig[] = DEFAULT_SECTIONS;
+  try {
+    if (settings.HOMEPAGE_LAYOUT) {
+      const parsed = JSON.parse(settings.HOMEPAGE_LAYOUT);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        layout = parsed;
+      }
+    }
+  } catch (e) {
+    layout = DEFAULT_SECTIONS;
+  }
+
+  // Filter only enabled sections
+  const activeSections = layout.filter((s) => s.enabled);
+
+  const renderSection = (section: SectionConfig) => {
+    switch (section.type) {
+      case 'GoldHero':
+        return <GoldHero key={section.id} config={section.settings} />;
+      case 'ReassuranceBar':
+        return <ReassuranceBar key={section.id} config={section.settings} />;
+      case 'SelectionGrid':
+        return <SelectionGrid key={section.id} config={section.settings} />;
+      case 'WhyChooseUs':
+        return <WhyChooseUs key={section.id} config={section.settings} />;
+      case 'PreciousMetalsTicker':
+        return <PreciousMetalsTicker key={section.id} config={section.settings} />;
+      case 'CtaBanner':
+        return <CtaBanner key={section.id} config={section.settings} />;
+      case 'Testimonials':
+        return <TestimonialsSection key={section.id} config={section.settings} />;
+
+      // Legacy / alternate sections
+      case 'Hero':
+        return <Hero key={section.id} config={section.settings} />;
+      case 'BestDeals':
+        return <BestDeals key={section.id} config={section.settings} />;
+      case 'BestSeller':
+        return <BestSeller key={section.id} config={section.settings} />;
+      case 'LatestBlogs':
+        return <LatestBlogs key={section.id} config={section.settings} />;
+      case 'Newsletter':
+        return <Newsletter key={section.id} config={section.settings} />;
+      case 'PromoBanners':
+        return <PromoBanners key={section.id} config={section.settings} />;
+      case 'ProductGrid':
+        return <ProductGrid key={section.id} config={section.settings} />;
+      case 'FullWidthBanner':
+        return <FullWidthBanner key={section.id} config={section.settings} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <main>
-        {/* 1. Hero Section */}
-        <GoldHero />
-
-        {/* 2. Reassurance Bar (Qualité garantie, Prix compétitifs, etc.) */}
-        <ReassuranceBar />
-
-        {/* 3. Notre sélection - Or & Argent */}
-        <SelectionGrid />
-
-        {/* 4. Pourquoi nous choisir ? Votre partenaire de confiance */}
-        <WhyChooseUs />
-
-        {/* 5. Cours des métaux précieux (Live Ticker) */}
-        <PreciousMetalsTicker />
-
-        {/* 6. Bannière CTA - Investissez dès aujourd'hui */}
-        <CtaBanner />
-
-        {/* 7. Ils nous font confiance (Témoignages clients) */}
-        <TestimonialsSection />
+        {activeSections.map(renderSection)}
       </main>
     </div>
   );
