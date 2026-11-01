@@ -19,28 +19,28 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
       id: 'card1',
       title: c.card1_title || "Pièces d'or",
       desc: c.card1_desc || 'Un patrimoine intemporel',
-      image: c.card1_img || '/images/gold-coins.jpg',
+      image: typeof c.card1_img !== 'undefined' ? c.card1_img : '/images/gold-coins.jpg',
       href: c.card1_url || '/shop?category=pieces-dor'
     },
     {
       id: 'card2',
       title: c.card2_title || "Lingots d'or",
       desc: c.card2_desc || 'Une valeur sûre',
-      image: c.card2_img || '/images/gold-bars.jpg',
+      image: typeof c.card2_img !== 'undefined' ? c.card2_img : '/images/gold-bars.jpg',
       href: c.card2_url || '/shop?category=lingots-dor'
     },
     {
       id: 'card3',
       title: c.card3_title || "Lingots d'argent",
       desc: c.card3_desc || 'Investir autrement',
-      image: c.card3_img || '/images/silver-bars.jpg',
+      image: typeof c.card3_img !== 'undefined' ? c.card3_img : '/images/silver-bars.jpg',
       href: c.card3_url || '/shop?category=lingots-dargent'
     },
     {
       id: 'card4',
       title: c.card4_title || "Pièces d'argent",
       desc: c.card4_desc || 'Un investissement accessible',
-      image: c.card4_img || '/images/silver-coins.jpg',
+      image: typeof c.card4_img !== 'undefined' ? c.card4_img : '/images/silver-coins.jpg',
       href: c.card4_url || '/shop?category=pieces-dargent'
     }
   ];
@@ -68,50 +68,67 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
 
         {/* 4 Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-7">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              style={{ backgroundColor: cardBgColor }}
-              className="group rounded-2xl overflow-hidden flex flex-col justify-between border border-white/5 hover:border-[#c59a3f]/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
-            >
-              {/* Product Image on Dark Background */}
-              <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#222222] to-[#151515] overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-transparent pointer-events-none" />
-              </div>
+          {items.map((item) => {
+            const hasCardImage = Boolean(item.image && typeof item.image === 'string' && item.image.trim() !== '');
 
-              {/* Card Content */}
-              <div className="p-6 pt-2 flex flex-col items-center text-center flex-grow justify-between">
-                <div>
-                  <h3 className="text-lg md:text-xl font-serif font-bold text-white group-hover:text-[#c59a3f] transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-xs md:text-sm text-gray-400 font-light">
-                    {item.desc}
-                  </p>
+            return (
+              <div
+                key={item.id}
+                style={{ backgroundColor: cardBgColor }}
+                className="group rounded-2xl overflow-hidden flex flex-col justify-between border border-white/5 hover:border-[#c59a3f]/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
+              >
+                {/* Product Image on Dark Background (if defined) */}
+                <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#222222] to-[#151515] overflow-hidden flex items-center justify-center">
+                  {hasCardImage ? (
+                    <>
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-transparent pointer-events-none" />
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#c59a3f]/40 mb-2">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-400">Aucune image</span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-6 w-full flex justify-center">
-                  <Link
-                    href={item.href}
-                    className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#c59a3f]/40 text-[#c59a3f] hover:bg-[#c59a3f] hover:text-black font-medium text-xs md:text-sm transition-all duration-300 group-hover:border-[#c59a3f]"
-                  >
-                    <span>Découvrir</span>
-                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
+                {/* Card Content */}
+                <div className="p-6 pt-3 flex flex-col items-center text-center flex-grow justify-between">
+                  <div>
+                    <h3 className="text-lg md:text-xl font-serif font-bold text-white group-hover:text-[#c59a3f] transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-xs md:text-sm text-gray-400 font-light">
+                      {item.desc}
+                    </p>
+                  </div>
 
-            </div>
-          ))}
+                  <div className="mt-6 w-full flex justify-center">
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#c59a3f]/40 text-[#c59a3f] hover:bg-[#c59a3f] hover:text-black font-medium text-xs md:text-sm transition-all duration-300 group-hover:border-[#c59a3f]"
+                    >
+                      <span>Découvrir</span>
+                      <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+
+              </div>
+            );
+          })}
         </div>
 
       </div>

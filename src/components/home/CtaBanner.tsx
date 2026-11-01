@@ -15,7 +15,10 @@ export default function CtaBanner({ config }: CtaBannerProps) {
   const subtitle = c.subtitle || 'Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent.';
   const btnText = c.btnText || 'Découvrir notre gamme';
   const btnUrl = c.btnUrl || '/shop';
-  const image = c.image || '/images/gold-banner-cta.jpg';
+
+  const image = typeof c.image !== 'undefined' ? c.image : '/images/gold-banner-cta.jpg';
+  const hasImage = Boolean(image && typeof image === 'string' && image.trim() !== '');
+
   const bgColor = c.bgColor || '#fcfbf9';
   const btnBgColor = c.btnBgColor || '#c59a3f';
   const btnTextColor = c.btnTextColor || '#000000';
@@ -23,17 +26,19 @@ export default function CtaBanner({ config }: CtaBannerProps) {
   return (
     <section className="w-full py-6 md:py-10 transition-colors duration-300" style={{ backgroundColor: bgColor }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 min-h-[160px] md:min-h-[190px] flex items-center">
+        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 min-h-[160px] md:min-h-[190px] flex items-center bg-[#151515]">
           
-          {/* Background Image with Dark Vignette Overlay */}
-          <Image 
-            src={image}
-            alt="Investissement Or et Argent - Gold Invest"
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/60 md:to-black/40" />
+          {/* Background Image with Dark Vignette Overlay (if defined and not deleted) */}
+          {hasImage && (
+            <Image 
+              src={image}
+              alt="Investissement Or et Argent - Gold Invest"
+              fill
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          )}
+          <div className={`absolute inset-0 ${hasImage ? 'bg-gradient-to-r from-black/85 via-black/70 to-black/60 md:to-black/40' : 'bg-gradient-to-r from-[#181818] via-[#222222] to-[#141414]'}`} />
 
           {/* Banner Content */}
           <div className="relative z-10 w-full p-6 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6">

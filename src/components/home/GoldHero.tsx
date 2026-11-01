@@ -27,8 +27,14 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const subtitle = config?.subtitle || "Pièces d'or, lingots d'or et d'argent au meilleur prix";
   const btnText = config?.btnText || 'Découvrir notre gamme';
   const btnUrl = config?.btnUrl || '/shop';
-  const image = config?.image || '/images/hero-gold-silver.jpg';
-  const bgImage = config?.bgImage || '/images/hero-bg-luxury.jpg';
+
+  // Support explicit deletion: if property is defined and set to '', it means deleted!
+  const image = typeof config?.image !== 'undefined' ? config.image : '/images/hero-gold-silver.jpg';
+  const bgImage = typeof config?.bgImage !== 'undefined' ? config.bgImage : '/images/hero-bg-luxury.jpg';
+
+  const hasImage = Boolean(image && typeof image === 'string' && image.trim() !== '');
+  const hasBgImage = Boolean(bgImage && typeof bgImage === 'string' && bgImage.trim() !== '');
+
   const bgColor = config?.bgColor || '#0a0a0a';
   const highlightColor = config?.highlightColor || '#c59a3f';
   const btnBgColor = config?.btnBgColor || '#c59a3f';
@@ -55,8 +61,8 @@ export default function GoldHero({ config }: GoldHeroProps) {
       className="relative w-full text-white overflow-hidden transition-colors duration-300"
       style={{ backgroundColor: bgColor }}
     >
-      {/* Background Image (BG) */}
-      {bgImage && (
+      {/* Background Image (BG) - only if defined and not deleted */}
+      {hasBgImage && (
         <div className="absolute inset-0 pointer-events-none z-0">
           <Image
             src={bgImage}
@@ -76,15 +82,15 @@ export default function GoldHero({ config }: GoldHeroProps) {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className={`grid grid-cols-1 ${hasImage ? 'lg:grid-cols-12' : 'max-w-3xl mx-auto text-center'} gap-12 items-center`}>
 
           {/* Left Text Column */}
-          <div className="lg:col-span-6 z-10 flex flex-col items-start text-left">
+          <div className={`${hasImage ? 'lg:col-span-6 items-start text-left' : 'w-full items-center text-center'} z-10 flex flex-col`}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.15]">
               {renderTitle()}
             </h1>
 
-            <p className="mt-5 text-lg sm:text-xl text-gray-300 font-light max-w-lg leading-relaxed">
+            <p className={`mt-5 text-lg sm:text-xl text-gray-300 font-light leading-relaxed ${hasImage ? 'max-w-lg' : 'max-w-2xl'}`}>
               {subtitle}
             </p>
 
@@ -107,21 +113,23 @@ export default function GoldHero({ config }: GoldHeroProps) {
             </div>
           </div>
 
-          {/* Right Image Visual Column */}
-          <div className="lg:col-span-6 relative flex justify-center items-center">
-            <div className="relative w-full max-w-[580px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-              <Image
-                src={image}
-                alt="Lingots d'or et d'argent, pièces Krugerrand et Maple Leaf - Gold Invest"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none" />
+          {/* Right Image Visual Column - only if defined and not deleted */}
+          {hasImage && (
+            <div className="lg:col-span-6 relative flex justify-center items-center">
+              <div className="relative w-full max-w-[580px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
+                <Image
+                  src={image}
+                  alt={title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none" />
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
