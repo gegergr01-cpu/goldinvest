@@ -248,6 +248,7 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       'CtaBanner',
       'Testimonials'
     ].includes(section.type)) {
+      const sectionIdx = sections.findIndex(s => s.id === section.id);
       return (
         <GoldSectionEditor
           section={section}
@@ -255,6 +256,7 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
           updateSectionSettings={updateSectionSettings}
           handleUpload={handleUpload}
           goBack={() => setEditingId(null)}
+          onDelete={sectionIdx >= 0 ? () => { removeSection(sectionIdx); setEditingId(null); } : undefined}
         />
       );
     }
