@@ -48,7 +48,7 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
   return (
     <section className="w-full bg-[#fcfbf9] py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-3">
@@ -66,14 +66,14 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
         {/* 4 Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-7">
           {items.map((item) => (
-            <div 
+            <div
               key={item.id}
               className="group bg-[#151515] rounded-2xl overflow-hidden flex flex-col justify-between border border-white/5 hover:border-[#c59a3f]/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
             >
               {/* Product Image on Dark Background */}
               <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#222222] to-[#151515] overflow-hidden">
-                <Image 
-                  src={item.image} 
+                <Image
+                  src={item.image}
                   alt={item.title}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -94,7 +94,7 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
                 </div>
 
                 <div className="mt-6 w-full flex justify-center">
-                  <Link 
+                  <Link
                     href={item.href}
                     className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#c59a3f]/40 text-[#c59a3f] hover:bg-[#c59a3f] hover:text-black font-medium text-xs md:text-sm transition-all duration-300 group-hover:border-[#c59a3f]"
                   >

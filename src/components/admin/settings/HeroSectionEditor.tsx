@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { SectionConfig } from '@/app/admin/(dashboard)/landing/LandingForm';
+import { SectionConfig } from '@/types/landing';
 import Image from "next/image";
 
 interface HeroSectionEditorProps {

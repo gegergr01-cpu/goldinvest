@@ -15,7 +15,7 @@ import PreciousMetalsTicker from '@/components/home/PreciousMetalsTicker';
 import CtaBanner from '@/components/home/CtaBanner';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
-import { SectionConfig, DEFAULT_SECTIONS } from '@/app/admin/(dashboard)/landing/LandingForm';
+import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 import PreviewSectionWrapper from '@/components/admin/PreviewSectionWrapper';
 import { getSettings } from '@/actions/settings';
 import prisma from '@/lib/prisma';
@@ -24,26 +24,31 @@ export const dynamic = 'force-dynamic';
 
 export default async function PreviewPage() {
   const draftLayoutSetting = await prisma.setting.findUnique({ where: { key: 'PREVIEW_LAYOUT_DRAFT' } });
-  
+
   let layoutCookieStr = draftLayoutSetting?.value || '';
-  
+
   let layout: SectionConfig[] = DEFAULT_SECTIONS;
   if (layoutCookieStr) {
     try {
-      const parsed = JSON.parse(layoutCookieStr);
+      const parsed = typeof layoutCookieStr === 'string' ? JSON.parse(layoutCookieStr) : layoutCookieStr;
       if (Array.isArray(parsed) && parsed.length > 0) {
         layout = parsed;
+      } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections) && parsed.sections.length > 0) {
+        layout = parsed.sections;
       }
     } catch (e) {
       console.error(e);
     }
   } else {
     const settings = await getSettings();
-    if (settings.HOMEPAGE_LAYOUT) {
+    if (settings && settings.HOMEPAGE_LAYOUT) {
       try {
-        const parsed = JSON.parse(settings.HOMEPAGE_LAYOUT);
+        const raw = settings.HOMEPAGE_LAYOUT;
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
         if (Array.isArray(parsed) && parsed.length > 0) {
           layout = parsed;
+        } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections) && parsed.sections.length > 0) {
+          layout = parsed.sections;
         }
       } catch (e) {
         console.error(e);
@@ -51,7 +56,11 @@ export default async function PreviewPage() {
     }
   }
 
-  const activeSections = layout.filter((s) => s.enabled);
+  if (!Array.isArray(layout) || layout.length === 0) {
+    layout = DEFAULT_SECTIONS;
+  }
+
+  const activeSections = layout.filter((s) => s && s.enabled);
 
   const renderSection = (section: SectionConfig) => {
     let content = null;

@@ -16,7 +16,7 @@ import ProductGrid from '@/components/home/ProductGrid';
 import FullWidthBanner from '@/components/home/FullWidthBanner';
 
 import { getCachedSettings } from '@/lib/cache';
-import { SectionConfig, DEFAULT_SECTIONS } from '@/app/admin/(dashboard)/landing/LandingForm';
+import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -24,19 +24,27 @@ export default async function Home() {
   const settings = await getCachedSettings();
 
   let layout: SectionConfig[] = DEFAULT_SECTIONS;
-  try {
-    if (settings.HOMEPAGE_LAYOUT) {
-      const parsed = JSON.parse(settings.HOMEPAGE_LAYOUT);
+  if (settings && settings.HOMEPAGE_LAYOUT) {
+    try {
+      const raw = settings.HOMEPAGE_LAYOUT;
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
       if (Array.isArray(parsed) && parsed.length > 0) {
         layout = parsed;
+      } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections) && parsed.sections.length > 0) {
+        layout = parsed.sections;
       }
+    } catch (e) {
+      console.error('Error parsing HOMEPAGE_LAYOUT:', e);
+      layout = DEFAULT_SECTIONS;
     }
-  } catch (e) {
+  }
+
+  if (!Array.isArray(layout) || layout.length === 0) {
     layout = DEFAULT_SECTIONS;
   }
 
   // Filter only enabled sections
-  const activeSections = layout.filter((s) => s.enabled);
+  const activeSections = layout.filter((s) => s && s.enabled);
 
   const renderSection = (section: SectionConfig) => {
     switch (section.type) {

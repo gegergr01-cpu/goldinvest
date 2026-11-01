@@ -41,7 +41,7 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
   return (
     <section className="w-full bg-[#fcfbf9] py-16 md:py-24 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-3">
@@ -56,7 +56,7 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
         {/* 3 Review Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {reviews.map((review) => (
-            <div 
+            <div
               key={review.id}
               className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5"
             >
