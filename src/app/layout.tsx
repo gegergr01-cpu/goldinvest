@@ -140,7 +140,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const storeSettings = {
     announcement: settingsMap.HEADER_ANNOUNCEMENT || `Welcome to ${storeName}`,
     logoImage: settingsMap.HEADER_LOGO_IMAGE || '/logo.png',
-    supportPhone: settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE ?? '+08 9229 8228',
+    supportPhone: settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE ?? '+32 2 123 45 67',
     supportEmail: settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL ?? 'info@goldsilversinvest.com',
     menuLinks: menuLinks,
     topBarLinks: topBarLinks,
@@ -159,7 +159,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     footerNewsletterText: settingsMap.FOOTER_NEWSLETTER_TEXT || 'Get 15% off your first purchase! Plus, be the first to know about sales new product launches and exclusive offers!',
     footerNewsletterPlaceholder: settingsMap.FOOTER_NEWSLETTER_PLACEHOLDER || 'Enter your email...',
     footerCallUsText: settingsMap.FOOTER_CALL_US_TEXT || 'Call Us Now',
-    footerCopyright: settingsMap.FOOTER_COPYRIGHT || `© 2026 ${storeName}. All rights reserved.`,
+    footerCopyright: settingsMap.FOOTER_COPYRIGHT || '© 2026 Gold Invest. Tous droits réservés.',
     footerSocialFacebook: settingsMap.FOOTER_SOCIAL_FACEBOOK || '#',
     footerSocialTwitter: settingsMap.FOOTER_SOCIAL_TWITTER || '#',
     footerSocialInstagram: settingsMap.FOOTER_SOCIAL_INSTAGRAM || '#',

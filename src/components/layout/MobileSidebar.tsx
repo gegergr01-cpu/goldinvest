@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import { useTranslations } from 'next-intl';
 
 type MobileSidebarProps = {
@@ -78,7 +79,7 @@ export default function MobileSidebar({
             {logoImage ? (
               <Image src={logoImage} alt="Logo" width={200} height={80} className="object-contain" style={{ width: 'auto', height: `${logoHeight}px` }} />
             ) : (
-              <span className="text-2xl font-extrabold text-gray-900">LOGO</span>
+              <GoldInvestLogo variant="dark" />
             )}
           </Link>
         </div>

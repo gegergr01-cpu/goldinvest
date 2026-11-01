@@ -65,7 +65,7 @@ export default function MobileBottomNav({ onSearchClick, onLoginClick }: MobileB
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
           {mounted && wishlistItems > 0 && (
-            <span className="absolute -top-1 -right-2 bg-orange-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm">
+            <span className="absolute -top-1 -right-2 bg-[#c59a3f] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm">
               {wishlistItems}
             </span>
           )}
