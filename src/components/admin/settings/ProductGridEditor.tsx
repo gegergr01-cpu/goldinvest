@@ -228,16 +228,69 @@ export default function ProductGridEditor({
           {openSection === 'content' && (
             <div className="p-4 border-t border-gray-200 space-y-4">
           <div className="space-y-4">
-            {renderContentInput(section, updateSectionSettings, 'Section Title', 'title', 'Enter the title...')}
-            {renderContentInput(section, updateSectionSettings, '"See All" Link Text', 'SEE_ALL_TEXT', 'See All')}
+            {section.type === 'BestDeals' && (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
+                  <input
+                    type="text"
+                    value={section.settings.badge ?? "NOS PIÈCES D'OR"}
+                    onChange={e => updateSectionSettings(section.id, 'badge', e.target.value)}
+                    placeholder="NOS PIÈCES D'OR"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
+                  <input
+                    type="text"
+                    value={section.settings.highlight ?? "l'excellence"}
+                    onChange={e => updateSectionSettings(section.id, 'highlight', e.target.value)}
+                    placeholder="l'excellence"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+              </>
+            )}
+
+            {renderContentInput(section, updateSectionSettings, 'Titre de la section', 'title', "Investissez dans l'excellence")}
+
+            {section.type === 'BestDeals' && (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre descriptif</label>
+                  <textarea
+                    rows={2}
+                    value={section.settings.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
+                    onChange={e => updateSectionSettings(section.id, 'subtitle', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes produits</label>
+                  <input
+                    type="text"
+                    value={section.settings.cardBadge ?? "Investissement"}
+                    onChange={e => updateSectionSettings(section.id, 'cardBadge', e.target.value)}
+                    placeholder="Investissement"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+              </>
+            )}
+
+            {renderContentInput(section, updateSectionSettings, 'Texte du bouton "Voir tout"', 'SEE_ALL_TEXT', "Voir toutes les pièces d'or")}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Custom "See All" URL</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Lien de redirection (URL)</label>
               <input
                 type="text"
-                value={section.settings.seeAllUrl || ''}
-                onChange={e => updateSectionSettings(section.id, 'seeAllUrl', e.target.value)}
-                placeholder="ex: /shop (leave empty for auto category link)"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 outline-none transition-colors"
+                value={section.settings.seeAllUrl || section.settings.btnUrl || ''}
+                onChange={e => {
+                  updateSectionSettings(section.id, 'seeAllUrl', e.target.value);
+                  updateSectionSettings(section.id, 'btnUrl', e.target.value);
+                }}
+                placeholder="ex: /shop?category=pieces-dor"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none transition-colors"
               />
             </div>
             {section.type === 'BestDeals' && (

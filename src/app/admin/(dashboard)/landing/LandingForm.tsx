@@ -217,7 +217,21 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       newSec.name = 'Témoignages (Ils nous font confiance)';
       newSec.settings = { badge: "Ils nous font confiance" };
     } else if (type === 'BestDeals') {
-      newSec.settings = { title: "New Deals", countdown: '2026-12-31T23:59:59', filterType: 'ON_SALE', categoryId: '' };
+      newSec.name = "Nos Pièces d'or (Investissez dans l'excellence)";
+      newSec.settings = { 
+        badge: "NOS PIÈCES D'OR",
+        title: "Investissez dans l'excellence", 
+        highlight: "l'excellence",
+        subtitle: "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine.",
+        cardBadge: "Investissement",
+        btnText: "Voir toutes les pièces d'or",
+        SEE_ALL_TEXT: "Voir toutes les pièces d'or",
+        seeAllUrl: "/shop?category=pieces-dor",
+        btnUrl: "/shop?category=pieces-dor",
+        maxProducts: '4',
+        filterType: 'ALL', 
+        categoryId: '' 
+      };
     } else if (type === 'BestSeller') {
       newSec.settings = { title: "New Selection", filterType: 'POPULAR', categoryId: '' };
     } else if (type === 'ProductGrid') {
