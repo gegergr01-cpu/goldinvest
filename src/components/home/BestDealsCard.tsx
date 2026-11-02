@@ -2,16 +2,28 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import QuickViewModal from '@/components/product/QuickViewModal';
+
+const Star = ({ filled = true }: { filled?: boolean }) => (
+  <svg 
+    className={`w-3.5 h-3.5 ${filled ? 'text-[#c59a3f]' : 'text-gray-300'}`} 
+    fill="currentColor" 
+    viewBox="0 0 20 20"
+  >
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+);
 
 interface BestDealsCardProps {
   product: {
     id: string | number;
     slug?: string;
     title: string;
+    category?: string;
     rawPrice?: number;
     price?: number | string;
     priceFormatted?: string;
@@ -19,13 +31,21 @@ interface BestDealsCardProps {
     badge?: string;
     discount?: string;
     imagePlaceholder?: string;
+    rating?: number;
+    ratingText?: string;
   };
   badge?: string;
+  borderColor?: string;
+  btnBgColor?: string;
+  btnTextColor?: string;
+  btnHoverBgColor?: string;
+  btnHoverTextColor?: string;
 }
 
 export default function BestDealsCard({
   product,
   badge = 'Investissement',
+  borderColor = '#e5e7eb',
 }: BestDealsCardProps) {
   const router = useRouter();
   const cartStore = useCartStore();
@@ -71,61 +91,54 @@ export default function BestDealsCard({
     <>
       <div 
         onClick={() => router.push(`/product/${product.slug || product.id}`)}
-        className="relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between group transition-all duration-500 bg-gradient-to-b from-[#181818]/95 via-[#121212]/95 to-[#0b0b0b]/95 border border-white/10 hover:border-[#c59a3f] hover:shadow-[0_0_35px_rgba(197,154,63,0.35)] cursor-pointer backdrop-blur-md overflow-hidden"
+        className="w-full bg-white border border-gray-200/90 hover:border-[#c59a3f] rounded-2xl p-5 sm:p-6 flex flex-col justify-between group/card cursor-pointer hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+        style={{ borderColor: borderColor !== '#e5e7eb' ? borderColor : undefined }}
       >
-        {/* Subtle hover gradient halo behind card */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#c59a3f]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-        {/* 1. Top Badge (e.g. "Investissement") */}
-        <div className="flex items-center justify-between w-full z-10">
-          <span className="border border-[#c59a3f]/50 bg-black/60 text-amber-200/90 text-[10px] font-medium px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-            {product.badge || badge || 'Investissement'}
-          </span>
-          {product.discount && (
-            <span className="text-[10px] font-bold text-red-400 bg-red-950/60 border border-red-800/40 px-2 py-0.5 rounded-full">
+        {/* 1. Image Area with Badges & Hover Actions */}
+        <div className="relative h-48 sm:h-52 w-full bg-white mb-4 flex items-center justify-center overflow-hidden rounded-xl">
+          {/* Discount / Tag */}
+          {product.discount ? (
+            <span className="absolute top-1 left-1 bg-amber-100 text-[#9b7628] text-xs font-bold px-2.5 py-1 rounded-md z-10 shadow-sm">
               {product.discount}
             </span>
-          )}
-        </div>
+          ) : (product.badge || badge) ? (
+            <span className="absolute top-1 left-1 bg-amber-50/90 border border-amber-200/80 text-[#9b7628] text-[11px] font-semibold px-2.5 py-0.5 rounded-full z-10 shadow-xs">
+              {product.badge || badge}
+            </span>
+          ) : null}
 
-        {/* 2. Product Coin Visual with Floating Action Icons */}
-        <div className="relative w-full aspect-square my-4 flex items-center justify-center">
-          {/* Subtle warm glow behind coin */}
-          <div className="absolute inset-4 rounded-full bg-[#c59a3f]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
+          {/* Product Image */}
           {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
+            <Image 
+              src={product.imageUrl} 
+              alt={product.title} 
+              width={500} 
+              height={500} 
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)] group-hover:scale-105 transition-transform duration-500 p-2"
+              className="w-full h-full object-contain group-hover/card:scale-105 transition duration-500" 
             />
           ) : (
-            <div className="w-36 h-36 rounded-full border-2 border-[#c59a3f]/40 bg-gradient-to-br from-[#d4af37]/20 to-[#996515]/20 flex items-center justify-center text-4xl shadow-inner text-[#c59a3f]">
-              🪙
+            <div className="text-7xl group-hover/card:scale-110 transition duration-500 select-none">
+              {product.imagePlaceholder || '🪙'}
             </div>
           )}
 
-          {/* Action Icons: Cart, Quick View, Wishlist (exact mockup placement) */}
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 transition-all duration-300">
-            {/* Cart Icon */}
+          {/* Hover Action Icons Stack */}
+          <div className="absolute top-1 right-1 flex flex-col items-center justify-center gap-1.5 z-20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
             <button
               type="button"
               onClick={handleAddToCart}
-              className="w-10 h-10 rounded-full bg-black/90 hover:bg-[#c59a3f] text-white hover:text-black border border-white/20 hover:border-[#c59a3f] flex items-center justify-center transition-all duration-200 shadow-xl cursor-pointer"
+              className="w-9 h-9 rounded-full bg-white hover:bg-[#c59a3f] text-gray-700 hover:text-white border border-gray-200 shadow-md flex items-center justify-center transition-all duration-200 transform hover:scale-105 cursor-pointer"
               title="Ajouter au panier"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </button>
-
-            {/* Quick View Icon */}
             <button
               type="button"
               onClick={handleQuickView}
-              className="w-10 h-10 rounded-full bg-black/90 hover:bg-[#c59a3f] text-white hover:text-black border border-white/20 hover:border-[#c59a3f] flex items-center justify-center transition-all duration-200 shadow-xl cursor-pointer"
+              className="w-9 h-9 rounded-full bg-white hover:bg-[#c59a3f] text-gray-700 hover:text-white border border-gray-200 shadow-md flex items-center justify-center transition-all duration-200 transform hover:scale-105 cursor-pointer"
               title="Aperçu rapide"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,12 +146,10 @@ export default function BestDealsCard({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </button>
-
-            {/* Wishlist Icon */}
             <button
               type="button"
               onClick={handleToggleWishlist}
-              className={`w-10 h-10 rounded-full ${isWishlisted ? 'bg-[#c59a3f] text-black border-[#c59a3f]' : 'bg-black/90 hover:bg-[#c59a3f] text-white hover:text-black border-white/20 hover:border-[#c59a3f]'} border flex items-center justify-center transition-all duration-200 shadow-xl cursor-pointer`}
+              className={`w-9 h-9 rounded-full ${isWishlisted ? 'bg-[#c59a3f] text-white border-[#c59a3f]' : 'bg-white hover:bg-[#c59a3f] text-gray-700 hover:text-white border-gray-200'} border shadow-md flex items-center justify-center transition-all duration-200 transform hover:scale-105 cursor-pointer`}
               title="Favoris"
             >
               <svg className="w-4 h-4" fill={isWishlisted ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -148,17 +159,44 @@ export default function BestDealsCard({
           </div>
         </div>
 
-        {/* 3. Bottom Title & Price */}
-        <div className="text-center z-10 pt-2">
+        {/* 2. Product Info (Centered as requested) */}
+        <div className="mt-auto pt-2 flex flex-col items-center text-center">
+          {product.category && (
+            <span className="text-[11px] font-medium uppercase tracking-wider text-amber-700/80 mb-1">
+              {product.category}
+            </span>
+          )}
+
           <h3 
-            className="text-white font-serif text-base sm:text-lg font-normal tracking-wide text-center line-clamp-2 group-hover:text-amber-200 transition-colors"
+            className="text-sm sm:text-base font-serif font-medium text-gray-900 line-clamp-2 mb-2 transition-colors group-hover/card:text-[#b8860b]" 
             title={product.title}
           >
-            {product.title}
+            <Link 
+              href={`/product/${product.slug || product.id}`} 
+              className="hover:underline" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              {product.title}
+            </Link>
           </h3>
 
-          <div className="text-center mt-2.5">
-            <span className="text-[#c59a3f] font-serif font-bold text-lg sm:text-xl tracking-wider">
+          {/* Rating Stars (if available) */}
+          {product.ratingText && (
+            <div className="flex items-center justify-center gap-1 mb-2">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} filled={i < (product.rating || 0)} />
+                ))}
+              </div>
+              <span className="text-xs text-gray-500 font-medium">
+                {product.ratingText}
+              </span>
+            </div>
+          )}
+
+          {/* Price */}
+          <div className="mt-1">
+            <span className="text-lg sm:text-xl font-serif font-bold text-[#b8860b]">
               {formattedPrice}
             </span>
           </div>

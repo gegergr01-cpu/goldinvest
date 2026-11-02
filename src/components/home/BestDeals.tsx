@@ -8,39 +8,51 @@ interface BestDealsProps {
   config?: Record<string, any>;
 }
 
-// 4 iconic default gold coins matching the mockup
+// 4 iconic default gold coins matching the luxury gold catalog
 const fallbackCoins = [
   {
     id: 'coin-napoleon',
     slug: '20-francs-or-napoleon-iii',
     title: '20 Francs Or Napoléon III',
+    category: 'Pièces d\'or',
     rawPrice: 887.50,
     imageUrl: '/images/gold-coins.jpg',
     badge: 'Investissement',
+    rating: 5,
+    ratingText: '(5.0)',
   },
   {
     id: 'coin-maple-leaf',
     slug: '1-once-or-maple-leaf',
     title: '1 Once Or Maple Leaf',
+    category: 'Pièces d\'or',
     rawPrice: 2489.00,
     imageUrl: '/images/gold-bars.jpg',
     badge: 'Investissement',
+    rating: 5,
+    ratingText: '(5.0)',
   },
   {
     id: 'coin-krugerrand',
     slug: '1-once-or-krugerrand',
     title: '1 Once Or Krugerrand',
+    category: 'Pièces d\'or',
     rawPrice: 2489.00,
     imageUrl: '/images/hero-gold-silver.jpg',
     badge: 'Investissement',
+    rating: 5,
+    ratingText: '(5.0)',
   },
   {
     id: 'coin-philharmonic',
     slug: '1-once-or-philharmonique',
     title: '1 Once Or Philharmonique',
+    category: 'Pièces d\'or',
     rawPrice: 2489.00,
     imageUrl: '/images/gold-coins.jpg',
     badge: 'Investissement',
+    rating: 5,
+    ratingText: '(5.0)',
   },
 ];
 
@@ -48,8 +60,8 @@ export default async function BestDeals({ config }: BestDealsProps) {
   const c = config || {};
 
   const badge = c.badge || "NOS PIÈCES D'OR";
-  const title = c.title || "Investissez dans l'excellence";
-  const highlight = c.highlight || "l'excellence";
+  const title = c.title || "Nos Pièces d'Or";
+  const highlight = c.highlight || "Pièces d'Or";
   const subtitle = c.subtitle || "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine.";
   const cardBadge = c.cardBadge || "Investissement";
   const btnText = c.btnText || c.SEE_ALL_TEXT || "Voir toutes les pièces d'or";
@@ -85,29 +97,35 @@ export default async function BestDeals({ config }: BestDealsProps) {
     displayProducts = dbProducts.map((p) => {
       const images = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images || '[]') : []);
       const primaryCategory = p.categories && p.categories.length > 0 ? p.categories[0].name : '';
+      const approvedReviews = (p as any).reviews || [];
+      const ratingCount = approvedReviews.length;
+      const avgRating = ratingCount > 0 ? approvedReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / ratingCount : 0;
+
       return {
         id: p.id,
         slug: p.slug,
         title: p.title,
+        category: primaryCategory || cardBadge,
         rawPrice: typeof p.price === 'number' ? p.price : Number(p.price) || 0,
         imageUrl: images[0] || '/images/gold-coins.jpg',
         badge: primaryCategory || cardBadge,
         discount: p.discountLabel || undefined,
+        rating: ratingCount > 0 ? Math.round(avgRating) : 5,
+        ratingText: ratingCount > 0 ? `(${avgRating.toFixed(1)})` : '',
       };
     });
   } else {
-    // Elegant fallback from mockup
     displayProducts = fallbackCoins;
   }
 
-  // Render title with gold highlight
+  // Render title with gold highlight if specified
   const renderTitle = () => {
     if (highlight && title.includes(highlight)) {
       const parts = title.split(highlight);
       return (
         <>
           {parts[0]}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e7c77c] via-[#ffd700] to-[#b8860b]">
+          <span className="text-[#b8860b]">
             {highlight}
           </span>
           {parts[1]}
@@ -118,43 +136,36 @@ export default async function BestDeals({ config }: BestDealsProps) {
   };
 
   return (
-    <section className="relative w-full py-16 md:py-24 bg-[#080808] text-white overflow-hidden font-sans">
-      
-      {/* Ambient warm gold radial glows (matching the mockup lighting) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[360px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute top-1/4 -left-40 w-96 h-96 bg-[#c59a3f]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/4 -right-40 w-96 h-96 bg-[#c59a3f]/5 rounded-full blur-3xl pointer-events-none" />
-
+    <section className={`relative w-full py-16 md:py-24 bg-white text-gray-900 overflow-hidden font-sans${c.hideMobile ? ' hidden sm:block' : ''}`}>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* 1. Header Section */}
+        {/* 1. Centered Header Section */}
         <div className="text-center max-w-3xl mx-auto">
-          
-          {/* Top Diamond icon & NOS PIÈCES D'OR */}
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-[#c59a3f] text-xs transform rotate-45 inline-block">◆</span>
-            
-            <div className="flex items-center justify-center gap-3 mt-2 mb-3">
-              <div className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent to-[#c59a3f]/70" />
-              <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c59a3f] font-semibold select-none">
+          {/* Eyebrow / Badge */}
+          {badge && (
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <div className="w-10 sm:w-14 h-px bg-gradient-to-r from-transparent to-[#c59a3f]/70" />
+              <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#b8860b] font-semibold select-none">
                 {badge}
               </span>
-              <div className="w-12 sm:w-16 h-px bg-gradient-to-l from-transparent to-[#c59a3f]/70" />
+              <div className="w-10 sm:w-14 h-px bg-gradient-to-l from-transparent to-[#c59a3f]/70" />
             </div>
-          </div>
+          )}
 
           {/* Main Title */}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white tracking-tight leading-[1.2]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-gray-900 tracking-tight leading-[1.2]">
             {renderTitle()}
           </h2>
 
           {/* Subtitle */}
-          <p className="mt-3.5 text-gray-300 font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            {subtitle}
-          </p>
+          {subtitle && (
+            <p className="mt-3.5 text-gray-600 font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+              {subtitle}
+            </p>
+          )}
         </div>
 
-        {/* 2. Four Luxury Products Grid */}
+        {/* 2. Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 md:mt-14">
           {displayProducts.map((product) => (
             <BestDealsCard 
@@ -167,15 +178,15 @@ export default async function BestDeals({ config }: BestDealsProps) {
 
         {/* 3. Bottom CTA with Flanking Gold Lines */}
         <div className="w-full max-w-5xl mx-auto mt-12 md:mt-16 flex items-center justify-center">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c59a3f]/40 to-[#c59a3f]/70" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c59a3f]/50 to-[#c59a3f]" />
           
           <Link
             href={seeAllUrl}
-            className="mx-4 sm:mx-8 px-8 py-3.5 rounded-full border border-[#c59a3f]/70 hover:border-[#c59a3f] bg-black/60 hover:bg-[#c59a3f]/15 text-white font-serif text-sm tracking-wide transition-all duration-300 flex items-center gap-2.5 group whitespace-nowrap shadow-[0_0_20px_rgba(197,154,63,0.15)] hover:shadow-[0_0_30px_rgba(197,154,63,0.35)]"
+            className="mx-4 sm:mx-8 px-8 py-3.5 rounded-full border border-[#c59a3f] bg-black hover:bg-[#c59a3f] text-[#d4af37] hover:text-white font-serif text-sm tracking-wide transition-all duration-300 flex items-center gap-2.5 group whitespace-nowrap shadow-md hover:shadow-xl"
           >
             <span>{btnText}</span>
             <svg 
-              className="w-4 h-4 text-[#c59a3f] transition-transform duration-300 group-hover:translate-x-1" 
+              className="w-4 h-4 text-[#c59a3f] group-hover:text-white transition-transform duration-300 group-hover:translate-x-1" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -184,7 +195,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
             </svg>
           </Link>
 
-          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-[#c59a3f]/40 to-[#c59a3f]/70" />
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-[#c59a3f]/50 to-[#c59a3f]" />
         </div>
 
       </div>

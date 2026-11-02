@@ -244,16 +244,16 @@ export default function ProductGridEditor({
                   <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
                   <input
                     type="text"
-                    value={section.settings.highlight ?? "l'excellence"}
+                    value={section.settings.highlight ?? "Pièces d'Or"}
                     onChange={e => updateSectionSettings(section.id, 'highlight', e.target.value)}
-                    placeholder="l'excellence"
+                    placeholder="Pièces d'Or"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-amber-500 focus:ring-amber-500 outline-none"
                   />
                 </div>
               </>
             )}
 
-            {renderContentInput(section, updateSectionSettings, 'Titre de la section', 'title', "Investissez dans l'excellence")}
+            {renderContentInput(section, updateSectionSettings, 'Titre de la section', 'title', section.type === 'BestDeals' ? "Nos Pièces d'Or" : "Investissez dans l'excellence")}
 
             {section.type === 'BestDeals' && (
               <>

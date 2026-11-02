@@ -217,11 +217,11 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       newSec.name = 'Témoignages (Ils nous font confiance)';
       newSec.settings = { badge: "Ils nous font confiance" };
     } else if (type === 'BestDeals') {
-      newSec.name = "Nos Pièces d'or (Investissez dans l'excellence)";
+      newSec.name = "Nos Pièces d'or";
       newSec.settings = { 
         badge: "NOS PIÈCES D'OR",
-        title: "Investissez dans l'excellence", 
-        highlight: "l'excellence",
+        title: "Nos Pièces d'Or", 
+        highlight: "Pièces d'Or",
         subtitle: "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine.",
         cardBadge: "Investissement",
         btnText: "Voir toutes les pièces d'or",
