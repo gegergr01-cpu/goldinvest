@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCategories, getBrands, createBrandAction, createProduct, uploadImage, getMinimalProducts } from '@/actions/admin';
+import { getCategories, getBrands, createBrandAction, createProduct, uploadImage, getMinimalProducts, quickCreateCategoryAction } from '@/actions/admin';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
 import MediaPickerModal from './MediaPickerModal';
@@ -30,6 +30,45 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
 
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialData?.categories?.map((c: any) => c.id) || []);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryParentId, setNewCategoryParentId] = useState('');
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [categoryError, setCategoryError] = useState('');
+  const [categorySuccess, setCategorySuccess] = useState('');
+
+  const handleQuickCreateCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    setIsCreatingCategory(true);
+    setCategoryError('');
+    setCategorySuccess('');
+
+    try {
+      const res = await quickCreateCategoryAction(newCategoryName.trim(), newCategoryParentId || null);
+      if (res.error) {
+        setCategoryError(res.error);
+      } else if (res.success && res.category) {
+        // Refresh categories list immediately from database
+        const updated = await getCategories();
+        setCategories(updated);
+        // Automatically check the new category
+        setSelectedCategories((prev) => {
+          if (!prev.includes(res.category.id)) {
+            return [...prev, res.category.id];
+          }
+          return prev;
+        });
+        setNewCategoryName('');
+        setNewCategoryParentId('');
+        setCategorySuccess('Catégorie ajoutée et sélectionnée avec succès !');
+        setTimeout(() => setCategorySuccess(''), 3000);
+      }
+    } catch (err: any) {
+      setCategoryError(err?.message || "Erreur lors de la création de la catégorie");
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
   const [brands, setBrands] = useState<any[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string>(initialData?.brandId || '');
   const [showNewBrand, setShowNewBrand] = useState(false);
@@ -234,11 +273,84 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
         </div>
 
         <div className="grid grid-cols-1 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('categories_label')}</label>
-            <div className="border border-gray-300 rounded-md p-4 max-h-48 overflow-y-auto bg-gray-50 flex flex-col gap-2">
+          <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">{t('categories_label')}</label>
+              <button
+                type="button"
+                onClick={() => setShowNewCategory(!showNewCategory)}
+                className="text-xs font-semibold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-md transition flex items-center gap-1 cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={showNewCategory ? "M6 18L18 6M6 6l12 12" : "M12 4v16m8-8H4"} />
+                </svg>
+                <span>{showNewCategory ? 'Fermer' : '+ Ajouter une catégorie'}</span>
+              </button>
+            </div>
+
+            {/* Formulaire d'ajout rapide de catégorie */}
+            {showNewCategory && (
+              <div className="mb-3 p-3 bg-white border border-amber-200 rounded-lg shadow-xs space-y-2.5">
+                <span className="text-xs font-bold text-amber-900 block">Créer une nouvelle catégorie</span>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="Nom de la catégorie (ex: Pièces d'or, Lingots...)"
+                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleQuickCreateCategory();
+                      }
+                    }}
+                  />
+                  <select
+                    value={newCategoryParentId}
+                    onChange={(e) => setNewCategoryParentId(e.target.value)}
+                    className="px-3 py-1.5 border border-gray-300 rounded text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 max-w-[200px]"
+                  >
+                    <option value="">(Racine - Aucune)</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        Parent: {c.displayName || c.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    disabled={isCreatingCategory || !newCategoryName.trim()}
+                    onClick={handleQuickCreateCategory}
+                    className="px-4 py-1.5 bg-[#c59a3f] hover:bg-[#b08733] text-black text-xs font-bold rounded shadow-xs transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    {isCreatingCategory ? (
+                      <>
+                        <span className="inline-block w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        <span>Création...</span>
+                      </>
+                    ) : (
+                      <span>Ajouter</span>
+                    )}
+                  </button>
+                </div>
+                {categoryError && (
+                  <p className="text-[11px] text-red-600 font-medium">{categoryError}</p>
+                )}
+                {categorySuccess && (
+                  <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {categorySuccess}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="border border-gray-300 rounded-md p-3 max-h-52 overflow-y-auto bg-white flex flex-col gap-2">
               {categories.map((cat) => (
-                <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
+                <label key={cat.id} className="flex items-center gap-2 cursor-pointer text-sm text-gray-800 hover:text-black">
                   <input 
                     type="checkbox" 
                     checked={selectedCategories.includes(cat.id)}
@@ -249,11 +361,14 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                         setSelectedCategories(selectedCategories.filter(id => id !== cat.id));
                       }
                     }}
-                    className="rounded border-gray-300 text-orange-700 focus:ring-orange-500"
+                    className="rounded border-gray-300 text-amber-700 focus:ring-amber-500 cursor-pointer"
                   />
-                  {cat.parent ? `${cat.parent.name} > ${cat.name}` : cat.name}
+                  <span>{cat.displayName || (cat.parent ? `${cat.parent.name} > ${cat.name}` : cat.name)}</span>
                 </label>
               ))}
+              {categories.length === 0 && (
+                <p className="text-xs text-gray-400 italic">Aucune catégorie disponible. Cliquez sur &quot;+ Ajouter une catégorie&quot; ci-dessus.</p>
+              )}
             </div>
           </div>
         </div>

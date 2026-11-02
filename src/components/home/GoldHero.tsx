@@ -43,6 +43,12 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const btnStyle = c.BTN_STYLE || 'pill';
   const btnRadiusClass = btnStyle === 'square' ? 'rounded-none' : btnStyle === 'rounded' ? 'rounded-xl' : 'rounded-full';
 
+  // Hero Height (Customizable via admin or tall luxury default)
+  const rawHeight = c.HERO_HEIGHT || c.heroHeight || c.minHeight;
+  const minHeightStyle = rawHeight 
+    ? (String(rawHeight).endsWith('px') || String(rawHeight).endsWith('vh') ? String(rawHeight) : `${rawHeight}px`) 
+    : '780px';
+
   // Alignment (3x3 Grid)
   const hAlign = c.CONTENT_ALIGN || 'left';
   const vAlign = c.CONTENT_VALIGN || 'center';
@@ -74,8 +80,8 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
   return (
     <section 
-      className="relative w-full text-white overflow-hidden transition-colors duration-300"
-      style={{ backgroundColor: bgColor }}
+      className="relative w-full text-white overflow-hidden transition-colors duration-300 flex items-center min-h-[520px] md:min-h-[680px]"
+      style={{ backgroundColor: bgColor, minHeight: minHeightStyle }}
     >
       {/* Background Image (BG) */}
       {hasBgImage && (
@@ -97,7 +103,7 @@ export default function GoldHero({ config }: GoldHeroProps) {
       {/* Radial gradient warmth */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32 w-full">
         <div className={`grid grid-cols-1 ${hasImage ? 'lg:grid-cols-12' : 'max-w-3xl mx-auto'} gap-12 ${vAlignClass}`}>
 
           {/* Left Text Column */}
@@ -138,7 +144,7 @@ export default function GoldHero({ config }: GoldHeroProps) {
           {/* Right Image Visual Column */}
           {hasImage && (
             <div className="lg:col-span-6 relative flex justify-center items-center">
-              <div className="relative w-full max-w-[580px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
+              <div className="relative w-full max-w-[620px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
                 <Image
                   src={image}
                   alt={title}

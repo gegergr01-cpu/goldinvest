@@ -184,10 +184,19 @@ export async function getCategories() {
 
 export async function createCategory(formData: FormData) {
   await requireAdmin();
-  const name = formData.get('name') as string;
-  let slug = formData.get('slug') as string;
-  const parentId = formData.get('parentId') as string || null;
+  const name = (formData.get('name') as string)?.trim();
+  let slug = (formData.get('slug') as string)?.trim();
+  const parentId = (formData.get('parentId') as string) || null;
   if (!name) return { error: "Nom requis" };
+
+  // Check if category already exists with that name
+  const existingByName = await prisma.category.findUnique({
+    where: { name },
+    include: { parent: true, children: true }
+  });
+  if (existingByName) {
+    return { success: true, category: existingByName, alreadyExisted: true };
+  }
 
   if (!slug) {
     slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -195,28 +204,45 @@ export async function createCategory(formData: FormData) {
     slug = slug.toLowerCase().replace(/[^a-z0-9\-]+/g, '-').replace(/(^-|-$)+/g, '');
   }
 
-  const metaTitle = formData.get('metaTitle') as string || null;
-  const metaDescription = formData.get('metaDescription') as string || null;
-  const metaKeywords = formData.get('metaKeywords') as string || null;
+  // Ensure unique slug
+  let uniqueSlug = slug;
+  let counter = 1;
+  while (await prisma.category.findUnique({ where: { slug: uniqueSlug } })) {
+    uniqueSlug = `${slug}-${counter}`;
+    counter++;
+  }
+
+  const metaTitle = (formData.get('metaTitle') as string) || null;
+  const metaDescription = (formData.get('metaDescription') as string) || null;
+  const metaKeywords = (formData.get('metaKeywords') as string) || null;
 
   try {
-    await prisma.category.create({ 
+    const category = await prisma.category.create({ 
       data: { 
         name, 
-        slug, 
-        parentId,
+        slug: uniqueSlug, 
+        parentId: parentId || null,
         metaTitle,
         metaDescription,
         metaKeywords 
-      } 
+      },
+      include: { parent: true, children: true }
     });
     revalidatePath('/admin/categories');
+    revalidatePath('/admin/products');
     refreshCacheTag('categories');
     revalidatePath('/', 'layout');
-    return { success: true };
-  } catch (error) {
-    return { error: "Error creating category" };
+    return { success: true, category };
+  } catch (error: any) {
+    return { error: error?.message || "Error creating category" };
   }
+}
+
+export async function quickCreateCategoryAction(name: string, parentId?: string | null) {
+  const formData = new FormData();
+  formData.append('name', name);
+  if (parentId) formData.append('parentId', parentId);
+  return await createCategory(formData);
 }
 
 export async function updateCategory(id: string, name: string, slug?: string, parentId?: string | null, metaTitle?: string | null, metaDescription?: string | null, metaKeywords?: string | null) {

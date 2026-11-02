@@ -463,6 +463,60 @@ export default function GoldSectionEditor({
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
+
+                  {/* Hauteur du Hero (Slider & Presets rapides) */}
+                  <div className="pt-2 border-t border-gray-100 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                        Hauteur minimale du Hero
+                      </label>
+                      <span className="text-xs font-mono font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">
+                        {s.HERO_HEIGHT || s.heroHeight || 780}px
+                      </span>
+                    </div>
+
+                    <input
+                      type="range"
+                      min="500"
+                      max="1000"
+                      step="10"
+                      value={parseInt(String(s.HERO_HEIGHT || s.heroHeight || 780), 10)}
+                      onChange={(e) => {
+                        handleFieldChange('HERO_HEIGHT', e.target.value);
+                        handleFieldChange('heroHeight', e.target.value);
+                      }}
+                      className="w-full accent-amber-600 cursor-pointer"
+                    />
+
+                    {/* Presets rapides (Elementor Style) */}
+                    <div className="grid grid-cols-4 gap-1 pt-0.5">
+                      {[
+                        { label: 'Compact', val: '620' },
+                        { label: 'Standard', val: '720' },
+                        { label: 'Grand (recommandé)', val: '780' },
+                        { label: 'Plein écran', val: '900' },
+                      ].map((preset) => (
+                        <button
+                          key={preset.val}
+                          type="button"
+                          onClick={() => {
+                            handleFieldChange('HERO_HEIGHT', preset.val);
+                            handleFieldChange('heroHeight', preset.val);
+                          }}
+                          className={`py-1 text-[10px] rounded border transition cursor-pointer text-center ${
+                            String(s.HERO_HEIGHT || s.heroHeight || 780) === preset.val
+                              ? 'bg-amber-100 border-amber-300 text-amber-900 font-bold shadow-xs'
+                              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -940,6 +994,27 @@ export default function GoldSectionEditor({
                   <option value="solid">Couleur Unie</option>
                 </select>
               </div>
+
+              {section.type === 'GoldHero' && (
+                <div className="pt-2 border-t border-gray-100 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 font-medium">Hauteur minimale (Hero)</span>
+                    <span className="text-xs font-mono font-bold text-gray-700">{s.HERO_HEIGHT || s.heroHeight || 780}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="500"
+                    max="1000"
+                    step="10"
+                    value={parseInt(String(s.HERO_HEIGHT || s.heroHeight || 780), 10)}
+                    onChange={(e) => {
+                      handleFieldChange('HERO_HEIGHT', e.target.value);
+                      handleFieldChange('heroHeight', e.target.value);
+                    }}
+                    className="w-full accent-amber-600 cursor-pointer"
+                  />
+                </div>
+              )}
             </ElementorAccordion>
           </div>
         )}
@@ -979,6 +1054,25 @@ export default function GoldSectionEditor({
                   <option value="default">Par défaut (Plein écran)</option>
                   <option value="boxed">Encadré (Conteneur centré)</option>
                 </select>
+              </div>
+
+              {/* Hauteur minimale */}
+              <div className="space-y-1 pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600 font-medium">Hauteur minimale (Min-Height)</span>
+                  <span className="text-xs font-mono text-gray-700">{s.HERO_HEIGHT || s.minHeight || (section.type === 'GoldHero' ? '780px' : 'Auto')}</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="ex: 780px ou 100vh"
+                  value={s.HERO_HEIGHT || s.minHeight || ''}
+                  onChange={(e) => {
+                    handleFieldChange('HERO_HEIGHT', e.target.value);
+                    handleFieldChange('minHeight', e.target.value);
+                    handleFieldChange('heroHeight', e.target.value);
+                  }}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none"
+                />
               </div>
 
               <div>
