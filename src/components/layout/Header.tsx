@@ -55,12 +55,12 @@ type HeaderProps = {
 export default function Header({
   menuLinks = [],
   categories = [],
-  mobileAboutTitle,
-  mobileAboutDesc,
-  mobileContactAddress,
-  mobileContactPhone,
-  mobileContactEmail,
-  mobileContactWebsite,
+  mobileAboutTitle = '',
+  mobileAboutDesc = '',
+  mobileContactAddress = '',
+  mobileContactPhone = '',
+  mobileContactEmail = '',
+  mobileContactWebsite = '',
   userRole: initialUserRole = null,
 }: HeaderProps) {
   const router = useRouter();
@@ -72,16 +72,12 @@ export default function Header({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
 
-  // Scroll detection for sticky header effect (matching Capture 2 & 3)
+  // Scroll detection for sticky header effect (scrolled > 12px transitions to solid --ink: #0E2036)
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 12);
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -158,12 +154,12 @@ export default function Header({
     }
   };
 
-  // Nav links inspired by user reference
+  // Nav links inspired by user reference & AZ Solutions
   const defaultNavLinks = [
     { label: 'Accueil', url: '/' },
     { label: "Pièces d'or", url: '/shop?category=pieces-dor' },
     { label: "Lingots d'or", url: '/shop?category=lingots-dor' },
-    { label: "Lingots d'argent", url: '/shop?category=lingots-dargent' },
+    { label: "Argent fin", url: '/shop?category=lingots-dargent' },
     { label: 'Services', url: '/shop' },
     { label: 'Contact', url: '/contact' },
   ];
@@ -183,83 +179,91 @@ export default function Header({
       {/* 1. TOP BAR (Infinite marquee ticker: EUR -> DKK -> Forint -> GBP -> USD -> CAD -> cycle repeats) */}
       <TopBarTicker />
 
-      {/* 2. STICKY / FLOATING HEADER */}
+      {/* 2. HEADER: Floating over Hero when top, solid #0E2036 with shadow on scroll */}
       <header
-        className={`w-full font-sans sticky top-0 z-40 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#080d19]/95 backdrop-blur-md shadow-2xl border-b border-white/10 py-3'
-            : 'bg-[#070c18]/80 backdrop-blur-sm border-b border-white/5 py-4'
-        }`}
+        className={`w-full sticky top-0 z-40 transition-all duration-300 ${isScrolled
+          ? 'bg-[#0E2036] shadow-[0_6px_24px_rgba(0,0,0,0.35)] py-2.5 border-b border-white/10'
+          : 'bg-transparent py-4 border-b border-white/5'
+          }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          
-          {/* Brand Logo (Left) */}
-          <div className="flex-shrink-0 flex items-center">
-            <GoldInvestLogo variant="light" />
-          </div>
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
-          {/* Right: Floating Capsule Navigation (Matching Capture 2 & 3) */}
-          <div className="hidden lg:flex items-center gap-3">
-            <div className="rounded-full bg-[#121c2e]/75 backdrop-blur-md border border-white/15 px-6 py-2 flex items-center gap-6 shadow-2xl">
-              
-              {/* Navigation Links with active underline */}
-              <nav className="flex items-center space-x-6 text-[13px] font-medium text-gray-200">
-                {activeNavLinks.map((link, idx) => {
-                  const isActive = pathname === link.url;
-                  return (
-                    <Link
-                      key={idx}
-                      href={link.url}
-                      className={`relative py-1 transition-colors duration-200 ${
-                        isActive
-                          ? 'text-white font-semibold'
-                          : 'text-gray-300 hover:text-white'
+          {/* Logo Line (Left) matching AZ Solutions aesthetic */}
+          <Link href="/" className="flex flex-col items-start gap-1 text-decoration-none flex-none select-none group">
+            <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none group-hover:text-[#E8A63D] transition-colors">
+              GOLD<span className="text-[#E8A63D]">INVEST</span>
+            </span>
+            <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
+              OR · ARGENT · GROUPAGE
+            </span>
+          </Link>
+
+          {/* Pill Nav Bar (Center & Right, matching Capture 2 / AZ Solutions .nav-pill) */}
+          <div className="hidden lg:flex items-center justify-between gap-2.5 bg-white/[0.09] border border-white/10 rounded-full pl-8 pr-2 py-2 flex-1 max-w-[820px] mx-auto shadow-sm backdrop-blur-md">
+
+            {/* Main Nav Links with active dot indicator */}
+            <nav className="flex items-center gap-7">
+              {activeNavLinks.map((link, idx) => {
+                const isActive = pathname === link.url;
+                return (
+                  <Link
+                    key={idx}
+                    href={link.url}
+                    className={`relative text-[14.5px] font-medium transition-colors duration-150 whitespace-nowrap ${isActive ? 'text-white font-semibold' : 'text-white/80 hover:text-white'
                       }`}
-                    >
-                      {link.label}
-                      {isActive && (
-                        <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#ea580c] rounded-full" />
-                      )}
-                    </Link>
-                  );
-                })}
-              </nav>
+                  >
+                    {link.label}
+                    {isActive && (
+                      <span className="absolute left-1/2 -bottom-[9px] -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-[#D2571E]" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-              {/* CTA Button: Demander un devis ↗ (Orange pill button matching capture) */}
+            {/* Actions inside pill: Demander un devis + 4-Squares Icon + Icons */}
+            <div className="flex items-center gap-2.5 flex-none">
+
+              {/* Orange Pill CTA: Demander un devis ↗ */}
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-1.5 bg-[#ea580c] hover:bg-[#d44e07] text-white text-xs font-semibold px-5 py-2.5 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md shadow-orange-600/30 whitespace-nowrap cursor-pointer"
+                className="inline-flex items-center gap-2 bg-[#D2571E] hover:bg-[#A8420F] text-white font-bold text-[14.5px] px-6 py-2.5 rounded-full transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-[#D2571E]/30 whitespace-nowrap select-none"
               >
                 <span>Demander un devis</span>
-                <span className="text-sm font-bold">↗</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-3.5 h-3.5 flex-none"
+                >
+                  <path d="M7 17L17 7M9 7h8v8" />
+                </svg>
               </Link>
 
-              {/* 4-Squares Icon Button (Toggles Contact Drawer from Capture 1) */}
+              {/* 4-Squares Button (Exact AZ Solutions geometry: 2 straight + 2 diamonds rotated 45°) */}
               <button
                 type="button"
                 onClick={() => setIsContactDrawerOpen(true)}
-                className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white border border-white/20 flex items-center justify-center transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm cursor-pointer"
+                className="w-11 h-11 rounded-full bg-[#0a1420] hover:bg-[#050b13] text-white border-none flex items-center justify-center transition-all duration-150 cursor-pointer shadow-sm"
                 title="Informations & Contact"
                 aria-label="Ouvrir le panneau de contact"
               >
-                {/* 4 Rounded Squares (2x2 Grid matching reference capture) */}
-                <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 16 16">
-                  <rect x="2" y="2" width="5" height="5" rx="1.2" />
-                  <rect x="9" y="2" width="5" height="5" rx="1.2" />
-                  <rect x="2" y="9" width="5" height="5" rx="1.2" />
-                  <rect x="9" y="9" width="5" height="5" rx="1.2" />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-[17px] h-[17px]">
+                  <rect x="3" y="3" width="7" height="7" rx="1.6" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.6" transform="rotate(45 17.5 6.5)" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.6" transform="rotate(45 6.5 17.5)" />
+                  <rect x="14" y="14" width="7" height="7" rx="1.6" />
                 </svg>
               </button>
 
-            </div>
-
-            {/* Quick Action Icons: Search, Account, Cart */}
-            <div className="flex items-center gap-2 pl-2">
-              {/* Search Toggle */}
+              {/* Quick Search Icon */}
               <div className="relative" ref={searchContainerRef}>
                 <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer"
                   aria-label="Rechercher"
                   title="Rechercher"
                 >
@@ -269,7 +273,7 @@ export default function Header({
                 </button>
 
                 {isSearchOpen && (
-                  <div className="absolute right-0 top-12 w-72 sm:w-80 bg-[#0d1627] rounded-xl shadow-2xl border border-white/20 p-2 z-50 text-white">
+                  <div className="absolute right-0 top-12 w-80 bg-[#0E2036] rounded-xl shadow-2xl border border-white/20 p-2.5 z-50 text-white">
                     <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
                       <input
                         ref={searchInputRef}
@@ -281,7 +285,7 @@ export default function Header({
                       />
                       <button
                         type="submit"
-                        className="bg-[#ea580c] hover:bg-[#d44e07] text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+                        className="bg-[#D2571E] hover:bg-[#A8420F] text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
                       >
                         OK
                       </button>
@@ -301,7 +305,7 @@ export default function Header({
                               className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded text-xs text-white"
                             >
                               <span className="font-medium truncate flex-1">{prod.title}</span>
-                              <Price amount={prod.price} className="text-[#c59a3f] font-bold" />
+                              <Price amount={prod.price} className="text-[#E8A63D] font-bold" />
                             </Link>
                           </li>
                         ))}
@@ -311,25 +315,10 @@ export default function Header({
                 )}
               </div>
 
-              {/* Login / Account */}
-              <button
-                onClick={handleAccountClick}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
-                aria-label="Mon compte"
-                title={actualUserRole ? 'Mon compte' : 'Se connecter'}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                {actualUserRole && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#080d19]" />
-                )}
-              </button>
-
-              {/* Cart Drawer */}
+              {/* Cart Drawer Button */}
               <button
                 onClick={() => cartStore.setIsOpen(true)}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
                 aria-label="Panier"
                 title="Panier"
               >
@@ -337,11 +326,12 @@ export default function Header({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 {mounted && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-[#ea580c] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute -top-0.5 -right-0.5 bg-[#D2571E] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                     {cartItems}
                   </span>
                 )}
               </button>
+
             </div>
           </div>
 
@@ -350,82 +340,64 @@ export default function Header({
             <button
               type="button"
               onClick={() => setIsContactDrawerOpen(true)}
-              className="w-8 h-8 rounded-full bg-black/60 text-white border border-white/20 flex items-center justify-center"
-              title="Contact"
+              className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center"
+              aria-label="Contact rapide"
             >
-              <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 16 16">
-                <rect x="2" y="2" width="5" height="5" rx="1.2" />
-                <rect x="9" y="2" width="5" height="5" rx="1.2" />
-                <rect x="2" y="9" width="5" height="5" rx="1.2" />
-                <rect x="9" y="9" width="5" height="5" rx="1.2" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4">
+                <rect x="3" y="3" width="7" height="7" rx="1.6" />
+                <rect x="14" y="3" width="7" height="7" rx="1.6" transform="rotate(45 17.5 6.5)" />
+                <rect x="3" y="14" width="7" height="7" rx="1.6" transform="rotate(45 6.5 17.5)" />
+                <rect x="14" y="14" width="7" height="7" rx="1.6" />
               </svg>
             </button>
 
             <button
-              onClick={() => cartStore.setIsOpen(true)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 relative"
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="text-white text-2xl p-1 focus:outline-none"
+              aria-label="Ouvrir le menu"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {mounted && cartItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#ea580c] text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                  {cartItems}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-1.5 rounded-lg text-gray-300 hover:text-white"
-              aria-label="Menu"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              ☰
             </button>
           </div>
 
         </div>
       </header>
 
-      {/* 4-Squares Contact Drawer (Capture 1) */}
-      <ContactDrawer 
-        isOpen={isContactDrawerOpen} 
+      {/* 3. QUICK PANEL / CONTACT DRAWER (Opened via 4-Squares Button, Capture 1) */}
+      <ContactDrawer
+        isOpen={isContactDrawerOpen}
         onClose={() => setIsContactDrawerOpen(false)}
         phone1={mobileContactPhone || '+33 6 17 26 47 05'}
         email={mobileContactEmail || 'azevia.solutions@gmail.com'}
         address={mobileContactAddress || 'Laval, France'}
-        description="Spécialistes du négoce et de l'investissement en métaux précieux : pièces d'or, lingots d'or et d'argent certifiés LBMA, avec un accompagnement personnalisé et sécurisé à chaque étape jusqu'à la livraison."
+        description={mobileAboutDesc}
       />
 
-      {/* Other Global Modals and Drawers */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-      />
-
-      <CartDrawer 
-        isOpen={cartStore.isOpen} 
-        onClose={() => cartStore.setIsOpen(false)} 
-      />
-
-      <WishlistDrawer 
-        isOpen={wishlistStore.isOpen} 
-        onClose={() => wishlistStore.setIsOpen(false)} 
-      />
-
-      <MobileSidebar 
-        isOpen={isMobileMenuOpen} 
+      {/* 4. MOBILE SIDEBAR DRAWER */}
+      <MobileSidebar
+        isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         menuLinks={activeNavLinks}
-        categories={categories}
-        aboutTitle={mobileAboutTitle || 'Gold Silver Invest'}
-        aboutDesc={mobileAboutDesc || 'Spécialistes du négoce et de l\'investissement en métaux précieux.'}
-        contactAddress={mobileContactAddress || 'Laval, France'}
-        contactPhone={mobileContactPhone || '+33 6 17 26 47 05'}
-        contactEmail={mobileContactEmail || 'azevia.solutions@gmail.com'}
-        contactWebsite={mobileContactWebsite || 'www.goldsilverinvest.fr'}
+        aboutTitle={mobileAboutTitle || ''}
+        aboutDesc={mobileAboutDesc || ''}
+        contactAddress={mobileContactAddress || ''}
+        contactPhone={mobileContactPhone || ''}
+        contactEmail={mobileContactEmail || ''}
+        contactWebsite={mobileContactWebsite || ''}
+      />
+
+      {/* 5. CART & WISHLIST DRAWERS & LOGIN MODAL */}
+      <CartDrawer
+        isOpen={cartStore.isOpen}
+        onClose={() => cartStore.setIsOpen(false)}
+      />
+      <WishlistDrawer
+        isOpen={wishlistStore.isOpen}
+        onClose={() => wishlistStore.setIsOpen(false)}
+      />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </>
   );

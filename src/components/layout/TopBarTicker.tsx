@@ -73,7 +73,7 @@ export default function TopBarTicker() {
   const [prices, setPrices] = useState<MetalPrices>(DEFAULT_PRICES);
 
   useEffect(() => {
-    // Attempt live fetch from /api/metals
+    // Live prices from /api/metals
     fetch('/api/metals')
       .then((res) => res.json())
       .then((data) => {
@@ -87,7 +87,7 @@ export default function TopBarTicker() {
         }
       })
       .catch(() => {
-        // Fallback is already loaded
+        // Fallback already in place
       });
   }, []);
 
@@ -95,14 +95,14 @@ export default function TopBarTicker() {
     return CURRENCIES.map((cur) => (
       <div key={`${keyPrefix}-${cur.code}`} className="inline-flex items-center gap-4 sm:gap-6 px-4">
         {/* Currency Tag */}
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#121c2e] border border-white/10 text-[#c59a3f] font-mono text-[10px] font-bold tracking-wider uppercase select-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-[#E8A63D] font-mono text-[10.5px] font-bold tracking-wider uppercase select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D2571E] animate-pulse" />
           {cur.label}
         </span>
 
         {/* Gold item */}
         <div className="inline-flex items-center gap-1.5 text-xs">
-          <span className="text-gray-400 font-medium">OR (1 oz):</span>
+          <span className="text-white/60 font-medium">OR (1 oz):</span>
           <span className="font-semibold text-white tracking-wide">
             {cur.formatGold(prices.goldEur)}
           </span>
@@ -115,7 +115,7 @@ export default function TopBarTicker() {
 
         {/* Silver item */}
         <div className="inline-flex items-center gap-1.5 text-xs">
-          <span className="text-gray-400 font-medium">ARGENT (1 oz):</span>
+          <span className="text-white/60 font-medium">ARGENT (1 oz):</span>
           <span className="font-semibold text-white tracking-wide">
             {cur.formatSilver(prices.silverEur)}
           </span>
@@ -125,20 +125,20 @@ export default function TopBarTicker() {
         </div>
 
         {/* Diamond separator */}
-        <span className="text-[#c59a3f]/50 text-[10px] select-none mx-2">◆</span>
+        <span className="text-[#E8A63D]/40 text-[10px] select-none mx-2">◆</span>
       </div>
     ));
   };
 
   return (
-    <div className="w-full bg-[#060a12] text-gray-200 border-b border-white/10 overflow-hidden py-2 select-none relative z-50">
+    <div className="w-full bg-[#0B1A2C] text-gray-200 border-b border-white/10 overflow-hidden py-2 select-none relative z-50">
       <div className="w-full overflow-hidden">
         <div className="animate-marquee whitespace-nowrap flex items-center">
           {/* First loop copy */}
           <div className="flex items-center">
             {renderCurrencyItems('loop1')}
           </div>
-          {/* Second loop copy for infinite seamless effect */}
+          {/* Second loop copy for infinite seamless repeat */}
           <div className="flex items-center" aria-hidden="true">
             {renderCurrencyItems('loop2')}
           </div>
@@ -147,4 +147,3 @@ export default function TopBarTicker() {
     </div>
   );
 }
-

@@ -1,7 +1,25 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 :root {
+  --ink: #0E2036;
+  --ink-2: #16304C;
+  --ink-3: #1E3E5E;
+  --paper: #F4F6F5;
+  --paper-2: #FFFFFF;
+  --cargo: #D2571E;
+  --cargo-dark: #A8420F;
+  --dusk: #E8A63D;
+  --route: #1C6B4F;
+  --route-light: #E4F1EA;
+  --ink-text: #0E2036;
+  --muted: #5B6B7A;
+  --line: #DDE3E6;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
   --background: #ffffff;
   --foreground: #171717;
   zoom: 0.9;
@@ -36,7 +54,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
 }
 
 button, 
@@ -71,8 +89,6 @@ a {
   overflow-wrap: break-word !important;
   hyphens: none !important;
 }
-
-
 
 /* Infinite Marquee Animation for Precious Metals Ticker */
 @keyframes marquee {
