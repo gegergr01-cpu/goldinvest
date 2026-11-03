@@ -170,12 +170,12 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       settings: {}
     };
     if (type === 'GoldHero') {
-      newSec.name = 'Hero (Investissez dans la valeur sûre)';
+      newSec.name = 'Hero (Or & Argent - Investissez en toute confiance)';
       newSec.settings = { 
-        title: "Investissez dans la valeur sûre", 
-        highlight: "valeur sûre", 
-        subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
-        btnText: "Découvrir notre gamme", 
+        title: "Or & Argent", 
+        highlight: "&", 
+        subtitle: "INVESTISSEZ EN TOUTE CONFIANCE", 
+        btnText: "Découvrez notre sélection", 
         btnUrl: "/shop", 
         image: "/images/hero-gold-silver.jpg",
         bgImage: "/images/hero-bg-luxury.jpg",
@@ -183,7 +183,14 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         bgOpacity: 0.45,
         highlightColor: "#c59a3f",
         btnBgColor: "#c59a3f",
-        btnTextColor: "#000000"
+        btnTextColor: "#000000",
+        showFeatures: true,
+        feature1_title: "Qualité",
+        feature1_sub: "Garantie",
+        feature2_title: "Prix",
+        feature2_sub: "Compétitifs",
+        feature3_title: "Livraison",
+        feature3_sub: "Sécurisée"
       };
     } else if (type === 'ReassuranceBar') {
       newSec.name = 'Barre de réassurance (4 avantages)';

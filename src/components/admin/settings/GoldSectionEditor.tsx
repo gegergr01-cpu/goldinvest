@@ -316,6 +316,7 @@ export default function GoldSectionEditor({
   // Accordion open/close states
   const [accordions, setAccordions] = useState<Record<string, boolean>>({
     general: true,
+    features: true,
     media: true,
     action: true,
     titleStyle: true,
@@ -442,7 +443,7 @@ export default function GoldSectionEditor({
                     </label>
                     <input
                       type="text"
-                      value={s.highlight ?? "valeur sûre"}
+                      value={s.highlight ?? "&"}
                       onChange={(e) => handleFieldChange('highlight', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -452,17 +453,17 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
                     <input
                       type="text"
-                      value={s.title ?? "Investissez dans la valeur sûre"}
+                      value={s.title ?? "Or & Argent"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Slogan / Sous-titre</label>
                     <textarea
                       rows={2}
-                      value={s.subtitle ?? "Pièces d'or, lingots d'or et d'argent au meilleur prix"}
+                      value={s.subtitle ?? "INVESTISSEZ EN TOUTE CONFIANCE"}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -1125,6 +1126,109 @@ export default function GoldSectionEditor({
               )}
             </ElementorAccordion>
 
+            {/* Accordion: Avantages & Réassurance (3 icônes pour GoldHero) */}
+            {section.type === 'GoldHero' && (
+              <ElementorAccordion
+                title="Avantages & Réassurance (3 icônes)"
+                isOpen={accordions.features}
+                onToggle={() => toggleAccordion('features')}
+              >
+                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                  <input
+                    type="checkbox"
+                    id="showFeatures"
+                    checked={s.showFeatures !== 'false' && s.showFeatures !== false}
+                    onChange={(e) => handleFieldChange('showFeatures', e.target.checked)}
+                    className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer w-3.5 h-3.5"
+                  />
+                  <label htmlFor="showFeatures" className="text-xs font-semibold text-gray-700 cursor-pointer select-none">
+                    Afficher les 3 avantages sous le slogan
+                  </label>
+                </div>
+
+                {/* Avantage 1: Qualité Garantie */}
+                <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                    <span className="text-amber-600">🛡️</span> Avantage 1 (Bouclier)
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
+                      <input
+                        type="text"
+                        value={s.feature1_title ?? "Qualité"}
+                        onChange={(e) => handleFieldChange('feature1_title', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
+                      <input
+                        type="text"
+                        value={s.feature1_sub ?? "Garantie"}
+                        onChange={(e) => handleFieldChange('feature1_sub', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Avantage 2: Prix Compétitifs */}
+                <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                    <span className="text-amber-600">⚖️</span> Avantage 2 (Balance)
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
+                      <input
+                        type="text"
+                        value={s.feature2_title ?? "Prix"}
+                        onChange={(e) => handleFieldChange('feature2_title', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
+                      <input
+                        type="text"
+                        value={s.feature2_sub ?? "Compétitifs"}
+                        onChange={(e) => handleFieldChange('feature2_sub', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Avantage 3: Livraison Sécurisée */}
+                <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                    <span className="text-amber-600">🚚</span> Avantage 3 (Camion)
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
+                      <input
+                        type="text"
+                        value={s.feature3_title ?? "Livraison"}
+                        onChange={(e) => handleFieldChange('feature3_title', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
+                      <input
+                        type="text"
+                        value={s.feature3_sub ?? "Sécurisée"}
+                        onChange={(e) => handleFieldChange('feature3_sub', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </ElementorAccordion>
+            )}
+
             {/* Accordion 2: Images & Médias */}
             {(section.type === 'GoldHero' || section.type === 'CtaBanner' || section.type === 'SelectionGrid') && (
               <ElementorAccordion
@@ -1210,7 +1314,7 @@ export default function GoldSectionEditor({
                   <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton</label>
                   <input
                     type="text"
-                    value={s.btnText ?? "Découvrir notre gamme"}
+                    value={s.btnText ?? (section.type === 'GoldHero' ? "Découvrez notre sélection" : "Découvrir notre gamme")}
                     onChange={(e) => handleFieldChange('btnText', e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                   />
