@@ -25,7 +25,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'Authenticité & Pureté',
     desc: 'Buy bullion bars and coins from certified, globally recognized refiners, guaranteeing the authenticity, purity, and quality of precious metals. Enjoy a wide selection of products at the best price.',
     ctaText: 'Learn more',
-    url: '/shop',
+    url: '/services#purchase',
     iconType: 'purchase',
   },
   {
@@ -34,7 +34,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'Coffres Haute Sécurité',
     desc: 'Store your precious metals outside the banking system in highly secure vaults located in free-trade zones in Zurich, Singapore, New York, or Toronto.',
     ctaText: 'Learn more',
-    url: '/services/storage',
+    url: '/services#storage',
     iconType: 'storage',
   },
   {
@@ -43,7 +43,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'Livraison Assurée 100%',
     desc: 'Receive your precious metals directly at home with a fast, secure, and discreet delivery service. Package delivery with real-time tracking.',
     ctaText: 'Learn more',
-    url: '/services/delivery',
+    url: '/services#delivery',
     iconType: 'delivery',
   },
   {
@@ -52,7 +52,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'Retrait en Main Propre',
     desc: 'Visit one of our storage vaults to collect your precious metals order in person in complete discretion, security, and confidentiality.',
     ctaText: 'Learn more',
-    url: '/services/pickup',
+    url: '/services#pickup',
     iconType: 'pickup',
   },
   {
@@ -61,7 +61,7 @@ const SERVICES: ServiceItem[] = [
     tag: 'Liquidité Immédiate',
     desc: 'Easily sell your bars and coins stored in the vaults. Through our buyback service, you can sell all or part of your precious metals quickly, transparently, and without having to move them physically.',
     ctaText: 'Learn more',
-    url: '/services/buyback',
+    url: '/services#buyback',
     iconType: 'buyback',
   },
 ];

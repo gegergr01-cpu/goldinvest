@@ -200,32 +200,32 @@ export default function Footer({
                 </Link>
               </li>
               <li>
-                <Link href="/services/storage" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/services#storage" className="hover:text-[#E8A63D] transition-colors">
                   Gold and silver storage
                 </Link>
               </li>
               <li>
-                <Link href="/services/delivery" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/services#delivery" className="hover:text-[#E8A63D] transition-colors">
                   Gold and silver delivery
                 </Link>
               </li>
               <li>
-                <Link href="/services/buyback" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/services#buyback" className="hover:text-[#E8A63D] transition-colors">
                   Buyback &amp; resale
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-[#E8A63D] transition-colors">
-                  Pricing &amp; fees
+                <Link href="/services#pickup" className="hover:text-[#E8A63D] transition-colors">
+                  Agency pickup &amp; withdrawal
                 </Link>
               </li>
               <li>
-                <Link href="/services/insurance" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/services#storage" className="hover:text-[#E8A63D] transition-colors">
                   Precious metals insurance
                 </Link>
               </li>
               <li>
-                <Link href="/services/investment" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/services#purchase" className="hover:text-[#E8A63D] transition-colors">
                   Our investment solution
                 </Link>
               </li>

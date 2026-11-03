@@ -167,7 +167,7 @@ export default function Header({
     { label: "Pièces d'or", url: '/shop?category=pieces-dor' },
     { label: "Lingots d'or", url: '/shop?category=lingots-dor' },
     { label: "Argent fin", url: '/shop?category=lingots-dargent' },
-    { label: 'Services', url: '/shop' },
+    { label: 'Services', url: '/services' },
     { label: 'Contact', url: '/contact' },
   ];
 
