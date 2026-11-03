@@ -224,7 +224,7 @@ export default function Header({
                     priority
                     unoptimized
                     className="w-auto object-contain transition-transform group-hover:scale-[1.02]"
-                    style={{ maxHeight: headerLogoHeight ? `${headerLogoHeight}px` : '46px' }}
+                    style={{ maxHeight: headerLogoHeight ? `${headerLogoHeight}px` : '50px' }}
                   />
                 </div>
               ) : (
@@ -367,7 +367,7 @@ export default function Header({
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  {mounted && (
+                  {mounted && cartItems > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 bg-[#D2571E] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                       {cartItems}
                     </span>

@@ -182,7 +182,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           
           <Link
             href={seeAllUrl}
-            className="mx-4 sm:mx-8 px-8 py-3.5 rounded-full border border-[#c59a3f] bg-black hover:bg-[#c59a3f] text-[#d4af37] hover:text-white font-serif text-sm tracking-wide transition-all duration-300 flex items-center gap-2.5 group whitespace-nowrap shadow-md hover:shadow-xl"
+            className="mx-4 sm:mx-8 px-8 py-3.5 rounded-full border border-[#c59a3f]/80 bg-[#0E2036] hover:bg-[#16304C] text-[#d4af37] hover:text-[#fae5a2] font-serif text-sm tracking-wide transition-all duration-300 flex items-center gap-2.5 group whitespace-nowrap shadow-md hover:shadow-xl"
           >
             <span>{btnText}</span>
             <svg 

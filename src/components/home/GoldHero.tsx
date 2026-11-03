@@ -20,10 +20,10 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const tagline = rawTagline || "IMPORT · EXPORT · GROUPAGE — OR & ARGENT PHYSIQUE";
 
   const rawSubtitle = c.subtitle;
-  const subtitle = rawSubtitle || "Négoce et livraison sécurisée de pièces d'or cotées et lingots d'or et d'argent purs certifiés LBMA. Accompagnement sur-mesure de la commande à la livraison scellée.";
+  const subtitle = rawSubtitle || "Pièces d'or, lingots d'or et d'argent d'investissement, sélectionnés au meilleur prix.";
 
-  const btnText = c.btnText || "Demander un devis";
-  const btnUrl = c.btnUrl || "/contact";
+  const btnText = c.btnText || "Découvrir notre gamme";
+  const btnUrl = c.btnUrl || "/shop";
   const whatsappNumber = c.whatsappNumber || "33617264705";
 
   // 3 Floating Cards (Bottom right showcase matching capture 3 Maritime / Aérien / Routier)
@@ -45,16 +45,16 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const rawHeight = c.HERO_HEIGHT || c.heroHeight || '780px';
   const minHeightStyle = String(rawHeight).endsWith('px') || String(rawHeight).endsWith('vh') ? String(rawHeight) : `${rawHeight}px`;
 
-  // Render title with orange badge highlight matching AZ Solutions (.hero h1 em)
+  // Render title with gold gradient highlight
   const renderTitle = () => {
     if (highlight && title.includes(highlight)) {
       const parts = title.split(highlight);
       return (
         <>
           {parts[0]}
-          <em className="not-italic bg-[#D2571E] text-white px-2.5 sm:px-3 py-0.5 rounded-[5px] inline-block shadow-md">
+          <span className="not-italic bg-gradient-to-r from-[#fae5a2] via-[#E8A63D] to-[#c59a3f] bg-clip-text text-transparent drop-shadow-[0_2px_18px_rgba(232,166,61,0.4)] font-serif italic">
             {highlight}
-          </em>
+          </span>
           {parts[1]}
         </>
       );
@@ -123,13 +123,13 @@ export default function GoldHero({ config }: GoldHeroProps) {
             {subtitle}
           </p>
 
-          {/* Hero CTA Buttons (.hero-cta) */}
+          {/* Hero CTA Buttons */}
           <div className="flex flex-wrap items-center gap-3.5 mb-8">
             
-            {/* Button 1: Demander un devis (.btn .btn-cargo) */}
+            {/* Button 1: Découvrir notre gamme */}
             <Link
               href={btnUrl}
-              className="inline-flex items-center justify-center gap-2 bg-[#D2571E] hover:bg-[#A8420F] text-white font-semibold text-[14.5px] px-6 py-3 rounded-[6px] shadow-lg shadow-[#D2571E]/30 transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-2 bg-[#D2571E] hover:bg-[#A8420F] text-white font-semibold text-[14.5px] px-7 py-3 rounded-full shadow-lg shadow-[#D2571E]/30 transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
             >
               <span>{btnText}</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
@@ -137,18 +137,25 @@ export default function GoldHero({ config }: GoldHeroProps) {
               </svg>
             </Link>
 
-            {/* Button 2: Écrire sur WhatsApp (.btn .btn-outline-dark) */}
-            <a
-              href={`https://wa.me/${whatsappNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-white/[0.08] text-white font-semibold text-[14.5px] px-6 py-3 rounded-[6px] border-[1.5px] border-white/35 hover:border-white transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
+            {/* Button 2: Create an account */}
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center gap-2.5 bg-white/[0.07] hover:bg-[#E8A63D]/15 text-[#FFE699] hover:text-white font-semibold text-[14.5px] px-7 py-3 rounded-full border border-[#E8A63D]/60 hover:border-[#E8A63D] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none shadow-sm"
             >
-              <svg className="w-4 h-4 text-emerald-400 fill-currentColor" viewBox="0 0 24 24">
-                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12 19.82c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a7.88 7.88 0 0 1-1.2-4.16c0-4.36 3.55-7.91 7.91-7.91 2.11 0 4.1.82 5.6 2.31a7.86 7.86 0 0 1 2.31 5.6c0 4.36-3.55 7.92-7.93 7.92zm4.33-5.91c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42s-.54-1.3-.74-1.78c-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z" />
+              <svg 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="w-4 h-4 text-[#E8A63D]"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
-              <span>Écrire sur WhatsApp</span>
-            </a>
+              <span>Create an account</span>
+            </Link>
 
           </div>
 
