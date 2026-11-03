@@ -96,7 +96,7 @@ export default function TopBarTicker() {
       <div key={`${keyPrefix}-${cur.code}`} className="inline-flex items-center gap-4 sm:gap-6 px-4">
         {/* Currency Tag */}
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-[#E8A63D] font-mono text-[10.5px] font-bold tracking-wider uppercase select-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D2571E] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A] animate-pulse" />
           {cur.label}
         </span>
 

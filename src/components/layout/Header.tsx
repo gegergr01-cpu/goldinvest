@@ -256,7 +256,7 @@ export default function Header({
                     >
                       {link.label}
                       {isActive && (
-                        <span className="absolute left-1/2 -bottom-2 -translate-x-1/2 w-3.5 h-[2px] bg-[#D2571E] rounded-full" />
+                        <span className="absolute left-1/2 -bottom-2 -translate-x-1/2 w-3.5 h-[2px] bg-gradient-to-r from-[#D88334] to-[#B8641C] rounded-full" />
                       )}
                     </Link>
                   );
@@ -266,10 +266,10 @@ export default function Header({
               {/* Actions inside pill: Demander un devis + 4-Squares Icon + Icons */}
               <div className="flex items-center gap-2.5 flex-none">
 
-                {/* Orange Pill CTA: Demander un devis ↗ */}
+                {/* Cuivre Doré Pill CTA: Demander un devis ↗ */}
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 bg-[#D2571E] hover:bg-[#A8420F] text-white font-bold text-[14.5px] px-6 py-2.5 rounded-full transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-[#D2571E]/30 whitespace-nowrap select-none"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-bold text-[14.5px] px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 whitespace-nowrap select-none"
                 >
                   <span>Demander un devis</span>
                   <svg
