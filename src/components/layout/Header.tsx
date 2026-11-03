@@ -4,13 +4,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { searchProducts } from '@/actions/public';
 import { getUserRole } from '@/actions/auth';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import Price from '@/components/Price';
+import TopBarTicker from './TopBarTicker';
+import ContactDrawer from './ContactDrawer';
 
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), { ssr: false });
 const CartDrawer = dynamic(() => import('@/components/cart/CartDrawer'), { ssr: false });
@@ -54,7 +55,6 @@ type HeaderProps = {
 export default function Header({
   menuLinks = [],
   categories = [],
-  myAccountText = 'Mon compte',
   mobileAboutTitle,
   mobileAboutDesc,
   mobileContactAddress,
@@ -70,6 +70,23 @@ export default function Header({
   const [actualUserRole, setActualUserRole] = useState<'ADMIN' | 'CUSTOMER' | null>(initialUserRole);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
+
+  // Scroll detection for sticky header effect (matching Capture 2 & 3)
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 30) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Search state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -127,14 +144,12 @@ export default function Header({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Focus search input when toggled open
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [isSearchOpen]);
 
-  // Handle Search Submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -143,14 +158,13 @@ export default function Header({
     }
   };
 
-  // Nav links matching the mockup
+  // Nav links inspired by user reference
   const defaultNavLinks = [
     { label: 'Accueil', url: '/' },
     { label: "Pièces d'or", url: '/shop?category=pieces-dor' },
     { label: "Lingots d'or", url: '/shop?category=lingots-dor' },
     { label: "Lingots d'argent", url: '/shop?category=lingots-dargent' },
-    { label: 'À propos', url: '/about' },
-    { label: 'FAQ', url: '/faq' },
+    { label: 'Services', url: '/shop' },
     { label: 'Contact', url: '/contact' },
   ];
 
@@ -166,184 +180,226 @@ export default function Header({
 
   return (
     <>
-      <header className="w-full font-sans sticky top-0 z-50 bg-white shadow-sm transition-all duration-300">
-        
-        {/* 1. TOP BAR (Dark Luxury) */}
-        <div className="w-full bg-[#111111] text-gray-300 text-xs py-2 px-4 border-b border-white/5">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-            
-            {/* Left: Paiement sécurisé */}
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>Paiement 100% sécurisé</span>
-            </div>
+      {/* 1. TOP BAR (Infinite marquee ticker: EUR -> DKK -> Forint -> GBP -> USD -> CAD -> cycle repeats) */}
+      <TopBarTicker />
 
-            {/* Center: Livraison rapide */}
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5 8h10v9H5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 11h4l3 3v3h-7v-6z" />
-                <circle cx="8" cy="19" r="2" strokeWidth={1.8} />
-                <circle cx="18" cy="19" r="2" strokeWidth={1.8} />
-              </svg>
-              <span>Livraison rapide et assurée</span>
-            </div>
-
-            {/* Right: Service client */}
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 18v-6a9 9 0 0118 0v6" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z" />
-              </svg>
-              <span>Service client à votre écoute</span>
-            </div>
-
-          </div>
-        </div>
-
-        {/* 2. MAIN HEADER BAR (White) */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 md:gap-8">
+      {/* 2. STICKY / FLOATING HEADER */}
+      <header
+        className={`w-full font-sans sticky top-0 z-40 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-[#080d19]/95 backdrop-blur-md shadow-2xl border-b border-white/10 py-3'
+            : 'bg-[#070c18]/80 backdrop-blur-sm border-b border-white/5 py-4'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
-          {/* Brand Logo */}
+          {/* Brand Logo (Left) */}
           <div className="flex-shrink-0 flex items-center">
-            <GoldInvestLogo variant="dark" />
+            <GoldInvestLogo variant="light" />
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center space-x-6 lg:space-x-8 text-[14px] font-medium text-gray-700">
-            {activeNavLinks.map((link, idx) => {
-              const isActive = pathname === link.url;
-              return (
-                <Link
-                  key={idx}
-                  href={link.url}
-                  className={`transition-colors duration-200 py-1 relative ${
-                    isActive
-                      ? 'text-[#c59a3f] font-semibold'
-                      : 'hover:text-[#c59a3f]'
-                  }`}
-                >
-                  {link.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#c59a3f] rounded-full" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Right: Floating Capsule Navigation (Matching Capture 2 & 3) */}
+          <div className="hidden lg:flex items-center gap-3">
+            <div className="rounded-full bg-[#121c2e]/75 backdrop-blur-md border border-white/15 px-6 py-2 flex items-center gap-6 shadow-2xl">
+              
+              {/* Navigation Links with active underline */}
+              <nav className="flex items-center space-x-6 text-[13px] font-medium text-gray-200">
+                {activeNavLinks.map((link, idx) => {
+                  const isActive = pathname === link.url;
+                  return (
+                    <Link
+                      key={idx}
+                      href={link.url}
+                      className={`relative py-1 transition-colors duration-200 ${
+                        isActive
+                          ? 'text-white font-semibold'
+                          : 'text-gray-300 hover:text-white'
+                      }`}
+                    >
+                      {link.label}
+                      {isActive && (
+                        <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#ea580c] rounded-full" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
 
-          {/* Right Action Icons & "Mon compte" Button */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            
-            {/* Search Toggle Icon */}
-            <div className="relative" ref={searchContainerRef}>
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-gray-700 hover:text-[#c59a3f] hover:bg-gray-100 transition cursor-pointer"
-                aria-label="Rechercher"
-                title="Rechercher"
+              {/* CTA Button: Demander un devis ↗ (Orange pill button matching capture) */}
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-1.5 bg-[#ea580c] hover:bg-[#d44e07] text-white text-xs font-semibold px-5 py-2.5 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md shadow-orange-600/30 whitespace-nowrap cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <span>Demander un devis</span>
+                <span className="text-sm font-bold">↗</span>
+              </Link>
+
+              {/* 4-Squares Icon Button (Toggles Contact Drawer from Capture 1) */}
+              <button
+                type="button"
+                onClick={() => setIsContactDrawerOpen(true)}
+                className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white border border-white/20 flex items-center justify-center transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm cursor-pointer"
+                title="Informations & Contact"
+                aria-label="Ouvrir le panneau de contact"
+              >
+                {/* 4 Rounded Squares (2x2 Grid matching reference capture) */}
+                <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 16 16">
+                  <rect x="2" y="2" width="5" height="5" rx="1.2" />
+                  <rect x="9" y="2" width="5" height="5" rx="1.2" />
+                  <rect x="2" y="9" width="5" height="5" rx="1.2" />
+                  <rect x="9" y="9" width="5" height="5" rx="1.2" />
                 </svg>
               </button>
 
-              {/* Floating Search Input */}
-              {isSearchOpen && (
-                <div className="absolute right-0 top-12 w-72 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 z-50">
-                  <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Rechercher pièces, lingots..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border-none outline-none text-gray-800 placeholder-gray-400"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-[#c59a3f] hover:bg-[#b08733] text-black px-3 py-1.5 rounded-lg text-xs font-semibold"
-                    >
-                      OK
-                    </button>
-                  </form>
-
-                  {/* Quick live search preview */}
-                  {isSearching && (
-                    <div className="p-3 text-center text-xs text-gray-400">Recherche en cours...</div>
-                  )}
-
-                  {!isSearching && searchResults.length > 0 && (
-                    <ul className="mt-2 border-t border-gray-100 pt-2 max-h-56 overflow-y-auto">
-                      {searchResults.slice(0, 5).map((prod) => (
-                        <li key={prod.id}>
-                          <Link
-                            href={`/product/${prod.slug}`}
-                            onClick={() => setIsSearchOpen(false)}
-                            className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded text-xs text-gray-800"
-                          >
-                            <span className="font-medium truncate flex-1">{prod.title}</span>
-                            <Price amount={prod.price} className="text-[#c59a3f] font-bold" />
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
             </div>
 
-            {/* LOGIN ICON (Demande explicite: Prévoir l'icône de Login au niveau du Header) */}
+            {/* Quick Action Icons: Search, Account, Cart */}
+            <div className="flex items-center gap-2 pl-2">
+              {/* Search Toggle */}
+              <div className="relative" ref={searchContainerRef}>
+                <button
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer"
+                  aria-label="Rechercher"
+                  title="Rechercher"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+
+                {isSearchOpen && (
+                  <div className="absolute right-0 top-12 w-72 sm:w-80 bg-[#0d1627] rounded-xl shadow-2xl border border-white/20 p-2 z-50 text-white">
+                    <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Rechercher pièces, lingots..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-black/40 rounded-lg border border-white/10 outline-none text-white placeholder-gray-400"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-[#ea580c] hover:bg-[#d44e07] text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+                      >
+                        OK
+                      </button>
+                    </form>
+
+                    {isSearching && (
+                      <div className="p-3 text-center text-xs text-gray-400">Recherche en cours...</div>
+                    )}
+
+                    {!isSearching && searchResults.length > 0 && (
+                      <ul className="mt-2 border-t border-white/10 pt-2 max-h-56 overflow-y-auto">
+                        {searchResults.slice(0, 5).map((prod) => (
+                          <li key={prod.id}>
+                            <Link
+                              href={`/product/${prod.slug}`}
+                              onClick={() => setIsSearchOpen(false)}
+                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded text-xs text-white"
+                            >
+                              <span className="font-medium truncate flex-1">{prod.title}</span>
+                              <Price amount={prod.price} className="text-[#c59a3f] font-bold" />
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Login / Account */}
+              <button
+                onClick={handleAccountClick}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
+                aria-label="Mon compte"
+                title={actualUserRole ? 'Mon compte' : 'Se connecter'}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                {actualUserRole && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#080d19]" />
+                )}
+              </button>
+
+              {/* Cart Drawer */}
+              <button
+                onClick={() => cartStore.setIsOpen(true)}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
+                aria-label="Panier"
+                title="Panier"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {mounted && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-[#ea580c] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                    {cartItems}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Right Controls: 4-Squares + Hamburger */}
+          <div className="flex lg:hidden items-center gap-2">
             <button
-              onClick={handleAccountClick}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-gray-700 hover:text-[#c59a3f] hover:bg-gray-100 transition cursor-pointer relative"
-              aria-label="Connexion / Compte"
-              title={actualUserRole ? 'Mon compte' : 'Se connecter'}
+              type="button"
+              onClick={() => setIsContactDrawerOpen(true)}
+              className="w-8 h-8 rounded-full bg-black/60 text-white border border-white/20 flex items-center justify-center"
+              title="Contact"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 16 16">
+                <rect x="2" y="2" width="5" height="5" rx="1.2" />
+                <rect x="9" y="2" width="5" height="5" rx="1.2" />
+                <rect x="2" y="9" width="5" height="5" rx="1.2" />
+                <rect x="9" y="9" width="5" height="5" rx="1.2" />
               </svg>
-              {actualUserRole && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-              )}
             </button>
 
-            {/* CART ICON WITH GOLD BADGE */}
             <button
               onClick={() => cartStore.setIsOpen(true)}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-gray-700 hover:text-[#c59a3f] hover:bg-gray-100 transition cursor-pointer relative"
-              aria-label="Panier d'achat"
-              title="Panier"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 relative"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              {mounted && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#c59a3f] text-black text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+              {mounted && cartItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-[#ea580c] text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
                   {cartItems}
                 </span>
               )}
             </button>
 
-            {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition"
+              className="p-1.5 rounded-lg text-gray-300 hover:text-white"
               aria-label="Menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-
           </div>
 
         </div>
       </header>
 
-      {/* Global Interactive Drawers and Modals */}
+      {/* 4-Squares Contact Drawer (Capture 1) */}
+      <ContactDrawer 
+        isOpen={isContactDrawerOpen} 
+        onClose={() => setIsContactDrawerOpen(false)}
+        phone1={mobileContactPhone || '+33 6 17 26 47 05'}
+        email={mobileContactEmail || 'azevia.solutions@gmail.com'}
+        address={mobileContactAddress || 'Laval, France'}
+        description="Spécialistes du négoce et de l'investissement en métaux précieux : pièces d'or, lingots d'or et d'argent certifiés LBMA, avec un accompagnement personnalisé et sécurisé à chaque étape jusqu'à la livraison."
+      />
+
+      {/* Other Global Modals and Drawers */}
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
@@ -365,11 +421,11 @@ export default function Header({
         menuLinks={activeNavLinks}
         categories={categories}
         aboutTitle={mobileAboutTitle || 'Gold Silver Invest'}
-        aboutDesc={mobileAboutDesc || 'Investissez en toute sérénité dans l’or et l’argent, valeurs refuges par excellence.'}
-        contactAddress={mobileContactAddress || 'Chaussée de Tirlemont 110, 5030 Gembloux'}
-        contactPhone={mobileContactPhone || '+32 2 123 45 67'}
-        contactEmail={mobileContactEmail || 'info@goldsilversinvest.com'}
-        contactWebsite={mobileContactWebsite || 'www.goldsilversinvest.com'}
+        aboutDesc={mobileAboutDesc || 'Spécialistes du négoce et de l\'investissement en métaux précieux.'}
+        contactAddress={mobileContactAddress || 'Laval, France'}
+        contactPhone={mobileContactPhone || '+33 6 17 26 47 05'}
+        contactEmail={mobileContactEmail || 'azevia.solutions@gmail.com'}
+        contactWebsite={mobileContactWebsite || 'www.goldsilverinvest.fr'}
       />
     </>
   );

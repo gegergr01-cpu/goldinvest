@@ -11,96 +11,50 @@ interface GoldHeroProps {
 export default function GoldHero({ config }: GoldHeroProps) {
   const c = config || {};
 
-  // Smart defaults matching the reference capture
+  // Headline & Subtitle matching the reference capture structure
   const rawTitle = c.title;
-  const title = (rawTitle && rawTitle !== 'Investissez dans la valeur sûre') ? rawTitle : 'Or & Argent';
-  const highlight = c.highlight || '&';
+  const title = rawTitle || "L'excellence de l'or physique, votre patrimoine en sécurité .";
+  const highlight = c.highlight || "sécurité .";
+
+  const rawTagline = c.tagline;
+  const tagline = rawTagline || "OR & ARGENT — INVESTISSEMENT EN TOUTE CONFIANCE";
 
   const rawSubtitle = c.subtitle;
-  const subtitle = (rawSubtitle && rawSubtitle !== "Pièces d'or, lingots d'or et d'argent au meilleur prix") 
-    ? rawSubtitle 
-    : 'INVESTISSEZ EN TOUTE CONFIANCE';
+  const subtitle = rawSubtitle || "Négoce de pièces d'or cotées et lingots d'or et d'argent purs 999.9. Produits certifiés, scellés avec traçabilité et livraison assurée à 100%.";
 
-  const rawBtnText = c.btnText;
-  const btnText = (rawBtnText && rawBtnText !== 'Découvrir notre gamme') 
-    ? rawBtnText 
-    : 'Découvrez notre sélection';
+  const btnText = c.btnText || "Demander un devis";
+  const btnUrl = c.btnUrl || "/contact";
+  const whatsappNumber = c.whatsappNumber || "33617264705";
 
-  const btnUrl = c.btnUrl || '/shop';
+  // 3 Floating Cards (Bottom right, matching capture 3: Maritime / Aérien / Routier)
+  const card1Title = c.card1_title || "Pièces d'Or";
+  const card1Desc = c.card1_desc || "Napoléon, Krugerrand, Souverains, Maple Leaf... Scellées et cotées en continu.";
 
-  // 3 Reassurance Features (Capture: Qualité Garantie, Prix Compétitifs, Livraison Sécurisée)
-  const showFeatures = c.showFeatures !== 'false' && c.showFeatures !== false;
-  const feature1Title = c.feature1_title || 'Qualité';
-  const feature1Sub = c.feature1_sub || 'Garantie';
-  const feature2Title = c.feature2_title || 'Prix';
-  const feature2Sub = c.feature2_sub || 'Compétitifs';
-  const feature3Title = c.feature3_title || 'Livraison';
-  const feature3Sub = c.feature3_sub || 'Sécurisée';
+  const card2Title = c.card2_title || "Lingots d'Or";
+  const card2Desc = c.card2_desc || "Or pur 999.9 certifié LBMA de 1g à 1kg, livrés sous blister sécurisé.";
 
-  // Explicit deletion support
-  const image = typeof c.image !== 'undefined' ? c.image : '/images/hero-gold-silver.jpg';
-  const bgImage = typeof c.bgImage !== 'undefined' ? c.bgImage : '/images/hero-bg-luxury.jpg';
+  const card3Title = c.card3_title || "Argent Fin";
+  const card3Desc = c.card3_desc || "Lingots et pièces d'argent d'investissement, fiscalité avantageuse et stock vérifié.";
 
+  // Background image
+  const bgImage = c.bgImage || '/images/hero-bg-luxury.jpg';
   const showBgImage = c.SHOW_BG_IMAGE !== 'false';
-  const showMainImage = c.SHOW_MAIN_IMAGE !== 'false';
+  const bgOpacity = typeof c.BG_OVERLAY !== 'undefined' ? Number(c.BG_OVERLAY) / 100 : 0.65;
 
-  const hasImage = Boolean(showMainImage && image && typeof image === 'string' && image.trim() !== '');
-  const hasBgImage = Boolean(showBgImage && bgImage && typeof bgImage === 'string' && bgImage.trim() !== '');
+  // Hero Height
+  const rawHeight = c.HERO_HEIGHT || c.heroHeight || '820px';
+  const minHeightStyle = String(rawHeight).endsWith('px') || String(rawHeight).endsWith('vh') ? String(rawHeight) : `${rawHeight}px`;
 
-  // Background & Overlay
-  const bgColor = c.bgColor || c.BG_COLOR || '#0a0a0a';
-  const overlayPercent = typeof c.BG_OVERLAY !== 'undefined' ? Number(c.BG_OVERLAY) : (typeof c.bgOpacity !== 'undefined' ? Number(c.bgOpacity) * 100 : 45);
-  const bgOpacity = overlayPercent / 100;
-
-  // Colors & Styles
-  const highlightColor = c.CATEGORY_COLOR || c.highlightColor || '#c59a3f';
-  const titleColor = c.TITLE_COLOR || '#ffffff';
-  const subtitleColor = c.SUBTITLE_COLOR || '#e5e7eb';
-  const btnBgColor = c.BTN_BG_COLOR || c.btnBgColor || '#c59a3f';
-  const btnTextColor = c.BTN_TEXT_COLOR || c.btnTextColor || '#000000';
-
-  // Button radius
-  const btnStyle = c.BTN_STYLE || 'pill';
-  const btnRadiusClass = btnStyle === 'square' ? 'rounded-none' : btnStyle === 'rounded' ? 'rounded-xl' : 'rounded-full';
-
-  // Hero Height (Customizable via admin or tall luxury default)
-  const rawHeight = c.HERO_HEIGHT || c.heroHeight || c.minHeight;
-  const minHeightStyle = rawHeight 
-    ? (String(rawHeight).endsWith('px') || String(rawHeight).endsWith('vh') ? String(rawHeight) : `${rawHeight}px`) 
-    : '780px';
-
-  // Alignment (3x3 Grid)
-  const hAlign = c.CONTENT_ALIGN || 'left';
-  const vAlign = c.CONTENT_VALIGN || 'center';
-
-  const alignContainerClass = 
-    hAlign === 'center' ? 'text-center items-center' :
-    hAlign === 'right' ? 'text-right items-end' :
-    'text-left items-start';
-
-  const vAlignClass =
-    vAlign === 'top' ? 'items-start' :
-    vAlign === 'bottom' ? 'items-end' :
-    'items-center';
-
-  // Render title with gold '&' or highlight
+  // Render title with orange badge on the highlight word (matching Capture 3)
   const renderTitle = () => {
-    if (title.includes('&')) {
-      const parts = title.split('&');
-      return (
-        <>
-          {parts[0]}
-          <span className="text-[#c59a3f] font-serif font-light mx-1 sm:mx-1.5">&</span>
-          {parts.slice(1).join('&')}
-        </>
-      );
-    }
     if (highlight && title.includes(highlight)) {
       const parts = title.split(highlight);
       return (
         <>
           {parts[0]}
-          <span style={{ color: highlightColor }}>{highlight}</span>
+          <span className="bg-[#ea580c] px-3 sm:px-4 py-0.5 sm:py-1 rounded-xl text-white inline-block shadow-md mx-1">
+            {highlight}
+          </span>
           {parts[1]}
         </>
       );
@@ -110,11 +64,11 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
   return (
     <section 
-      className="relative w-full text-white overflow-hidden transition-colors duration-300 flex items-center min-h-[520px] md:min-h-[680px]"
-      style={{ backgroundColor: bgColor, minHeight: minHeightStyle }}
+      className="relative w-full text-white overflow-hidden flex flex-col justify-between"
+      style={{ minHeight: minHeightStyle }}
     >
-      {/* Background Image (BG) */}
-      {hasBgImage && (
+      {/* Background Artwork */}
+      {showBgImage && (
         <div className="absolute inset-0 pointer-events-none z-0">
           <Image
             src={bgImage}
@@ -125,123 +79,103 @@ export default function GoldHero({ config }: GoldHeroProps) {
             className="object-cover object-center"
             style={{ opacity: bgOpacity }}
           />
-          {/* Subtle dark vignette overlay to blend edges */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60 pointer-events-none" />
+          {/* Dual-gradient vignette for total contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#060a12]/95 via-[#060a12]/80 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#060a12] via-transparent to-transparent pointer-events-none" />
         </div>
       )}
 
-      {/* Radial gradient warmth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c59a3f]/15 via-transparent to-transparent pointer-events-none z-0" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28 w-full">
-        <div className={`grid grid-cols-1 ${hasImage ? 'lg:grid-cols-12' : 'max-w-3xl mx-auto'} gap-10 lg:gap-12 ${vAlignClass}`}>
-
-          {/* Left Text Column */}
-          <div className={`${hasImage ? 'lg:col-span-7 xl:col-span-6' : 'w-full'} z-10 flex flex-col ${alignContainerClass}`}>
-            
-            {/* Main Title: Or & Argent */}
-            <h1 
-              style={{ color: titleColor }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight leading-none"
-            >
-              {renderTitle()}
-            </h1>
-
-            {/* Tagline: INVESTISSEZ EN TOUTE CONFIANCE */}
-            <p 
-              style={{ color: subtitleColor }}
-              className="mt-4 sm:mt-5 text-xs sm:text-sm md:text-base font-semibold tracking-[0.25em] text-gray-200 uppercase font-sans select-none"
-            >
-              {subtitle}
-            </p>
-
-            {/* Gold separator line */}
-            <div className="w-20 sm:w-28 h-[2px] bg-[#c59a3f] mt-4 mb-6 sm:mb-8" />
-
-            {/* 3 Reassurance Features (Icons + 2-line labels) */}
-            {showFeatures && (
-              <div className="flex flex-wrap items-center gap-5 sm:gap-7 md:gap-8 my-1">
-                {/* 1. Qualité Garantie */}
-                <div className="flex items-center gap-2.5 group">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#c59a3f] transition-transform duration-300 group-hover:scale-110 shrink-0">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature1Title}</span>
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature1Sub}</span>
-                  </div>
-                </div>
-
-                {/* 2. Prix Compétitifs */}
-                <div className="flex items-center gap-2.5 group">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#c59a3f] transition-transform duration-300 group-hover:scale-110 shrink-0">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature2Title}</span>
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature2Sub}</span>
-                  </div>
-                </div>
-
-                {/* 3. Livraison Sécurisée */}
-                <div className="flex items-center gap-2.5 group">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#c59a3f] transition-transform duration-300 group-hover:scale-110 shrink-0">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 17a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature3Title}</span>
-                    <span className="text-xs sm:text-sm font-medium text-white leading-tight">{feature3Sub}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CTA Button: Découvrez notre sélection > */}
-            <div className="mt-8 sm:mt-10">
-              <Link
-                href={btnUrl}
-                style={{ backgroundColor: btnBgColor, color: btnTextColor }}
-                className={`inline-flex items-center gap-2.5 font-semibold text-xs sm:text-sm px-7 py-3.5 ${btnRadiusClass} transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#c59a3f]/30 cursor-pointer group`}
-              >
-                <span>{btnText}</span>
-                <svg 
-                  className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
+      {/* Main Content Area */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-12 w-full flex-1 flex flex-col justify-between">
+        
+        {/* Left Column Text Content */}
+        <div className="max-w-3xl pt-4 sm:pt-8">
+          
+          {/* Tagline / Eyebrow */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-gray-200 mb-6 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#ea580c] animate-pulse" />
+            <span>{tagline}</span>
           </div>
 
-          {/* Right Image Visual Column */}
-          {hasImage && (
-            <div className="lg:col-span-5 xl:col-span-6 relative flex justify-center items-center">
-              <div className="relative w-full max-w-[620px] aspect-[16/11] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-                <Image
-                  src={image}
-                  alt={title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none" />
-              </div>
-            </div>
-          )}
+          {/* Large Serif Title with Orange Badge Highlight */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold tracking-tight text-white leading-[1.15]">
+            {renderTitle()}
+          </h1>
+
+          {/* Subtitle Description */}
+          <p className="mt-5 text-base sm:text-lg lg:text-xl text-gray-200 font-light leading-relaxed max-w-2xl">
+            {subtitle}
+          </p>
+
+          {/* Dual Action Buttons (Demander un devis + Écrire sur WhatsApp) */}
+          <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4">
+            
+            {/* Button 1: Demander un devis */}
+            <Link
+              href={btnUrl}
+              className="inline-flex items-center gap-2 bg-[#ea580c] hover:bg-[#d44e07] text-white font-semibold text-sm sm:text-base px-8 py-4 rounded-xl shadow-xl shadow-orange-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+            >
+              <span>{btnText}</span>
+              <span className="text-lg">↗</span>
+            </Link>
+
+            {/* Button 2: Écrire sur WhatsApp */}
+            <a
+              href={`https://wa.me/${whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 bg-black/60 hover:bg-black/90 text-white font-medium text-sm sm:text-base px-7 py-4 rounded-xl border border-white/20 backdrop-blur-md transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+            >
+              <svg className="w-5 h-5 text-emerald-400 fill-currentColor" viewBox="0 0 24 24">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12 19.82c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a7.88 7.88 0 0 1-1.2-4.16c0-4.36 3.55-7.91 7.91-7.91 2.11 0 4.1.82 5.6 2.31a7.86 7.86 0 0 1 2.31 5.6c0 4.36-3.55 7.92-7.93 7.92zm4.33-5.91c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42s-.54-1.3-.74-1.78c-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z" />
+              </svg>
+              <span>Écrire sur WhatsApp</span>
+            </a>
+
+          </div>
 
         </div>
+
+        {/* Bottom Right: 3 Floating Cards (Matching Capture 3 Maritime / Aérien / Routier) */}
+        <div className="mt-14 sm:mt-16 flex justify-end">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full lg:max-w-3xl">
+            
+            {/* Card 1: Pièces d'Or */}
+            <div className="bg-[#0b1220]/90 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-white shadow-2xl hover:border-[#ea580c]/60 transition-all duration-300">
+              <h3 className="font-serif font-bold text-lg text-white mb-1.5 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#ea580c]" />
+                {card1Title}
+              </h3>
+              <p className="text-xs text-gray-300 leading-relaxed font-light">
+                {card1Desc}
+              </p>
+            </div>
+
+            {/* Card 2: Lingots d'Or */}
+            <div className="bg-[#0b1220]/90 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-white shadow-2xl hover:border-[#ea580c]/60 transition-all duration-300">
+              <h3 className="font-serif font-bold text-lg text-white mb-1.5 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#ea580c]" />
+                {card2Title}
+              </h3>
+              <p className="text-xs text-gray-300 leading-relaxed font-light">
+                {card2Desc}
+              </p>
+            </div>
+
+            {/* Card 3: Argent Fin */}
+            <div className="bg-[#0b1220]/90 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-white shadow-2xl hover:border-[#ea580c]/60 transition-all duration-300">
+              <h3 className="font-serif font-bold text-lg text-white mb-1.5 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#ea580c]" />
+                {card3Title}
+              </h3>
+              <p className="text-xs text-gray-300 leading-relaxed font-light">
+                {card3Desc}
+              </p>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </section>
   );

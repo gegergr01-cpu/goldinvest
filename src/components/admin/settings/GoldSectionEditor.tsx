@@ -439,12 +439,12 @@ export default function GoldSectionEditor({
                 <>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Mots mis en valeur (couleur or)
+                      Sur-titre / Slogan (Tagline)
                     </label>
                     <input
                       type="text"
-                      value={s.highlight ?? "&"}
-                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
+                      value={s.tagline ?? "OR & ARGENT — INVESTISSEMENT EN TOUTE CONFIANCE"}
+                      onChange={(e) => handleFieldChange('tagline', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
@@ -453,17 +453,29 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
                     <input
                       type="text"
-                      value={s.title ?? "Or & Argent"}
+                      value={s.title ?? "L'excellence de l'or physique, votre patrimoine en sécurité ."}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Slogan / Sous-titre</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Mots mis en valeur (badge orange)
+                    </label>
+                    <input
+                      type="text"
+                      value={s.highlight ?? "sécurité ."}
+                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre descriptif</label>
                     <textarea
                       rows={2}
-                      value={s.subtitle ?? "INVESTISSEZ EN TOUTE CONFIANCE"}
+                      value={s.subtitle ?? "Négoce de pièces d'or cotées et lingots d'or et d'argent purs 999.9. Produits certifiés, scellés avec traçabilité et livraison assurée à 100%."}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -1126,104 +1138,85 @@ export default function GoldSectionEditor({
               )}
             </ElementorAccordion>
 
-            {/* Accordion: Avantages & Réassurance (3 icônes pour GoldHero) */}
+            {/* Accordion: 3 Cartes flottantes (GoldHero - Capture 3) */}
             {section.type === 'GoldHero' && (
               <ElementorAccordion
-                title="Avantages & Réassurance (3 icônes)"
+                title="3 Cartes flottantes (Bas droit)"
                 isOpen={accordions.features}
                 onToggle={() => toggleAccordion('features')}
               >
-                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                  <input
-                    type="checkbox"
-                    id="showFeatures"
-                    checked={s.showFeatures !== 'false' && s.showFeatures !== false}
-                    onChange={(e) => handleFieldChange('showFeatures', e.target.checked)}
-                    className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer w-3.5 h-3.5"
-                  />
-                  <label htmlFor="showFeatures" className="text-xs font-semibold text-gray-700 cursor-pointer select-none">
-                    Afficher les 3 avantages sous le slogan
-                  </label>
-                </div>
-
-                {/* Avantage 1: Qualité Garantie */}
+                {/* Carte 1 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="text-amber-600">🛡️</span> Avantage 1 (Bouclier)
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 1
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
-                      <input
-                        type="text"
-                        value={s.feature1_title ?? "Qualité"}
-                        onChange={(e) => handleFieldChange('feature1_title', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
-                      <input
-                        type="text"
-                        value={s.feature1_sub ?? "Garantie"}
-                        onChange={(e) => handleFieldChange('feature1_sub', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
+                    <input
+                      type="text"
+                      value={s.card1_title ?? "Pièces d'Or"}
+                      onChange={(e) => handleFieldChange('card1_title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
+                    <textarea
+                      rows={2}
+                      value={s.card1_desc ?? "Napoléon, Krugerrand, Souverains, Maple Leaf... Scellées et cotées en continu."}
+                      onChange={(e) => handleFieldChange('card1_desc', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
                   </div>
                 </div>
 
-                {/* Avantage 2: Prix Compétitifs */}
+                {/* Carte 2 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="text-amber-600">⚖️</span> Avantage 2 (Balance)
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 2
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
-                      <input
-                        type="text"
-                        value={s.feature2_title ?? "Prix"}
-                        onChange={(e) => handleFieldChange('feature2_title', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
-                      <input
-                        type="text"
-                        value={s.feature2_sub ?? "Compétitifs"}
-                        onChange={(e) => handleFieldChange('feature2_sub', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
+                    <input
+                      type="text"
+                      value={s.card2_title ?? "Lingots d'Or"}
+                      onChange={(e) => handleFieldChange('card2_title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
+                    <textarea
+                      rows={2}
+                      value={s.card2_desc ?? "Or pur 999.9 certifié LBMA de 1g à 1kg, livrés sous blister sécurisé."}
+                      onChange={(e) => handleFieldChange('card2_desc', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
                   </div>
                 </div>
 
-                {/* Avantage 3: Livraison Sécurisée */}
+                {/* Carte 3 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="text-amber-600">🚚</span> Avantage 3 (Camion)
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 3
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 1</label>
-                      <input
-                        type="text"
-                        value={s.feature3_title ?? "Livraison"}
-                        onChange={(e) => handleFieldChange('feature3_title', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] text-gray-500 mb-0.5">Ligne 2</label>
-                      <input
-                        type="text"
-                        value={s.feature3_sub ?? "Sécurisée"}
-                        onChange={(e) => handleFieldChange('feature3_sub', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
+                    <input
+                      type="text"
+                      value={s.card3_title ?? "Argent Fin"}
+                      onChange={(e) => handleFieldChange('card3_title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
+                    <textarea
+                      rows={2}
+                      value={s.card3_desc ?? "Lingots et pièces d'argent d'investissement, fiscalité avantageuse et stock vérifié."}
+                      onChange={(e) => handleFieldChange('card3_desc', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
+                    />
                   </div>
                 </div>
               </ElementorAccordion>
@@ -1311,14 +1304,27 @@ export default function GoldSectionEditor({
                 onToggle={() => toggleAccordion('action')}
               >
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton principal</label>
                   <input
                     type="text"
-                    value={s.btnText ?? (section.type === 'GoldHero' ? "Découvrez notre sélection" : "Découvrir notre gamme")}
+                    value={s.btnText ?? (section.type === 'GoldHero' ? "Demander un devis" : "Découvrir notre gamme")}
                     onChange={(e) => handleFieldChange('btnText', e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                   />
                 </div>
+
+                {section.type === 'GoldHero' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Numéro WhatsApp (bouton secondaire)</label>
+                    <input
+                      type="text"
+                      value={s.whatsappNumber ?? "33617264705"}
+                      onChange={(e) => handleFieldChange('whatsappNumber', e.target.value)}
+                      placeholder="33617264705"
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Lien de redirection (URL)</label>

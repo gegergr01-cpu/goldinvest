@@ -170,27 +170,25 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       settings: {}
     };
     if (type === 'GoldHero') {
-      newSec.name = 'Hero (Or & Argent - Investissez en toute confiance)';
+      newSec.name = 'Hero (Capture 3: Demander un devis & 3 cartes)';
       newSec.settings = { 
-        title: "Or & Argent", 
-        highlight: "&", 
-        subtitle: "INVESTISSEZ EN TOUTE CONFIANCE", 
-        btnText: "Découvrez notre sélection", 
-        btnUrl: "/shop", 
+        title: "L'excellence de l'or physique, votre patrimoine en sécurité .", 
+        highlight: "sécurité .", 
+        tagline: "OR & ARGENT — INVESTISSEMENT EN TOUTE CONFIANCE",
+        subtitle: "Négoce de pièces d'or cotées et lingots d'or et d'argent purs 999.9. Produits certifiés, scellés avec traçabilité et livraison assurée à 100%.", 
+        btnText: "Demander un devis", 
+        btnUrl: "/contact", 
+        whatsappNumber: "33617264705",
         image: "/images/hero-gold-silver.jpg",
         bgImage: "/images/hero-bg-luxury.jpg",
-        bgColor: "#0a0a0a",
-        bgOpacity: 0.45,
-        highlightColor: "#c59a3f",
-        btnBgColor: "#c59a3f",
-        btnTextColor: "#000000",
-        showFeatures: true,
-        feature1_title: "Qualité",
-        feature1_sub: "Garantie",
-        feature2_title: "Prix",
-        feature2_sub: "Compétitifs",
-        feature3_title: "Livraison",
-        feature3_sub: "Sécurisée"
+        bgColor: "#060a12",
+        bgOpacity: 0.65,
+        card1_title: "Pièces d'Or",
+        card1_desc: "Napoléon, Krugerrand, Souverains, Maple Leaf... Scellées et cotées en continu.",
+        card2_title: "Lingots d'Or",
+        card2_desc: "Or pur 999.9 certifié LBMA de 1g à 1kg, livrés sous blister sécurisé.",
+        card3_title: "Argent Fin",
+        card3_desc: "Lingots et pièces d'argent d'investissement, fiscalité avantageuse et stock vérifié."
       };
     } else if (type === 'ReassuranceBar') {
       newSec.name = 'Barre de réassurance (4 avantages)';
