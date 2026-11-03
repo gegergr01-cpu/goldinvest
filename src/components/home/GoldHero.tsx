@@ -42,10 +42,10 @@ export default function GoldHero({ config }: GoldHeroProps) {
   const bgOpacity = typeof c.BG_OVERLAY !== 'undefined' ? Number(c.BG_OVERLAY) / 100 : 0.65;
 
   // Hero Height
-  const rawHeight = c.HERO_HEIGHT || c.heroHeight || '740px';
+  const rawHeight = c.HERO_HEIGHT || c.heroHeight || '780px';
   const minHeightStyle = String(rawHeight).endsWith('px') || String(rawHeight).endsWith('vh') ? String(rawHeight) : `${rawHeight}px`;
 
-  // Render title with orange badge highlight matching `AZ_Solutions.html` (.hero h1 em)
+  // Render title with orange badge highlight matching AZ Solutions (.hero h1 em)
   const renderTitle = () => {
     if (highlight && title.includes(highlight)) {
       const parts = title.split(highlight);
@@ -64,11 +64,10 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
   return (
     <section 
-      className="hero relative w-full text-white overflow-hidden flex flex-col justify-between"
+      className="hero relative w-full text-white overflow-hidden flex flex-col justify-between pt-[130px] sm:pt-[150px] pb-14 sm:pb-16"
       style={{
         minHeight: minHeightStyle,
         background: 'linear-gradient(135deg, #1E3E5E 0%, #0E2036 55%, #A8420F 145%)',
-        padding: '80px 0 64px 0',
       }}
     >
       {/* Background Photo & Repeating linear gradient stripes */}
@@ -106,7 +105,7 @@ export default function GoldHero({ config }: GoldHeroProps) {
       <div className="relative z-[2] max-w-[1180px] mx-auto px-4 sm:px-7 w-full flex-1 flex flex-col justify-between">
         
         {/* Left Column Copy */}
-        <div className="max-w-[680px] pt-4 sm:pt-8">
+        <div className="max-w-[680px]">
           
           {/* Eyebrow (.hero .eyebrow) */}
           <div className="font-mono text-[12px] tracking-[0.14em] uppercase text-white font-semibold mb-3.5 flex items-center gap-2">
