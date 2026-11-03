@@ -18,12 +18,16 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 import PreviewSectionWrapper from '@/components/admin/PreviewSectionWrapper';
 import { getSettings } from '@/actions/settings';
+import { getHeroDailyCards } from '@/lib/heroDailyProducts';
 import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PreviewPage() {
-  const draftLayoutSetting = await prisma.setting.findUnique({ where: { key: 'PREVIEW_LAYOUT_DRAFT' } });
+  const [draftLayoutSetting, heroDailyCards] = await Promise.all([
+    prisma.setting.findUnique({ where: { key: 'PREVIEW_LAYOUT_DRAFT' } }),
+    getHeroDailyCards(),
+  ]);
 
   let layoutCookieStr = draftLayoutSetting?.value || '';
 
@@ -66,7 +70,7 @@ export default async function PreviewPage() {
     let content = null;
     switch (section.type) {
       case 'GoldHero':
-        content = <GoldHero config={section.settings} />;
+        content = <GoldHero config={section.settings} dailyCards={heroDailyCards} />;
         break;
       case 'ReassuranceBar':
         content = <ReassuranceBar config={section.settings} />;

@@ -170,7 +170,7 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       settings: {}
     };
     if (type === 'GoldHero') {
-      newSec.name = 'Hero (Capture 3: Demander un devis & 3 cartes)';
+      newSec.name = 'Hero (4 Cartes : Gold bars, Silver bars, Gold coins, Silver coins)';
       newSec.settings = { 
         title: "L'excellence de l'or physique, votre patrimoine en sécurité .", 
         highlight: "sécurité .", 
@@ -183,12 +183,10 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         bgImage: "/images/hero-bg-luxury.jpg",
         bgColor: "#060a12",
         bgOpacity: 0.65,
-        card1_title: "Pièces d'Or",
-        card1_desc: "Napoléon, Krugerrand, Souverains, Maple Leaf... Scellées et cotées en continu.",
-        card2_title: "Lingots d'Or",
-        card2_desc: "Or pur 999.9 certifié LBMA de 1g à 1kg, livrés sous blister sécurisé.",
-        card3_title: "Argent Fin",
-        card3_desc: "Lingots et pièces d'argent d'investissement, fiscalité avantageuse et stock vérifié."
+        card1_title: "Gold bars",
+        card2_title: "Silver bars",
+        card3_title: "Gold coins",
+        card4_title: "Silver coins"
       };
     } else if (type === 'ReassuranceBar') {
       newSec.name = 'Barre de réassurance (4 avantages)';

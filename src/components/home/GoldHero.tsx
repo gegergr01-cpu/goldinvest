@@ -3,12 +3,77 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { HeroDailyCard, getDefaultHeroDailyCards } from '@/types/heroCards';
 
 interface GoldHeroProps {
   config?: Record<string, any>;
+  dailyCards?: HeroDailyCard[];
 }
 
-export default function GoldHero({ config }: GoldHeroProps) {
+function CategoryIcon({ type }: { type: 'gold-bar' | 'silver-bar' | 'gold-coin' | 'silver-coin' }) {
+  switch (type) {
+    case 'gold-bar':
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="none">
+          <defs>
+            <linearGradient id="heroGoldBarGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFE082" />
+              <stop offset="50%" stopColor="#F59E0B" />
+              <stop offset="100%" stopColor="#B45309" />
+            </linearGradient>
+          </defs>
+          <path d="M3.5 17L6.8 7H17.2L20.5 17H3.5Z" fill="url(#heroGoldBarGrad)" fillOpacity="0.28" stroke="url(#heroGoldBarGrad)" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M7 10.5H17M8.5 13.5H15.5" stroke="url(#heroGoldBarGrad)" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'silver-bar':
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="none">
+          <defs>
+            <linearGradient id="heroSilverBarGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="50%" stopColor="#CBD5E1" />
+              <stop offset="100%" stopColor="#64748B" />
+            </linearGradient>
+          </defs>
+          <path d="M3.5 17L6.8 7H17.2L20.5 17H3.5Z" fill="url(#heroSilverBarGrad)" fillOpacity="0.25" stroke="url(#heroSilverBarGrad)" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M7 10.5H17M8.5 13.5H15.5" stroke="url(#heroSilverBarGrad)" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'gold-coin':
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="none">
+          <defs>
+            <linearGradient id="heroGoldCoinGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFE082" />
+              <stop offset="50%" stopColor="#F59E0B" />
+              <stop offset="100%" stopColor="#B45309" />
+            </linearGradient>
+          </defs>
+          <circle cx="12" cy="12" r="8.5" fill="url(#heroGoldCoinGrad)" fillOpacity="0.22" stroke="url(#heroGoldCoinGrad)" strokeWidth="1.5" />
+          <circle cx="12" cy="12" r="5.5" stroke="url(#heroGoldCoinGrad)" strokeWidth="1" strokeDasharray="2 2" />
+          <path d="M12 9v6m-2-4.5h4" stroke="url(#heroGoldCoinGrad)" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'silver-coin':
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="none">
+          <defs>
+            <linearGradient id="heroSilverCoinGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="50%" stopColor="#CBD5E1" />
+              <stop offset="100%" stopColor="#64748B" />
+            </linearGradient>
+          </defs>
+          <circle cx="12" cy="12" r="8.5" fill="url(#heroSilverCoinGrad)" fillOpacity="0.2" stroke="url(#heroSilverCoinGrad)" strokeWidth="1.5" />
+          <circle cx="12" cy="12" r="5.5" stroke="url(#heroSilverCoinGrad)" strokeWidth="1" strokeDasharray="2 2" />
+          <path d="M12 9v6m-2-4.5h4" stroke="url(#heroSilverCoinGrad)" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
+  }
+}
+
+export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
   const c = config || {};
 
   // Headline & Subtitle matching the reference capture & AZ Solutions template
@@ -24,17 +89,17 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
   const btnText = c.btnText || "Découvrir notre gamme";
   const btnUrl = c.btnUrl || "/shop";
-  const whatsappNumber = c.whatsappNumber || "33617264705";
 
-  // 3 Floating Cards (Bottom right showcase matching capture 3 Maritime / Aérien / Routier)
-  const card1Title = c.card1_title || "Pièces d'Or";
-  const card1Desc = c.card1_desc || "Napoléon, Krugerrand, Maple Leaf · 20F & 1oz disponibles";
+  // 4 Daily Cards (Gold bars, Silver bars, Gold coins, Silver coins)
+  const defaultCards = getDefaultHeroDailyCards(c);
+  const activeCards = (dailyCards && dailyCards.length === 4) ? dailyCards : defaultCards;
 
-  const card2Title = c.card2_title || "Lingots d'Or";
-  const card2Desc = c.card2_desc || "Certifiés LBMA 999.9‰ · De 1g à 1kg scellés";
-
-  const card3Title = c.card3_title || "Argent Fin";
-  const card3Desc = c.card3_desc || "Pièces et lingots d'argent · Prix direct cours du marché";
+  const customTitles = [
+    c.card1_title || 'Gold bars',
+    c.card2_title || 'Silver bars',
+    c.card3_title || 'Gold coins',
+    c.card4_title || 'Silver coins',
+  ];
 
   // Background artwork
   const bgImage = c.bgImage || '/images/hero-bg-luxury.jpg';
@@ -62,9 +127,11 @@ export default function GoldHero({ config }: GoldHeroProps) {
     return title;
   };
 
+  const delays = ['0s', '-1.4s', '-2.8s', '-4.2s'];
+
   return (
     <section
-      className="hero relative w-full text-white overflow-hidden flex flex-col justify-between pt-[130px] sm:pt-[150px] pb-14 sm:pb-16"
+      className="hero relative w-full text-white overflow-hidden flex flex-col justify-between pt-[130px] sm:pt-[150px] pb-12 sm:pb-14"
       style={{
         minHeight: minHeightStyle,
         background: 'linear-gradient(135deg, #1E3E5E 0%, #0E2036 55%, #A8420F 145%)',
@@ -102,7 +169,7 @@ export default function GoldHero({ config }: GoldHeroProps) {
       />
 
       {/* Main Container Area matching .wrap */}
-      <div className="relative z-[2] max-w-[1180px] mx-auto px-4 sm:px-7 w-full flex-1 flex flex-col justify-between">
+      <div className="relative z-[2] max-w-[1240px] mx-auto px-4 sm:px-7 w-full flex-1 flex flex-col justify-between">
 
         {/* Left Column Copy */}
         <div className="max-w-[680px]">
@@ -161,109 +228,83 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
         </div>
 
-        {/* Bottom Right: 3 Floating Cards Showcase (.hero-showcase with Rotating Copper-Gold Beam) */}
-        <div className="mt-12 sm:mt-16 flex justify-end">
-          <div className="w-full lg:w-[620px] grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        {/* Bottom Right: 4 Floating Cards Showcase with Rotating Copper-Gold Beam */}
+        <div className="mt-8 sm:mt-12 flex justify-end">
+          <div className="w-full lg:max-w-[920px] xl:max-w-[980px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {activeCards.map((card, idx) => {
+              const delay = delays[idx % delays.length];
+              const title = customTitles[idx] || card.title;
+              const product = card.product;
 
-            {/* Card 1: Pièces d'Or */}
-            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
-              
-              {/* Soft Golden Halo */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
-                  animationDelay: '0s',
-                }}
-              />
+              return (
+                <Link
+                  key={card.id}
+                  href={`/product/${product.slug}`}
+                  className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
+                >
+                  {/* Outer base border */}
+                  <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
 
-              {/* Traveling Light Beam & Copper Trail #C96A2B */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
-                  animationDelay: '0s',
-                }}
-              />
+                  {/* Soft Golden Halo */}
+                  <div
+                    className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
+                    style={{
+                      background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                      animationDelay: delay,
+                    }}
+                  />
 
-              {/* Inner Card (Translucent Navy #0E2036) */}
-              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
-                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
-                  {card1Title}
-                </div>
-                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
-                  {card1Desc}
-                </div>
-              </div>
-            </div>
+                  {/* Traveling Light Beam & Copper Trail #C96A2B */}
+                  <div
+                    className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
+                    style={{
+                      background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                      animationDelay: delay,
+                    }}
+                  />
 
-            {/* Card 2: Lingots d'Or */}
-            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
-              
-              {/* Soft Golden Halo */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
-                  animationDelay: '-1.8s',
-                }}
-              />
+                  {/* Inner Card (Translucent Navy #0E2036) */}
+                  <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/92 backdrop-blur-[12px] rounded-[14.5px] p-3 sm:p-3.5 h-full w-full">
+                    
+                    {/* Header: Icon + Category Title + 24h indicator */}
+                    <div className="flex items-center justify-between gap-1.5 mb-2.5">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CategoryIcon type={card.iconType} />
+                        <span className="font-serif font-bold text-[14px] sm:text-[15px] text-white tracking-[0.01em] truncate group-hover:text-[#FFE599] transition-colors">
+                          {title}
+                        </span>
+                      </div>
+                      <span className="shrink-0 text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-white/[0.08] text-[#E8A63D] border border-[#E8A63D]/30 flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-[#E8A63D] animate-ping" />
+                        24h
+                      </span>
+                    </div>
 
-              {/* Traveling Light Beam & Copper Trail #C96A2B */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
-                  animationDelay: '-1.8s',
-                }}
-              />
+                    {/* Product of the day */}
+                    <div className="flex items-center gap-2.5 pt-2 border-t border-white/[0.08]">
+                      <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                          sizes="40px"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[11.5px] font-medium text-white/85 truncate group-hover:text-white transition-colors" title={product.title}>
+                          {product.title}
+                        </div>
+                        <div className="text-[12.5px] font-bold text-[#F3BA2F] tracking-tight mt-0.5 font-mono">
+                          {product.formattedPrice}
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Inner Card (Translucent Navy #0E2036) */}
-              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
-                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
-                  {card2Title}
-                </div>
-                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
-                  {card2Desc}
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3: Argent Fin */}
-            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
-              
-              {/* Soft Golden Halo */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
-                  animationDelay: '-3.6s',
-                }}
-              />
-
-              {/* Traveling Light Beam & Copper Trail #C96A2B */}
-              <div
-                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
-                style={{
-                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
-                  animationDelay: '-3.6s',
-                }}
-              />
-
-              {/* Inner Card (Translucent Navy #0E2036) */}
-              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
-                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
-                  {card3Title}
-                </div>
-                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
-                  {card3Desc}
-                </div>
-              </div>
-            </div>
-
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 

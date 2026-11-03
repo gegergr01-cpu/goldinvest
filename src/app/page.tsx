@@ -16,12 +16,16 @@ import ProductGrid from '@/components/home/ProductGrid';
 import FullWidthBanner from '@/components/home/FullWidthBanner';
 
 import { getCachedSettings } from '@/lib/cache';
+import { getHeroDailyCards } from '@/lib/heroDailyProducts';
 import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
-  const settings = await getCachedSettings();
+  const [settings, heroDailyCards] = await Promise.all([
+    getCachedSettings(),
+    getHeroDailyCards(),
+  ]);
 
   let layout: SectionConfig[] = DEFAULT_SECTIONS;
   if (settings && settings.HOMEPAGE_LAYOUT) {
@@ -49,7 +53,7 @@ export default async function Home() {
   const renderSection = (section: SectionConfig) => {
     switch (section.type) {
       case 'GoldHero':
-        return <GoldHero key={section.id} config={section.settings} />;
+        return <GoldHero key={section.id} config={section.settings} dailyCards={heroDailyCards} />;
       case 'ReassuranceBar':
         return <ReassuranceBar key={section.id} config={section.settings} />;
       case 'SelectionGrid':

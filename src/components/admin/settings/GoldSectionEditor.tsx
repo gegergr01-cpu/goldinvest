@@ -1138,33 +1138,28 @@ export default function GoldSectionEditor({
               )}
             </ElementorAccordion>
 
-            {/* Accordion: 3 Cartes flottantes (GoldHero - Capture 3) */}
+            {/* Accordion: 4 Cartes flottantes (GoldHero - Capture 3) */}
             {section.type === 'GoldHero' && (
               <ElementorAccordion
-                title="3 Cartes flottantes (Bas droit)"
+                title="4 Cartes flottantes (Hero)"
                 isOpen={accordions.features}
                 onToggle={() => toggleAccordion('features')}
               >
+                <div className="p-2 bg-amber-50/60 rounded border border-amber-200/60 text-[11px] text-amber-900 mb-2">
+                  Chaque carte affiche automatiquement l'icône de sa catégorie et le <strong>produit du jour</strong> (changeant chaque 24h) avec photo et prix en direct.
+                </div>
+
                 {/* Carte 1 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 1
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 1 (Gold bars)
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
                     <input
                       type="text"
-                      value={s.card1_title ?? "Pièces d'Or"}
+                      value={s.card1_title ?? "Gold bars"}
                       onChange={(e) => handleFieldChange('card1_title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
-                    <textarea
-                      rows={2}
-                      value={s.card1_desc ?? "Napoléon, Krugerrand, Souverains, Maple Leaf... Scellées et cotées en continu."}
-                      onChange={(e) => handleFieldChange('card1_desc', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
                     />
                   </div>
@@ -1173,23 +1168,14 @@ export default function GoldSectionEditor({
                 {/* Carte 2 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 2
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 2 (Silver bars)
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
                     <input
                       type="text"
-                      value={s.card2_title ?? "Lingots d'Or"}
+                      value={s.card2_title ?? "Silver bars"}
                       onChange={(e) => handleFieldChange('card2_title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
-                    <textarea
-                      rows={2}
-                      value={s.card2_desc ?? "Or pur 999.9 certifié LBMA de 1g à 1kg, livrés sous blister sécurisé."}
-                      onChange={(e) => handleFieldChange('card2_desc', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
                     />
                   </div>
@@ -1198,23 +1184,30 @@ export default function GoldSectionEditor({
                 {/* Carte 3 */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 3
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 3 (Gold coins)
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
                     <input
                       type="text"
-                      value={s.card3_title ?? "Argent Fin"}
+                      value={s.card3_title ?? "Gold coins"}
                       onChange={(e) => handleFieldChange('card3_title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
                     />
                   </div>
+                </div>
+
+                {/* Carte 4 */}
+                <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-200/80 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                    <span className="w-2 h-2 rounded-full bg-[#ea580c]" /> Carte 4 (Silver coins)
+                  </div>
                   <div>
-                    <label className="block text-[10px] text-gray-500 mb-0.5">Description</label>
-                    <textarea
-                      rows={2}
-                      value={s.card3_desc ?? "Lingots et pièces d'argent d'investissement, fiscalité avantageuse et stock vérifié."}
-                      onChange={(e) => handleFieldChange('card3_desc', e.target.value)}
+                    <label className="block text-[10px] text-gray-500 mb-0.5">Titre</label>
+                    <input
+                      type="text"
+                      value={s.card4_title ?? "Silver coins"}
+                      onChange={(e) => handleFieldChange('card4_title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2 py-1 text-xs outline-none focus:border-amber-500 bg-white"
                     />
                   </div>
