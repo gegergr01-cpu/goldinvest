@@ -1,121 +1,365 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface WhyChooseUsProps {
   config?: Record<string, string>;
 }
 
+interface ServiceItem {
+  id: string;
+  title: string;
+  tag: string;
+  desc: string;
+  ctaText: string;
+  url: string;
+  iconType: 'purchase' | 'storage' | 'delivery' | 'pickup' | 'buyback';
+}
+
+const SERVICES: ServiceItem[] = [
+  {
+    id: 'purchase',
+    title: 'Purchase',
+    tag: 'Authenticité & Pureté',
+    desc: 'Buy bullion bars and coins from certified, globally recognized refiners, guaranteeing the authenticity, purity, and quality of precious metals. Enjoy a wide selection of products at the best price.',
+    ctaText: 'Learn more',
+    url: '/shop',
+    iconType: 'purchase',
+  },
+  {
+    id: 'storage',
+    title: 'Storage',
+    tag: 'Coffres Haute Sécurité',
+    desc: 'Store your precious metals outside the banking system in highly secure vaults located in free-trade zones in Zurich, Singapore, New York, or Toronto.',
+    ctaText: 'Learn more',
+    url: '/services/storage',
+    iconType: 'storage',
+  },
+  {
+    id: 'delivery',
+    title: 'Delivery',
+    tag: 'Livraison Assurée 100%',
+    desc: 'Receive your precious metals directly at home with a fast, secure, and discreet delivery service. Package delivery with real-time tracking.',
+    ctaText: 'Learn more',
+    url: '/services/delivery',
+    iconType: 'delivery',
+  },
+  {
+    id: 'pickup',
+    title: 'Pickup',
+    tag: 'Retrait en Main Propre',
+    desc: 'Visit one of our storage vaults to collect your precious metals order in person in complete discretion, security, and confidentiality.',
+    ctaText: 'Learn more',
+    url: '/services/pickup',
+    iconType: 'pickup',
+  },
+  {
+    id: 'buyback',
+    title: 'Buyback',
+    tag: 'Liquidité Immédiate',
+    desc: 'Easily sell your bars and coins stored in the vaults. Through our buyback service, you can sell all or part of your precious metals quickly, transparently, and without having to move them physically.',
+    ctaText: 'Learn more',
+    url: '/services/buyback',
+    iconType: 'buyback',
+  },
+];
+
+function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
+  switch (type) {
+    case 'purchase':
+      return (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none">
+          <defs>
+            <linearGradient id="srvIconGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFE082" />
+              <stop offset="50%" stopColor="#F59E0B" />
+              <stop offset="100%" stopColor="#B45309" />
+            </linearGradient>
+          </defs>
+          <path d="M3.5 17L6.8 7H17.2L20.5 17H3.5Z" fill="url(#srvIconGrad)" fillOpacity="0.25" stroke="url(#srvIconGrad)" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M7 10.5H17M8.5 13.5H15.5" stroke="url(#srvIconGrad)" strokeWidth="1.3" strokeLinecap="round" />
+        </svg>
+      );
+    case 'storage':
+      return (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+          <rect x="3" y="4" width="18" height="16" rx="3" fill="url(#srvIconGrad)" fillOpacity="0.18" />
+          <circle cx="12" cy="12" r="3.5" strokeWidth="1.4" />
+          <path d="M12 9v6M9 12h6" strokeLinecap="round" />
+          <circle cx="17.5" cy="7.5" r="1" fill="url(#srvIconGrad)" stroke="none" />
+        </svg>
+      );
+    case 'delivery':
+      return (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+          <rect x="2" y="7" width="14" height="11" rx="1.5" fill="url(#srvIconGrad)" fillOpacity="0.18" />
+          <path d="M16 10h4l2 3.5V18h-6v-8Z" strokeLinejoin="round" />
+          <circle cx="6.5" cy="18" r="2" fill="#0E2036" />
+          <circle cx="17.5" cy="18" r="2" fill="#0E2036" />
+        </svg>
+      );
+    case 'pickup':
+      return (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+          <path d="M12 21c4-4.5 7-8.5 7-12a7 7 0 1 0-14 0c0 3.5 3 7.5 7 12Z" fill="url(#srvIconGrad)" fillOpacity="0.18" />
+          <circle cx="12" cy="9" r="2.5" />
+        </svg>
+      );
+    case 'buyback':
+      return (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+          <path d="M4 12a8 8 0 0 1 14-5.3L20 8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 4v4h-4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 12a8 8 0 0 1-14 5.3L4 16" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 20v-4h4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+  }
+}
+
 export default function WhyChooseUs({ config }: WhyChooseUsProps) {
   const c = config || {};
 
-  const badge = c.badge || 'Pourquoi — nous choisir ?';
-  const title = c.title || 'Votre partenaire de confiance';
-  const subtitle = c.subtitle || 'Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise.';
-  const btnText = c.btnText || 'En savoir plus';
-  const btnUrl = c.btnUrl || '/about';
+  const badge = c.badge || 'NOS SERVICES EXCLUSIFS';
+  const title = c.title || 'Nos services';
+  const subtitle = c.subtitle || "L'excellence et la maîtrise de vos investissements en métaux précieux.";
+  const description = c.description || "De l'achat de lingots et pièces certifiés au gardiennage en coffre sécurisé hors système bancaire, nous vous offrons un écosystème haut de gamme complet, liquide et transparent.";
+  const btnText = c.btnText || 'Découvrir nos solutions';
+  const btnUrl = c.btnUrl || '/services';
 
-  const pillars = [
-    {
-      title: c.pillar1_title || 'Produits certifiés',
-      desc: c.pillar1_desc || 'Authenticité garantie',
-      icon: (
-        <svg className="w-9 h-9 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      )
-    },
-    {
-      title: c.pillar2_title || 'Transparence totale',
-      desc: c.pillar2_desc || 'Des prix clairs',
-      icon: (
-        <svg className="w-9 h-9 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M3 6l9-4 9 4M3 6v14l9 4 9-4V6M3 6l9 4 9-4M12 10v14" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M8 14l-4 3 4 3M16 14l4 3-4 3" />
-        </svg>
-      )
-    },
-    {
-      title: c.pillar3_title || 'Accompagnement personnalisé',
-      desc: c.pillar3_desc || 'Une équipe à votre écoute',
-      icon: (
-        <svg className="w-9 h-9 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      )
-    },
-    {
-      title: c.pillar4_title || 'Livraison sécurisée',
-      desc: c.pillar4_desc || 'Dans toute l’Europe',
-      icon: (
-        <svg className="w-9 h-9 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
-      )
-    }
-  ];
+  // Pair carousel state: displays 2 cards at a time, cycling through the 5 services
+  const [startIndex, setStartIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const bgColor = c.bgColor || '#0d0d0d';
-  const btnBgColor = c.btnBgColor || '#c59a3f';
-  const btnTextColor = c.btnTextColor || '#000000';
+  const nextPair = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setStartIndex((prev) => (prev + 2) % SERVICES.length);
+      setIsAnimating(false);
+    }, 220);
+  };
+
+  const prevPair = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setStartIndex((prev) => (prev - 2 + SERVICES.length) % SERVICES.length);
+      setIsAnimating(false);
+    }, 220);
+  };
+
+  // Automatic rotation every 5.5 seconds unless user hovers
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      nextPair();
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isPaused, startIndex]);
+
+  // Compute the 2 visible cards
+  const card1 = SERVICES[startIndex % SERVICES.length];
+  const card2 = SERVICES[(startIndex + 1) % SERVICES.length];
+  const visibleCards = [card1, card2];
+
+  const totalSteps = Math.ceil(SERVICES.length / 2);
+  const currentStep = Math.floor(startIndex / 2) % totalSteps;
 
   return (
     <section 
-      className="relative w-full text-white py-20 md:py-28 overflow-hidden border-t border-white/5 transition-colors duration-300"
-      style={{ backgroundColor: bgColor }}
+      id="services"
+      className="relative w-full text-white py-20 lg:py-28 overflow-hidden bg-[#0A1828] border-t border-b border-white/[0.08]"
     >
-      {/* Background golden dust glow effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#c59a3f]/10 to-transparent pointer-events-none" />
+      {/* Background Cinematic Atmosphere */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-25"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 80% 50%, rgba(200, 115, 42, 0.28), transparent 60%)'
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-25"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(120deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 20px)'
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           
-          {/* Left Text Column */}
-          <div className="lg:col-span-5 flex flex-col items-start">
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="text-xs md:text-sm font-semibold tracking-wider text-[#c59a3f] uppercase">
+          {/* ================= LEFT COLUMN: Text Copy, Description, CTA, Controls ================= */}
+          <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-4">
+            
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-3 mb-3.5">
+              <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#E8A63D]" />
+              <span className="font-mono text-[11px] sm:text-[12px] font-bold tracking-[0.18em] text-[#E8A63D] uppercase">
                 {badge}
               </span>
+              <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#E8A63D]" />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white tracking-tight leading-tight">
-              {title}
+            {/* Title */}
+            <h2 className="font-serif font-bold text-[34px] sm:text-[44px] lg:text-[48px] text-white tracking-tight leading-[1.1] mb-4">
+              {title.includes('services') ? (
+                <>
+                  Nos{' '}
+                  <span className="bg-gradient-to-r from-[#fae5a2] via-[#E8A63D] to-[#c59a3f] bg-clip-text text-transparent drop-shadow-[0_2px_18px_rgba(232,166,61,0.4)] italic">
+                    services
+                  </span>
+                </>
+              ) : title}
             </h2>
 
-            <p className="mt-5 text-base sm:text-lg text-gray-300 font-light leading-relaxed">
+            {/* Subtitle */}
+            <p className="text-[17px] sm:text-[18px] text-[#FFE599] font-serif italic mb-4 leading-snug">
               {subtitle}
             </p>
 
-            <div className="mt-8">
-              <Link 
-                href={btnUrl} 
-                style={{ backgroundColor: btnBgColor, color: btnTextColor }}
-                className="inline-flex items-center gap-2 font-semibold text-sm md:text-base px-7 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg group cursor-pointer"
+            {/* Description */}
+            <p className="text-[14.5px] sm:text-[15px] text-white/75 font-normal leading-relaxed mb-8 max-w-[48ch]">
+              {description}
+            </p>
+
+            {/* CTA Button (Cuivre Doré Impérial) & Carousel Controls */}
+            <div className="flex flex-wrap items-center gap-5">
+              <Link
+                href={btnUrl}
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
               >
                 <span>{btnText}</span>
-                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                  <path d="M7 17L17 7M9 7h8v8" />
                 </svg>
               </Link>
+
+              {/* Navigation arrows & step pills */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={prevPair}
+                  className="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 hover:border-[#E8A63D] text-white/80 hover:text-[#FFE599] flex items-center justify-center transition-all cursor-pointer"
+                  title="Services précédents"
+                  aria-label="Services précédents"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={nextPair}
+                  className="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 hover:border-[#E8A63D] text-white/80 hover:text-[#FFE599] flex items-center justify-center transition-all cursor-pointer"
+                  title="Services suivants"
+                  aria-label="Services suivants"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
+
+            {/* Stepper Indicators */}
+            <div className="flex items-center gap-2 mt-5">
+              {[0, 1, 2].map((step) => (
+                <button
+                  key={step}
+                  type="button"
+                  onClick={() => setStartIndex(step * 2)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    currentStep === step ? 'w-8 bg-[#E8A63D]' : 'w-2 bg-white/20 hover:bg-white/40'
+                  }`}
+                  aria-label={`Aller au groupe ${step + 1}`}
+                />
+              ))}
+              <span className="text-[11px] text-white/45 font-mono ml-2">
+                Auto 5.5s
+              </span>
+            </div>
+
           </div>
 
-          {/* Right 4 Pillars Column */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-6 md:gap-8">
-            {pillars.map((pillar, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center group">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 group-hover:border-[#c59a3f]/50 group-hover:bg-[#c59a3f]/10 transition-all duration-300">
-                  {pillar.icon}
-                </div>
-                <h3 className="text-sm md:text-base font-bold text-white group-hover:text-[#c59a3f] transition-colors">
-                  {pillar.title}
-                </h3>
-                <p className="text-xs text-gray-400 mt-1.5 font-light">
-                  {pillar.desc}
-                </p>
-              </div>
-            ))}
+          {/* ================= RIGHT COLUMN: 2 Rotating Cards (Hero Style with Copper-Gold Beam) ================= */}
+          <div 
+            className="lg:col-span-7"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 transition-opacity duration-300 ${isAnimating ? 'opacity-30 scale-[0.98]' : 'opacity-100 scale-100'}`}>
+              {visibleCards.map((service, idx) => {
+                const delays = ['0s', '-2.75s'];
+                const delay = delays[idx % delays.length];
+
+                return (
+                  <Link
+                    key={`${service.id}-${startIndex}-${idx}`}
+                    href={service.url}
+                    className="relative group rounded-[20px] p-[1.5px] overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1.5 block text-left min-h-[300px] flex flex-col"
+                  >
+                    {/* Base outline */}
+                    <div className="absolute inset-0 rounded-[20px] border border-white/[0.08] pointer-events-none" />
+
+                    {/* Soft Golden Halo */}
+                    <div
+                      className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none blur-[9px] opacity-75 animate-beam-spin"
+                      style={{
+                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                        animationDelay: delay,
+                      }}
+                    />
+
+                    {/* Traveling Light Beam & Copper Trail #C96A2B */}
+                    <div
+                      className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none animate-beam-spin"
+                      style={{
+                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                        animationDelay: delay,
+                      }}
+                    />
+
+                    {/* Inner Card (Navy #0E2036 / 94 with backdrop blur) */}
+                    <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/94 backdrop-blur-[14px] rounded-[18.5px] p-6 sm:p-7 h-full w-full flex-1">
+                      
+                      {/* Top: Icon + Tag */}
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-4">
+                          <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-sm">
+                            <ServiceIcon type={service.iconType} />
+                          </div>
+                          <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/[0.07] text-[#E8A63D] border border-[#E8A63D]/30">
+                            {service.tag}
+                          </span>
+                        </div>
+
+                        {/* Service Title */}
+                        <h3 className="font-serif font-bold text-[22px] sm:text-[24px] text-white tracking-[0.01em] group-hover:text-[#FFE599] transition-colors mb-2.5">
+                          {service.title}
+                        </h3>
+
+                        {/* Service Description */}
+                        <p className="text-[13.5px] text-white/75 leading-relaxed font-normal">
+                          {service.desc}
+                        </p>
+                      </div>
+
+                      {/* Bottom Link: Learn More */}
+                      <div className="pt-5 mt-4 border-t border-white/[0.08] flex items-center justify-between text-[#E8A63D] group-hover:text-[#FFE599] font-semibold text-[13.5px] transition-colors">
+                        <span>{service.ctaText}</span>
+                        <span className="w-7 h-7 rounded-full bg-white/[0.06] group-hover:bg-[#C8732A] group-hover:text-white flex items-center justify-center transition-all duration-200">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="w-3.5 h-3.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
+                          </svg>
+                        </span>
+                      </div>
+
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
         </div>

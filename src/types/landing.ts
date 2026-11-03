@@ -90,22 +90,15 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
   { 
     id: 'sec_why_choose', 
     type: 'WhyChooseUs', 
-    name: 'Pourquoi nous choisir (Votre partenaire de confiance)', 
+    name: 'Nos services (Purchase, Storage, Delivery, Pickup, Buyback)', 
     enabled: true, 
     settings: { 
-      badge: "Pourquoi — nous choisir ?", 
-      title: "Votre partenaire de confiance",
-      subtitle: "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise.",
-      btnText: "En savoir plus",
-      btnUrl: "/about",
-      pillar1_title: "Produits certifiés",
-      pillar1_desc: "Authenticité garantie",
-      pillar2_title: "Transparence totale",
-      pillar2_desc: "Des prix clairs",
-      pillar3_title: "Accompagnement personnalisé",
-      pillar3_desc: "Une équipe à votre écoute",
-      pillar4_title: "Livraison sécurisée",
-      pillar4_desc: "Dans toute l’Europe"
+      badge: "NOS SERVICES EXCLUSIFS", 
+      title: "Nos services",
+      subtitle: "L'excellence et la maîtrise de vos investissements en métaux précieux.",
+      description: "De l'achat de lingots et pièces certifiés au gardiennage en coffre sécurisé hors système bancaire, nous vous offrons un écosystème haut de gamme complet, liquide et transparent.",
+      btnText: "Découvrir nos solutions",
+      btnUrl: "/services"
     } 
   },
   { 

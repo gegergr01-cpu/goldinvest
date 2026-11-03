@@ -736,7 +736,7 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
                     <input
                       type="text"
-                      value={s.badge ?? "Pourquoi — nous choisir ?"}
+                      value={s.badge ?? "NOS SERVICES EXCLUSIFS"}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -745,17 +745,26 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Titre</label>
                     <input
                       type="text"
-                      value={s.title ?? "Votre partenaire de confiance"}
+                      value={s.title ?? "Nos services"}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre (Accroche dorée)</label>
+                    <input
+                      type="text"
+                      value={s.subtitle ?? "L'excellence et la maîtrise de vos investissements en métaux précieux."}
+                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
                     <textarea
-                      rows={2}
-                      value={s.subtitle ?? "Nous vous accompagnons dans votre investissement avec transparence, sécurité et expertise."}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                      rows={3}
+                      value={s.description ?? "De l'achat de lingots et pièces certifiés au gardiennage en coffre sécurisé hors système bancaire, nous vous offrons un écosystème haut de gamme complet, liquide et transparent."}
+                      onChange={(e) => handleFieldChange('description', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
