@@ -9,87 +9,151 @@ interface TestimonialsSectionProps {
 export default function TestimonialsSection({ config }: TestimonialsSectionProps) {
   const c = config || {};
 
-  const badge = c.badge || 'Ils nous font confiance';
+  const badge = c.badge || 'AVIS CLIENTS VÉRIFIÉS';
+  const title = c.title || 'Ils nous font confiance';
+  const subtitle = c.subtitle || 'Découvrez les retours d’expérience de nos clients investisseurs en métaux précieux physiques.';
 
   const reviews = [
     {
       id: 1,
       name: c.review1_name || 'Thomas D.',
-      text: c.review1_text || '« Service impeccable et livraison rapide. Je recommande vivement ! »',
+      city: 'Paris, France',
+      asset: "Lingot d'Or 100 g C.Hafner",
+      text: c.review1_text || '« Première commande de lingots d’or scellés LBMA. Colis ultra-discret, livraison sécurisée avec signature et certificat de conformité parfait. Un service d’un professionnalisme exemplaire. »',
       rating: parseInt(c.review1_rating || '5', 10),
-      avatarBg: 'bg-emerald-600',
-      initials: (c.review1_name || 'Thomas D.').split(' ').map(n => n[0]).join('').slice(0, 2)
+      date: 'Il y a 3 jours',
     },
     {
       id: 2,
       name: c.review2_name || 'Sophie M.',
-      text: c.review2_text || '« Des prix très compétitifs et une équipe très professionnelle. »',
+      city: 'Genève, Suisse',
+      asset: "20 Francs Napoléon III & Krugerrand",
+      text: c.review2_text || '« Conseillers très réactifs et à l’écoute. Les cours en direct sont limpides et sans frais cachés. Les pièces sont arrivées sous pochettes sécurisées scellées sous 48 heures. »',
       rating: parseInt(c.review2_rating || '5', 10),
-      avatarBg: 'bg-amber-600',
-      initials: (c.review2_name || 'Sophie M.').split(' ').map(n => n[0]).join('').slice(0, 2)
+      date: 'Il y a 1 semaine',
     },
     {
       id: 3,
       name: c.review3_name || 'Pierre L.',
-      text: c.review3_text || '« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »',
+      city: 'Bruxelles, Belgique',
+      asset: "Lingots d'Argent 1 kg LBMA",
+      text: c.review3_text || '« Excellent accompagnement pour la diversification de mon patrimoine. Prix très compétitifs face aux comptoirs bancaires traditionnels. Je recommande les yeux fermés. »',
       rating: parseInt(c.review3_rating || '5', 10),
-      avatarBg: 'bg-blue-600',
-      initials: (c.review3_name || 'Pierre L.').split(' ').map(n => n[0]).join('').slice(0, 2)
+      date: 'Il y a 2 semaines',
     }
   ];
 
-  const bgColor = c.bgColor || '#fcfbf9';
-  const cardBgColor = c.cardBgColor || '#ffffff';
-
   return (
-    <section 
-      className="w-full py-16 md:py-24 border-t border-gray-100 transition-colors duration-300"
-      style={{ backgroundColor: bgColor }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-20 lg:py-24 bg-[#FAF9F5] border-t border-b border-[#E8E4DA] relative overflow-hidden">
+      
+      {/* Background subtle watermark & decorative grid */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.035]"
+        style={{
+          backgroundImage: 'radial-gradient(#C8732A 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}
+      />
+
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Section Header */}
-        <div className="text-center max-w-xl mx-auto mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-3">
-            <span className="w-8 h-[1px] bg-[#c59a3f]" />
-            <span className="text-xs md:text-sm font-semibold tracking-widest text-[#c59a3f] uppercase">
+        <div className="text-center max-w-2xl mx-auto mb-14 lg:mb-16">
+          {/* Eyebrow with gold lines */}
+          <div className="inline-flex items-center gap-3 mb-3">
+            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#C8732A]" />
+            <span className="font-mono text-[11px] sm:text-[12px] font-bold tracking-[0.18em] text-[#C8732A] uppercase">
               {badge}
             </span>
-            <span className="w-8 h-[1px] bg-[#c59a3f]" />
+            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#C8732A]" />
+          </div>
+
+          {/* Heading */}
+          <h2 className="font-serif font-bold text-[32px] sm:text-[40px] text-[#0E2036] tracking-tight leading-tight mb-3">
+            {title.includes('confiance') ? (
+              <>
+                {title.replace('confiance', '')}
+                <span className="bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] bg-clip-text text-transparent italic">
+                  confiance
+                </span>
+              </>
+            ) : title}
+          </h2>
+
+          <p className="text-[15px] sm:text-[16px] text-gray-600 font-normal leading-relaxed mb-6">
+            {subtitle}
+          </p>
+
+          {/* Trust Rating Aggregate Badge */}
+          <div className="inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-200/80 shadow-sm text-[13px] text-gray-700">
+            <div className="flex items-center text-[#F59E0B]">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <span className="font-bold text-gray-900">4.9 / 5</span>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <span className="text-gray-500 font-normal">Plus de 450 investisseurs accompagnés</span>
           </div>
         </div>
 
         {/* 3 Review Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7">
           {reviews.map((review) => (
             <div
               key={review.id}
-              style={{ backgroundColor: cardBgColor }}
-              className="rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5"
+              className="bg-white rounded-[20px] p-7 sm:p-8 border border-gray-200/80 hover:border-[#C8732A]/50 transition-all duration-300 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_14px_35px_rgba(200,115,42,0.12)] hover:-translate-y-1 flex flex-col justify-between group relative"
             >
-              {/* Avatar with Initials & Ring */}
-              <div className={`w-14 h-14 rounded-full ${review.avatarBg} text-white font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-md ring-2 ring-[#c59a3f]/30`}>
-                {review.initials}
-              </div>
+              {/* Top Row: Stars + Verified Badge */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  {/* Stars */}
+                  <div className="flex items-center gap-1 text-[#F59E0B]">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
 
-              {/* Review Content */}
-              <div className="flex flex-col">
-                {/* 5 Gold Stars */}
-                <div className="flex items-center gap-1 text-[#e5a932] mb-1.5">
-                  {[...Array(Math.max(1, Math.min(5, review.rating)))].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  {/* Verified Badge */}
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <svg className="w-3 h-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                  ))}
+                    Achat vérifié
+                  </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-gray-700 italic leading-snug">
+                {/* Review Text */}
+                <p className="text-[14.5px] text-gray-700 leading-relaxed font-normal mb-5">
                   {review.text}
                 </p>
+              </div>
 
-                <span className="mt-2 text-xs font-semibold text-gray-900 not-italic">
-                  {review.name}
-                </span>
+              {/* Bottom: Client Profile & Purchased Asset Tag */}
+              <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-[14.5px] text-gray-900">
+                      {review.name}
+                    </h4>
+                    <span className="text-[12px] text-gray-400">
+                      {review.city}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-gray-400 font-mono">
+                    {review.date}
+                  </span>
+                </div>
+
+                {/* Acquired Asset Tag */}
+                <div className="mt-1 flex items-center gap-1.5 text-[11.5px] font-medium text-[#C8732A] bg-[#C8732A]/8 px-2.5 py-1 rounded-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A]" />
+                  <span className="truncate">{review.asset}</span>
+                </div>
               </div>
             </div>
           ))}

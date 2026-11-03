@@ -1136,6 +1136,38 @@ export default function GoldSectionEditor({
                   ))}
                 </div>
               )}
+
+              {section.type === 'Faq' && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
+                    <input
+                      type="text"
+                      value={s.badge ?? "QUESTIONS FRÉQUENTES"}
+                      onChange={(e) => handleFieldChange('badge', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre</label>
+                    <input
+                      type="text"
+                      value={s.title ?? "Tout savoir sur l'investissement dans les métaux précieux"}
+                      onChange={(e) => handleFieldChange('title', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
+                    <textarea
+                      rows={2}
+                      value={s.subtitle ?? "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."}
+                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    />
+                  </div>
+                </div>
+              )}
             </ElementorAccordion>
 
             {/* Accordion: 4 Cartes flottantes (GoldHero - Capture 3) */}

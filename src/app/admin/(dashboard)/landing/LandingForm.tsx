@@ -219,6 +219,13 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
     } else if (type === 'Testimonials') {
       newSec.name = 'Témoignages (Ils nous font confiance)';
       newSec.settings = { badge: "Ils nous font confiance" };
+    } else if (type === 'Faq') {
+      newSec.name = 'Foire Aux Questions (FAQ)';
+      newSec.settings = {
+        badge: "QUESTIONS FRÉQUENTES",
+        title: "Tout savoir sur l'investissement dans les métaux précieux",
+        subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."
+      };
     } else if (type === 'BestDeals') {
       newSec.name = "Nos Pièces d'or";
       newSec.settings = { 
@@ -263,7 +270,8 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
       'WhyChooseUs',
       'PreciousMetalsTicker',
       'CtaBanner',
-      'Testimonials'
+      'Testimonials',
+      'Faq'
     ].includes(section.type)) {
       const sectionIdx = sections.findIndex(s => s.id === section.id);
       return (
@@ -454,6 +462,10 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
                   <button onClick={() => addSection('Testimonials')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
                     <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                     Avis clients (Avis)
+                  </button>
+                  <button onClick={() => addSection('Faq')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Foire aux questions (FAQ)
                   </button>
                 </div>
 

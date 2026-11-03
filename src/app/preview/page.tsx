@@ -14,6 +14,7 @@ import WhyChooseUs from '@/components/home/WhyChooseUs';
 import PreciousMetalsTicker from '@/components/home/PreciousMetalsTicker';
 import CtaBanner from '@/components/home/CtaBanner';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
+import FaqSection from '@/components/home/FaqSection';
 
 import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 import PreviewSectionWrapper from '@/components/admin/PreviewSectionWrapper';
@@ -89,6 +90,9 @@ export default async function PreviewPage() {
         break;
       case 'Testimonials':
         content = <TestimonialsSection config={section.settings} />;
+        break;
+      case 'Faq':
+        content = <FaqSection config={section.settings} />;
         break;
 
       // Legacy / alternate sections

@@ -5,6 +5,7 @@ import WhyChooseUs from '@/components/home/WhyChooseUs';
 import PreciousMetalsTicker from '@/components/home/PreciousMetalsTicker';
 import CtaBanner from '@/components/home/CtaBanner';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
+import FaqSection from '@/components/home/FaqSection';
 
 import Hero from '@/components/home/Hero';
 import BestDeals from '@/components/home/BestDeals';
@@ -66,6 +67,8 @@ export default async function Home() {
         return <CtaBanner key={section.id} config={section.settings} />;
       case 'Testimonials':
         return <TestimonialsSection key={section.id} config={section.settings} />;
+      case 'Faq':
+        return <FaqSection key={section.id} config={section.settings} />;
 
       // Legacy / alternate sections
       case 'Hero':

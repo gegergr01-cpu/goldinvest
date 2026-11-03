@@ -6,6 +6,7 @@ export type SectionType =
   | 'PreciousMetalsTicker' 
   | 'CtaBanner' 
   | 'Testimonials'
+  | 'Faq'
   | 'Hero' 
   | 'BestDeals' 
   | 'BestSeller' 
@@ -157,6 +158,17 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       review3_text: "« Une expérience d’achat parfaite. Je reviendrai sans hésiter. »",
       review3_rating: "5"
     } 
+  },
+  {
+    id: 'sec_faq',
+    type: 'Faq',
+    name: 'Foire Aux Questions (FAQ)',
+    enabled: true,
+    settings: {
+      badge: "QUESTIONS FRÉQUENTES",
+      title: "Tout savoir sur l'investissement dans les métaux précieux",
+      subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."
+    }
   }
 ];
 

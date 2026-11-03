@@ -41,10 +41,9 @@ type FooterProps = {
 
 export default function Footer({
   footerLogoImage,
-  supportPhone = '+32 2 123 45 67',
-  supportEmail = 'info@goldsilversinvest.com',
-  footerCopyright = '© 2026 Gold Invest. Tous droits réservés.',
+  footerCopyright = 'Gold Silver Invest © 2011-2026',
   footerSocialFacebook = 'https://facebook.com',
+  footerSocialTwitter = 'https://x.com',
   footerSocialInstagram = 'https://instagram.com',
   footerSocialLinkedin = 'https://linkedin.com',
 }: FooterProps) {
@@ -63,245 +62,480 @@ export default function Footer({
     }, 600);
   };
 
-  const scrollToTop = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   return (
-    <footer className="w-full bg-[#111111] text-gray-300 font-sans border-t border-white/5 relative z-20">
+    <footer className="w-full bg-[#161719] text-white/70 font-sans border-t border-white/[0.08] relative z-20">
       
-      {/* Main Footer Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-          
-          {/* Column 1: Brand & Presentation (col-span-4) */}
-          <div className="lg:col-span-4 flex flex-col items-start pr-0 lg:pr-6">
+      {/* 1. Top Section: Centered Logo with horizontal divider lines */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12">
+        <div className="relative flex items-center justify-center">
+          {/* Left horizontal line */}
+          <div className="flex-1 h-[1px] bg-white/[0.12]" />
+
+          {/* Centered Logo badge */}
+          <div className="px-6 sm:px-8 bg-[#161719] flex items-center justify-center shrink-0">
             {footerLogoImage ? (
-              <Link href="/" className="inline-block">
+              <Link href="/" className="inline-block transition-opacity hover:opacity-90">
                 <Image
                   src={footerLogoImage}
-                  alt="Footer Logo"
+                  alt="Gold Silver Invest"
                   width={220}
-                  height={60}
+                  height={50}
                   unoptimized
-                  className="max-h-12 w-auto object-contain"
+                  className="max-h-10 sm:max-h-12 w-auto object-contain"
                 />
               </Link>
             ) : (
-              <GoldInvestLogo variant="light" size="lg" />
+              <Link href="/" className="inline-flex items-center gap-2.5 group">
+                <GoldInvestLogo variant="light" size="lg" />
+              </Link>
             )}
-            <p className="mt-4 text-xs sm:text-sm text-gray-400 font-light leading-relaxed max-w-sm">
-              Investissez en toute sérénité dans l’or et l’argent, des valeurs refuges par excellence.
-            </p>
-
-            {/* Social Icons */}
-            <div className="mt-6 flex items-center space-x-3.5">
-              {/* Facebook */}
-              <a 
-                href={footerSocialFacebook} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-black hover:bg-[#c59a3f] hover:border-[#c59a3f] transition-all duration-300"
-                aria-label="Facebook"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                </svg>
-              </a>
-
-              {/* Instagram */}
-              <a 
-                href={footerSocialInstagram} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-black hover:bg-[#c59a3f] hover:border-[#c59a3f] transition-all duration-300"
-                aria-label="Instagram"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </a>
-
-              {/* LinkedIn */}
-              <a 
-                href={footerSocialLinkedin} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-black hover:bg-[#c59a3f] hover:border-[#c59a3f] transition-all duration-300"
-                aria-label="LinkedIn"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg>
-              </a>
-            </div>
           </div>
 
-          {/* Column 2: Liens utiles (col-span-2) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-sm font-serif font-bold text-[#c59a3f] uppercase tracking-wider mb-4">
-              Liens utiles
+          {/* Right horizontal line */}
+          <div className="flex-1 h-[1px] bg-white/[0.12]" />
+        </div>
+      </div>
+
+      {/* 2. Main Columns Section (5 Columns matching GoldBroker) */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-12 sm:pb-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-7">
+          
+          {/* Column 1: About us */}
+          <div>
+            <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
+              About us
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-gray-400">
+            <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/" className="hover:text-white hover:underline transition-colors">
-                  Accueil
+                <Link href="/about" className="hover:text-[#E8A63D] transition-colors">
+                  Who we are
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-white hover:underline transition-colors">
-                  À propos
+                <Link href="/#testimonials" className="hover:text-[#E8A63D] transition-colors">
+                  Customer reviews
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-white hover:underline transition-colors">
+                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
+                  Press releases
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-[#E8A63D] transition-colors">
+                  Wealth management partnerships
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-[#E8A63D] transition-colors">
+                  Affiliate program
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="hover:text-[#E8A63D] transition-colors">
                   FAQ
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Column 2: Buy */}
+          <div>
+            <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
+              Buy
+            </h3>
+            <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/contact" className="hover:text-white hover:underline transition-colors">
-                  Contact
+                <Link href="/shop?category=lingots-dor" className="hover:text-[#E8A63D] transition-colors">
+                  Buy gold bullion
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=lingots-dor" className="hover:text-[#E8A63D] transition-colors">
+                  Gold bars
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=pieces-dor" className="hover:text-[#E8A63D] transition-colors">
+                  Gold coins
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=lingots-dargent" className="hover:text-[#E8A63D] transition-colors">
+                  Buy silver bullion
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=lingots-dargent" className="hover:text-[#E8A63D] transition-colors">
+                  Silver bars
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=pieces-dargent" className="hover:text-[#E8A63D] transition-colors">
+                  Silver coins
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
+                  Buy platinum bullion
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
+                  Buy palladium bullion
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Nos produits (col-span-2) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-sm font-serif font-bold text-[#c59a3f] uppercase tracking-wider mb-4">
-              Nos produits
+          {/* Column 3: Services */}
+          <div>
+            <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
+              Services
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-gray-400">
+            <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/shop?category=pieces-dor" className="hover:text-white hover:underline transition-colors">
-                  Pièces d&apos;or
+                <Link href="/services" className="hover:text-[#E8A63D] transition-colors">
+                  All our services
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=lingots-dor" className="hover:text-white hover:underline transition-colors">
-                  Lingots d&apos;or
+                <Link href="/services/storage" className="hover:text-[#E8A63D] transition-colors">
+                  Gold and silver storage
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=lingots-dargent" className="hover:text-white hover:underline transition-colors">
-                  Lingots d&apos;argent
+                <Link href="/services/delivery" className="hover:text-[#E8A63D] transition-colors">
+                  Gold and silver delivery
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=pieces-dargent" className="hover:text-white hover:underline transition-colors">
-                  Pièces d&apos;argent
+                <Link href="/services/buyback" className="hover:text-[#E8A63D] transition-colors">
+                  Buyback &amp; resale
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="hover:text-[#E8A63D] transition-colors">
+                  Pricing &amp; fees
+                </Link>
+              </li>
+              <li>
+                <Link href="/services/insurance" className="hover:text-[#E8A63D] transition-colors">
+                  Precious metals insurance
+                </Link>
+              </li>
+              <li>
+                <Link href="/services/investment" className="hover:text-[#E8A63D] transition-colors">
+                  Our investment solution
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Service client (col-span-2) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-sm font-serif font-bold text-[#c59a3f] uppercase tracking-wider mb-4">
-              Service client
+          {/* Column 4: Prices & market */}
+          <div>
+            <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
+              Prices &amp; market
             </h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-gray-400">
-              <li className="flex items-center gap-2.5">
-                <svg className="w-4 h-4 text-[#c59a3f] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <span>{supportPhone}</span>
+            <ul className="space-y-1.5 text-[13px] leading-[1.9]">
+              <li>
+                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
+                  News &amp; analysis
+                </Link>
               </li>
-              <li className="flex items-center gap-2.5">
-                <svg className="w-4 h-4 text-[#c59a3f] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <a href={`mailto:${supportEmail}`} className="hover:text-white truncate">
-                  {supportEmail}
-                </a>
+              <li>
+                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
+                  Archive
+                </Link>
               </li>
-              <li className="flex items-center gap-2.5">
-                <svg className="w-4 h-4 text-[#c59a3f] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Lun. - Ven. : 9h - 18h</span>
+              <li>
+                <Link href="/shop?metal=gold" className="hover:text-[#E8A63D] transition-colors">
+                  Gold price
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?metal=silver" className="hover:text-[#E8A63D] transition-colors">
+                  Silver price
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
+                  Platinum price
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
+                  Palladium price
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
+                  Gold/silver ratio
+                </Link>
+              </li>
+              <li>
+                <Link href="/widgets" className="hover:text-[#E8A63D] transition-colors">
+                  Widgets
+                </Link>
+              </li>
+              <li>
+                <Link href="/#app" className="hover:text-[#E8A63D] transition-colors">
+                  Mobile app
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 5: Newsletter (col-span-2) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-sm font-serif font-bold text-[#c59a3f] uppercase tracking-wider mb-4">
-              Newsletter
+          {/* Column 5: Guide & Newsletter */}
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
+              Guide
             </h3>
-            <p className="text-xs sm:text-sm text-gray-400 mb-3 font-light">
-              Recevez nos offres exclusives
-            </p>
+            <ul className="space-y-1.5 text-[13px] leading-[1.9] mb-5">
+              <li>
+                <Link href="/guide" className="hover:text-[#E8A63D] transition-colors">
+                  Investor&apos;s guide
+                </Link>
+              </li>
+              <li>
+                <Link href="/how-to-order" className="hover:text-[#E8A63D] transition-colors">
+                  How to order
+                </Link>
+              </li>
+              <li>
+                <Link href="/taxation" className="hover:text-[#E8A63D] transition-colors">
+                  Gold and silver taxation
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-[#E8A63D] transition-colors">
+                  Why choose Gold Silver Invest
+                </Link>
+              </li>
+            </ul>
 
-            {isSubscribed ? (
-              <div className="p-3 bg-[#c59a3f]/10 border border-[#c59a3f]/30 rounded-lg text-[#c59a3f] text-xs font-semibold">
-                Merci pour votre inscription !
-              </div>
-            ) : (
-              <form onSubmit={handleNewsletter} className="flex items-center bg-white rounded-lg p-1 border border-gray-200">
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Votre email" 
-                  required
-                  className="w-full px-2.5 py-1.5 text-xs text-gray-900 bg-transparent outline-none placeholder-gray-400"
-                />
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="bg-[#c59a3f] hover:bg-[#b08733] text-black w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 transition-colors shadow-sm cursor-pointer disabled:opacity-50"
-                  aria-label="S'inscrire"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            {/* Newsletter Subscription Box matching GoldBroker */}
+            <div className="pt-2">
+              {isSubscribed ? (
+                <div className="p-2.5 bg-[#C96A2B]/15 border border-[#C96A2B]/40 rounded text-[#FFE599] text-[12px] font-medium flex items-center gap-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-[#E8A63D]">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                </button>
-              </form>
-            )}
+                  <span>Thank you for subscribing!</span>
+                </div>
+              ) : (
+                <form onSubmit={handleNewsletter} className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Subscribe to our newsletter"
+                      required
+                      className="w-full bg-[#1F2023] border border-white/20 hover:border-white/35 focus:border-[#E8A63D] rounded px-3 py-2 text-[12px] text-white placeholder-white/40 outline-none transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-9 h-9 rounded bg-[#1F2023] border border-[#C96A2B]/70 hover:border-[#E8A63D] hover:bg-[#C96A2B]/20 text-[#FFE599] hover:text-white flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-sm group"
+                    title="Subscribe"
+                    aria-label="Subscribe"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-4 h-4 text-[#E8A63D] group-hover:scale-110 transition-transform"
+                    >
+                      <path d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
 
         </div>
       </div>
 
-      {/* Bottom Sub-Footer Bar */}
-      <div className="w-full border-t border-white/5 py-6 px-4 sm:px-6 lg:px-8 bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 text-center md:text-left">
+      {/* 3. Bottom Sub-Footer Bar */}
+      <div className="w-full border-t border-white/[0.12] py-6 px-4 sm:px-6 lg:px-8 bg-[#141517]">
+        <div className="max-w-[1280px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-5 text-[12px] text-white/50">
           
-          {/* Left: Copyright */}
-          <div>
-            <span>{footerCopyright}</span>
-          </div>
+          {/* Left: Social Icons + App Store Badges */}
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-5">
+            {/* Social Icons (Linear stroke in subtle gold) */}
+            <div className="flex items-center space-x-3 text-white/70">
+              {/* Facebook */}
+              <a
+                href={footerSocialFacebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="Facebook"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M14 9h-2a1 1 0 0 0-1 1v2H9v3h2v6h3v-6h2l1-3h-3V9.5a.5.5 0 0 1 .5-.5h.5V9z" fill="currentColor" stroke="none" />
+                </svg>
+              </a>
 
-          {/* Right: Legal Links & Back to Top Button */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-4">
-              <Link href="/pages/mentions-legales" className="hover:text-gray-300 transition-colors">
-                Mentions légales
-              </Link>
-              <span>|</span>
-              <Link href="/pages/politique-de-confidentialite" className="hover:text-gray-300 transition-colors">
-                Politique de confidentialité
-              </Link>
-              <span>|</span>
-              <Link href="/pages/conditions-generales-de-vente" className="hover:text-gray-300 transition-colors">
-                Conditions générales de vente
-              </Link>
+              {/* X / Twitter */}
+              <a
+                href={footerSocialTwitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors text-[13px] font-bold"
+                aria-label="X"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+
+              {/* Instagram */}
+              <a
+                href={footerSocialInstagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="Instagram"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+
+              {/* LinkedIn */}
+              <a
+                href={footerSocialLinkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="LinkedIn"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <rect x="2" y="2" width="20" height="20" rx="5" />
+                  <path d="M8 11v5m0-8v.01M12 16v-5m0 0a2 2 0 0 1 4 0v5" />
+                </svg>
+              </a>
+
+              {/* YouTube */}
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="YouTube"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <rect x="2" y="4" width="20" height="16" rx="4" />
+                  <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none" />
+                </svg>
+              </a>
+
+              {/* RSS */}
+              <a
+                href="/feed.xml"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="RSS Feed"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <path d="M4 11a9 9 0 0 1 9 9" />
+                  <path d="M4 4a16 16 0 0 1 16 16" />
+                  <circle cx="5" cy="19" r="1" fill="currentColor" />
+                </svg>
+              </a>
+
+              {/* Google Reviews */}
+              <a
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E8A63D] transition-colors"
+                aria-label="Google"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                </svg>
+              </a>
             </div>
 
-            {/* Back to top gold button */}
-            <button 
-              onClick={scrollToTop} 
-              className="w-8 h-8 rounded-full bg-[#c59a3f] hover:bg-[#b08733] text-black flex items-center justify-center transition-all duration-300 shadow-md cursor-pointer flex-shrink-0"
-              title="Retour en haut"
-              aria-label="Retour en haut"
+            {/* App Store Badges */}
+            <div className="flex items-center gap-2">
+              {/* App Store badge */}
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#202226] border border-white/10 hover:border-white/25 transition-colors text-white"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.84c.64-.78 1.08-1.87.96-2.96-.93.04-2.07.62-2.73 1.4-.58.67-1.09 1.76-.95 2.82 1.04.08 2.1-.51 2.72-1.26z" />
+                </svg>
+                <div className="text-left leading-none">
+                  <div className="text-[8px] text-white/50 uppercase tracking-tight">Download on the</div>
+                  <div className="text-[11px] font-semibold text-white">App Store</div>
+                </div>
+              </a>
+
+              {/* Google Play badge */}
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#202226] border border-white/10 hover:border-white/25 transition-colors text-white"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#E8A63D]" viewBox="0 0 24 24">
+                  <path d="M3 20.5v-17c0-.83.52-1.5 1.23-1.5.33 0 .66.14.93.38l10.42 8.79-4.24 4.24L3.48 21.67c-.29.21-.59.33-.48-.17zm12.33-7.58l2.25-1.9-9.9-8.35 7.65 10.25zm1.5 1.27l3.67 3.1c.54.46.54 1.2 0 1.66l-3.67 3.1-2.07-2.07 2.07-5.79zm-2.07 6.83l-7.65 6.47 9.9-8.35-2.25 1.88z" />
+                </svg>
+                <div className="text-left leading-none">
+                  <div className="text-[8px] text-white/50 uppercase tracking-tight">GET IT ON</div>
+                  <div className="text-[11px] font-semibold text-white">Google Play</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          {/* Right: Legal Links & Copyright */}
+          <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-2.5 gap-y-1 text-white/50 text-[11.5px]">
+            <Link href="/pages/politique-de-confidentialite" className="hover:text-white transition-colors">
+              Privacy
+            </Link>
+            <span>|</span>
+            <Link href="/pages/security" className="hover:text-white transition-colors">
+              Security
+            </Link>
+            <span>|</span>
+            <Link href="/sitemap.xml" className="hover:text-white transition-colors">
+              Sitemap
+            </Link>
+            <span>|</span>
+            <Link href="/pages/mentions-legales" className="hover:text-white transition-colors">
+              Terms of use
+            </Link>
+            <span>|</span>
+            <Link href="/pages/conditions-generales-de-vente" className="hover:text-white transition-colors">
+              Terms of sale
+            </Link>
+            <span>|</span>
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const event = new CustomEvent('open-cookie-preferences');
+                  window.dispatchEvent(event);
+                }
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
+              Manage my cookies
             </button>
+            <span>|</span>
+            <span className="text-white/70 font-medium">
+              {footerCopyright}
+            </span>
           </div>
 
         </div>
