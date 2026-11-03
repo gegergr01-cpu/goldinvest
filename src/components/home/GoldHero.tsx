@@ -161,37 +161,106 @@ export default function GoldHero({ config }: GoldHeroProps) {
 
         </div>
 
-        {/* Bottom Right: 3 Floating Cards Showcase (.hero-showcase matching Capture 3 & AZ Solutions) */}
+        {/* Bottom Right: 3 Floating Cards Showcase (.hero-showcase with Rotating Copper-Gold Beam) */}
         <div className="mt-12 sm:mt-16 flex justify-end">
           <div className="w-full lg:w-[620px] grid grid-cols-1 sm:grid-cols-3 gap-3.5">
 
             {/* Card 1: Pièces d'Or */}
-            <div className="flex flex-col justify-center bg-[#0E2036]/85 backdrop-blur-[8px] border border-white/10 rounded-[14px] p-[16px_18px] shadow-[0_14px_30px_rgba(0,0,0,0.25)] hover:border-[#C8732A]/70 transition-all duration-200">
-              <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em]">
-                {card1Title}
-              </div>
-              <div className="text-[12px] leading-[1.45] text-white/65 font-normal">
-                {card1Desc}
+            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
+              
+              {/* Soft Golden Halo */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                  animationDelay: '0s',
+                }}
+              />
+
+              {/* Traveling Light Beam & Copper Trail #C96A2B */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                  animationDelay: '0s',
+                }}
+              />
+
+              {/* Inner Card (Translucent Navy #0E2036) */}
+              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
+                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
+                  {card1Title}
+                </div>
+                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
+                  {card1Desc}
+                </div>
               </div>
             </div>
 
             {/* Card 2: Lingots d'Or */}
-            <div className="flex flex-col justify-center bg-[#0E2036]/85 backdrop-blur-[8px] border border-white/10 rounded-[14px] p-[16px_18px] shadow-[0_14px_30px_rgba(0,0,0,0.25)] hover:border-[#C8732A]/70 transition-all duration-200">
-              <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em]">
-                {card2Title}
-              </div>
-              <div className="text-[12px] leading-[1.45] text-white/65 font-normal">
-                {card2Desc}
+            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
+              
+              {/* Soft Golden Halo */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                  animationDelay: '-1.8s',
+                }}
+              />
+
+              {/* Traveling Light Beam & Copper Trail #C96A2B */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                  animationDelay: '-1.8s',
+                }}
+              />
+
+              {/* Inner Card (Translucent Navy #0E2036) */}
+              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
+                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
+                  {card2Title}
+                </div>
+                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
+                  {card2Desc}
+                </div>
               </div>
             </div>
 
             {/* Card 3: Argent Fin */}
-            <div className="flex flex-col justify-center bg-[#0E2036]/85 backdrop-blur-[8px] border border-white/10 rounded-[14px] p-[16px_18px] shadow-[0_14px_30px_rgba(0,0,0,0.25)] hover:border-[#C8732A]/70 transition-all duration-200">
-              <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em]">
-                {card3Title}
-              </div>
-              <div className="text-[12px] leading-[1.45] text-white/65 font-normal">
-                {card3Desc}
+            <div className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
+              
+              {/* Soft Golden Halo */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                  animationDelay: '-3.6s',
+                }}
+              />
+
+              {/* Traveling Light Beam & Copper Trail #C96A2B */}
+              <div
+                className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
+                style={{
+                  background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                  animationDelay: '-3.6s',
+                }}
+              />
+
+              {/* Inner Card (Translucent Navy #0E2036) */}
+              <div className="relative z-10 flex flex-col justify-center bg-[#0E2036]/90 backdrop-blur-[12px] rounded-[14.5px] p-[16px_18px] h-full w-full">
+                <div className="font-serif font-bold text-[18px] text-white mb-1.5 tracking-[0.01em] group-hover:text-[#FFE599] transition-colors duration-200">
+                  {card3Title}
+                </div>
+                <div className="text-[12px] leading-[1.45] text-white/70 font-normal">
+                  {card3Desc}
+                </div>
               </div>
             </div>
 

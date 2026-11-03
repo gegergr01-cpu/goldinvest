@@ -162,3 +162,16 @@ a {
 .animate-hero-image {
   animation: heroFadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
+
+@keyframes beam-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.animate-beam-spin {
+  animation: beam-spin 5.5s linear infinite;
+}
