@@ -3,6 +3,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { getFilteredProducts } from '@/actions/public';
 import BestDealsCard from './BestDealsCard';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface BestDealsProps {
   config?: Record<string, any>;
@@ -185,14 +186,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
             className="mx-4 sm:mx-8 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-sm tracking-wide transition-all duration-200 flex items-center gap-2.5 group whitespace-nowrap shadow-lg shadow-[#9C4E0F]/30 border border-[#E8A63D]/40 hover:-translate-y-0.5 active:translate-y-0 select-none cursor-pointer"
           >
             <span>{btnText}</span>
-            <svg 
-              className="w-4 h-4 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:translate-x-1" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.4} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            <LuxuryArrow className="w-3.5 h-3.5 text-white/90 group-hover:text-white group-hover:translate-x-1" />
           </Link>
 
           <div className="flex-1 h-px bg-gradient-to-l from-transparent via-[#c59a3f]/50 to-[#c59a3f]" />

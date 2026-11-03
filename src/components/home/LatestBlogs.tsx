@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 export default async function LatestBlogs({ config }: { config?: any }) {
   const displayMode = config?.displayMode || 'DATE_DESC';
@@ -59,11 +60,9 @@ export default async function LatestBlogs({ config }: { config?: any }) {
           {config?.title || t('latest_blogs_title')}
         </h2>
         {config?.SEE_ALL_TEXT !== '' && (
-          <Link href="/blog" className="flex items-center text-sm font-semibold text-gray-900 hover:text-orange-600 transition text-[length:var(--sz-m)] md:text-[length:var(--sz-t)] lg:text-[length:var(--sz-d)]" style={getResponsiveVars('SEE_ALL_TEXT', {m: '14px', t: '14px', d: '14px'})}>
-            {config?.SEE_ALL_TEXT || t('see_all')}
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+          <Link href="/blog" className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-orange-600 transition text-[length:var(--sz-m)] md:text-[length:var(--sz-t)] lg:text-[length:var(--sz-d)] group" style={getResponsiveVars('SEE_ALL_TEXT', {m: '14px', t: '14px', d: '14px'})}>
+            <span>{config?.SEE_ALL_TEXT || t('see_all')}</span>
+            <LuxuryArrow className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         )}
       </div>

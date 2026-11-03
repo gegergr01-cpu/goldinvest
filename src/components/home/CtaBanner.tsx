@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface CtaBannerProps {
   config?: Record<string, string>;
@@ -59,9 +60,7 @@ export default function CtaBanner({ config }: CtaBannerProps) {
                 className="inline-flex items-center gap-3 font-semibold text-sm sm:text-base px-8 py-3.5 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-[#c59a3f]/30 group cursor-pointer"
               >
                 <span>{btnText}</span>
-                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                <LuxuryArrow className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>
 

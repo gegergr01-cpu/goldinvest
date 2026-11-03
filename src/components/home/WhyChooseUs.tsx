@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface WhyChooseUsProps {
   config?: Record<string, string>;
@@ -174,9 +175,7 @@ function LuxuryServiceCard({ service, delay = '0s' }: { service: ServiceItem; de
         <div className="pt-4 mt-4 border-t border-white/[0.08] flex items-center justify-between text-[#E8A63D] group-hover:text-[#FFE599] font-semibold text-[13px] transition-colors">
           <span>{service.ctaText}</span>
           <span className="w-6 h-6 rounded-full bg-white/[0.06] group-hover:bg-[#C8732A] group-hover:text-white flex items-center justify-center transition-all duration-200">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="w-3 h-3">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
-            </svg>
+            <LuxuryArrow className="w-2.5 h-2.5 group-hover:translate-x-0.5" />
           </span>
         </div>
       </div>
@@ -315,15 +314,15 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
               {description}
             </p>
 
-            {/* Mechanical Odometer Counter Display */}
-            <div className="flex items-center gap-4 mb-7 p-2.5 px-4 rounded-xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md">
+            {/* Mechanical Odometer Counter Display (Borderless & Clean) */}
+            <div className="flex items-center gap-3 mb-7">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#E8A63D] animate-ping" />
-                <span className="text-[11px] font-mono uppercase tracking-wider text-white/60">
-                  Défilement compteur :
+                <span className="text-[11.5px] font-mono uppercase tracking-wider text-white/55">
+                  Service
                 </span>
               </div>
-              <div className="flex items-baseline font-serif font-bold text-[#FFE599] tracking-wider text-[20px]">
+              <div className="flex items-baseline font-serif font-bold text-[#FFE599] tracking-wider text-[22px]">
                 <span className="text-[#E8A63D]">0{activeNumber}</span>
                 <span className="text-white/30 mx-1.5 font-light text-[14px]">/</span>
                 <span className="text-white/45 text-[14px] font-normal">05</span>
@@ -334,12 +333,10 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href={btnUrl}
-                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
+                className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none group"
               >
                 <span>{btnText}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                  <path d="M7 17L17 7M9 7h8v8" />
-                </svg>
+                <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-0.5" />
               </Link>
 
               {/* Vertical Counter Step Buttons */}
@@ -393,20 +390,20 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
 
           </div>
 
-          {/* ================= RIGHT COLUMN: 2 Cards Rolling Vertically Like an Odometer Counter ================= */}
+          {/* ================= RIGHT COLUMN: 2 Cards Rolling Vertically (Borderless Floating Carousel) ================= */}
           <div 
             className="lg:col-span-7 relative"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* Top & Bottom Cinematic Shadow Masks creating the mechanical rolling reel effect */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#0A1828] via-[#0A1828]/80 to-transparent z-20 rounded-t-[20px]" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0A1828] via-[#0A1828]/80 to-transparent z-20 rounded-b-[20px]" />
-
-            {/* Dual Column Vertical Reels */}
+            {/* Dual Column Vertical Reels with borderless progressive alpha mask */}
             <div 
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 overflow-hidden rounded-[22px]"
-              style={{ height: `${CARD_HEIGHT}px` }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 overflow-hidden"
+              style={{ 
+                height: `${CARD_HEIGHT}px`,
+                maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+              }}
             >
               {/* Reel Column 1 (Starts at index 0) */}
               <div className="relative h-full overflow-hidden">

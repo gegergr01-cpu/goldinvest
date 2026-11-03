@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface FaqItem {
   q: string;
@@ -161,12 +162,10 @@ export default function FaqSection({ config }: FaqSectionProps) {
           </div>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[13.5px] px-5 py-2.5 rounded-full shadow-md transition-all duration-200 shrink-0"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[13.5px] px-5 py-2.5 rounded-full shadow-md transition-all duration-200 shrink-0 group select-none"
           >
             <span>Contacter un conseiller</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
-            </svg>
+            <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-0.5" />
           </Link>
         </div>
 

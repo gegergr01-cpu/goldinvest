@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface SelectionGridProps {
   config?: Record<string, string>;
@@ -119,9 +120,7 @@ export default function SelectionGrid({ config }: SelectionGridProps) {
                       className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#c59a3f]/40 text-[#c59a3f] hover:bg-[#c59a3f] hover:text-black font-medium text-xs md:text-sm transition-all duration-300 group-hover:border-[#c59a3f]"
                     >
                       <span>Découvrir</span>
-                      <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+                      <LuxuryArrow className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </div>

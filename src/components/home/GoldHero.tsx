@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { HeroDailyCard } from '@/types/heroCards';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface GoldHeroProps {
   config?: Record<string, any>;
@@ -195,12 +196,10 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
             {/* Button 1: Découvrir notre gamme (Cuivre Doré Impérial) */}
             <Link
               href={btnUrl}
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none group"
             >
               <span>{btnText}</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                <path d="M7 17L17 7M9 7h8v8" />
-              </svg>
+              <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-0.5" />
             </Link>
 
             {/* Button 2: Create an account */}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface PreciousMetalsTickerProps {
   config?: Record<string, any>;
@@ -270,12 +271,10 @@ export default function PreciousMetalsTicker({ config }: PreciousMetalsTickerPro
           <div className="flex-shrink-0 w-full sm:w-auto flex justify-center xl:justify-end">
             <Link 
               href={btnUrl} 
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 hover:border-[#c59a3f] bg-white hover:bg-[#c59a3f]/5 text-gray-800 hover:text-[#c59a3f] font-semibold text-xs sm:text-sm transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 hover:border-[#c59a3f] bg-white hover:bg-[#c59a3f]/5 text-gray-800 hover:text-[#c59a3f] font-semibold text-xs sm:text-sm transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer whitespace-nowrap group"
             >
               <span>{btnText}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              <LuxuryArrow className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
           </div>
 
