@@ -109,7 +109,17 @@ export default async function OrdersPage() {
                         {t('for_x_products', { count: totalItems })}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-2">
+                      <a
+                        href={`/api/invoice/${order.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-[#0E2036] text-gray-700 hover:text-white rounded-md text-xs font-semibold transition-colors border border-gray-200"
+                        title="Télécharger la facture officielle PDF"
+                      >
+                        <span>📄</span>
+                        <span className="hidden sm:inline">Facture PDF</span>
+                      </a>
                       <Link 
                         href={`/account/orders/${order.id}`} 
                         className="inline-flex items-center justify-center p-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors"

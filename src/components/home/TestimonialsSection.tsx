@@ -12,36 +12,69 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
   const badge = c.badge || 'AVIS CLIENTS VÉRIFIÉS';
   const title = c.title || 'Ils nous font confiance';
   const subtitle = c.subtitle || 'Découvrez les retours d’expérience de nos clients investisseurs en métaux précieux physiques.';
+  const ratingScore = c.rating_score || '4.9 / 5';
+  const investorsText = c.investors_text || 'Plus de 450 investisseurs accompagnés';
 
-  const reviews = [
+  // Build dynamic reviews list from config
+  const rawReviews = [
     {
       id: 1,
       name: c.review1_name || 'Thomas D.',
-      city: 'Paris, France',
-      asset: "Lingot d'Or 100 g C.Hafner",
+      city: c.review1_city || 'Paris, France',
+      asset: c.review1_asset || "Lingot d'Or 100 g C.Hafner",
       text: c.review1_text || '« Première commande de lingots d’or scellés LBMA. Colis ultra-discret, livraison sécurisée avec signature et certificat de conformité parfait. Un service d’un professionnalisme exemplaire. »',
-      rating: parseInt(c.review1_rating || '5', 10),
-      date: 'Il y a 3 jours',
+      rating: Math.min(5, Math.max(1, parseInt(c.review1_rating || '5', 10) || 5)),
+      date: c.review1_date || 'Il y a 3 jours',
     },
     {
       id: 2,
       name: c.review2_name || 'Sophie M.',
-      city: 'Genève, Suisse',
-      asset: "20 Francs Napoléon III & Krugerrand",
+      city: c.review2_city || 'Genève, Suisse',
+      asset: c.review2_asset || "20 Francs Napoléon III & Krugerrand",
       text: c.review2_text || '« Conseillers très réactifs et à l’écoute. Les cours en direct sont limpides et sans frais cachés. Les pièces sont arrivées sous pochettes sécurisées scellées sous 48 heures. »',
-      rating: parseInt(c.review2_rating || '5', 10),
-      date: 'Il y a 1 semaine',
+      rating: Math.min(5, Math.max(1, parseInt(c.review2_rating || '5', 10) || 5)),
+      date: c.review2_date || 'Il y a 1 semaine',
     },
     {
       id: 3,
       name: c.review3_name || 'Pierre L.',
-      city: 'Bruxelles, Belgique',
-      asset: "Lingots d'Argent 1 kg LBMA",
+      city: c.review3_city || 'Bruxelles, Belgique',
+      asset: c.review3_asset || "Lingots d'Argent 1 kg LBMA",
       text: c.review3_text || '« Excellent accompagnement pour la diversification de mon patrimoine. Prix très compétitifs face aux comptoirs bancaires traditionnels. Je recommande les yeux fermés. »',
-      rating: parseInt(c.review3_rating || '5', 10),
-      date: 'Il y a 2 semaines',
-    }
+      rating: Math.min(5, Math.max(1, parseInt(c.review3_rating || '5', 10) || 5)),
+      date: c.review3_date || 'Il y a 2 semaines',
+    },
+    // Optional additional reviews if configured in editor
+    c.review4_name ? {
+      id: 4,
+      name: c.review4_name,
+      city: c.review4_city || 'Lyon, France',
+      asset: c.review4_asset || "Lingot d'Or 50 g LBMA",
+      text: c.review4_text || '',
+      rating: Math.min(5, Math.max(1, parseInt(c.review4_rating || '5', 10) || 5)),
+      date: c.review4_date || 'Il y a 3 semaines',
+    } : null,
+    c.review5_name ? {
+      id: 5,
+      name: c.review5_name,
+      city: c.review5_city || 'Bordeaux, France',
+      asset: c.review5_asset || "Souverain Or Élisabeth II",
+      text: c.review5_text || '',
+      rating: Math.min(5, Math.max(1, parseInt(c.review5_rating || '5', 10) || 5)),
+      date: c.review5_date || 'Il y a 1 mois',
+    } : null,
+    c.review6_name ? {
+      id: 6,
+      name: c.review6_name,
+      city: c.review6_city || 'Monaco',
+      asset: c.review6_asset || "Lingot d'Or 250 g LBMA",
+      text: c.review6_text || '',
+      rating: Math.min(5, Math.max(1, parseInt(c.review6_rating || '5', 10) || 5)),
+      date: c.review6_date || 'Il y a 1 mois',
+    } : null
   ];
+
+  const reviews = rawReviews.filter((r): r is NonNullable<typeof r> => r !== null && Boolean(r.name));
 
   return (
     <section className="w-full py-20 lg:py-24 bg-[#FAF9F5] border-t border-b border-[#E8E4DA] relative overflow-hidden">
@@ -93,14 +126,14 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
                 </svg>
               ))}
             </div>
-            <span className="font-bold text-gray-900">4.9 / 5</span>
+            <span className="font-bold text-gray-900">{ratingScore}</span>
             <span className="w-1 h-1 rounded-full bg-gray-300" />
-            <span className="text-gray-500 font-normal">Plus de 450 investisseurs accompagnés</span>
+            <span className="text-gray-500 font-normal">{investorsText}</span>
           </div>
         </div>
 
-        {/* 3 Review Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7">
+        {/* Dynamic Review Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
           {reviews.map((review) => (
             <div
               key={review.id}
@@ -109,10 +142,14 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
               {/* Top Row: Stars + Verified Badge */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  {/* Stars */}
-                  <div className="flex items-center gap-1 text-[#F59E0B]">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  {/* Dynamic Stars */}
+                  <div className="flex items-center gap-1" aria-label={`${review.rating} sur 5 étoiles`}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg 
+                        key={star} 
+                        className={`w-4 h-4 ${star <= review.rating ? 'text-[#F59E0B] fill-current' : 'text-gray-300 fill-current'}`} 
+                        viewBox="0 0 20 20"
+                      >
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}

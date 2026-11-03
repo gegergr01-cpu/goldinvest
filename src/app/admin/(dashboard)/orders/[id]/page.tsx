@@ -97,7 +97,19 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
             {t('status_label')}: {t(`status_${order.status.toLowerCase()}`)}
           </span>
         </div>
-        <a href="/admin/orders" className="text-sm font-medium text-gray-600 hover:text-gray-900">{t('back_to_orders')}</a>
+        <div className="flex items-center gap-3">
+          <a
+            href={`/api/invoice/${order.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0E2036] hover:bg-[#1A3353] text-white text-xs font-semibold shadow-sm transition-colors"
+            title="Télécharger la facture officielle PDF"
+          >
+            <span>📄</span>
+            <span>Facture PDF</span>
+          </a>
+          <a href="/admin/orders" className="text-sm font-medium text-gray-600 hover:text-gray-900">{t('back_to_orders')}</a>
+        </div>
       </div>
 
       {order.status === 'PENDING' && order.paymentMethod !== 'BANK_TRANSFER' && (

@@ -1114,35 +1114,145 @@ export default function GoldSectionEditor({
               )}
 
               {section.type === 'Testimonials' && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge</label>
-                    <input
-                      type="text"
-                      value={s.badge ?? "Ils nous font confiance"}
-                      onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-                  {[1, 2, 3].map((num) => (
-                    <div key={num} className="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
-                      <span className="text-[11px] font-bold text-gray-700 block">Avis client #{num}</span>
+                <div className="space-y-4">
+                  {/* Titres & Badges */}
+                  <div className="space-y-3 pb-3 border-b border-gray-200">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Badge</label>
                       <input
                         type="text"
-                        value={s[`review${num}_name`] ?? ''}
-                        onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
-                        placeholder="Nom client"
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
-                      />
-                      <textarea
-                        rows={2}
-                        value={s[`review${num}_text`] ?? ''}
-                        onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
-                        placeholder="Témoignage"
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none text-gray-600"
+                        value={s.badge ?? "AVIS CLIENTS VÉRIFIÉS"}
+                        onChange={(e) => handleFieldChange('badge', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                       />
                     </div>
-                  ))}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Titre de la section</label>
+                      <input
+                        type="text"
+                        value={s.title ?? "Ils nous font confiance"}
+                        onChange={(e) => handleFieldChange('title', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Sous-titre</label>
+                      <textarea
+                        rows={2}
+                        value={s.subtitle ?? "Découvrez les retours d’expérience de nos clients investisseurs en métaux précieux physiques."}
+                        onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Statistiques globales d'avis & Investisseurs */}
+                  <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded space-y-3">
+                    <span className="text-xs font-bold text-amber-900 block flex items-center gap-1.5">
+                      ⭐ Badge de confiance & Chiffre clé
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-700 mb-1">Note globale</label>
+                        <input
+                          type="text"
+                          value={s.rating_score ?? "4.9 / 5"}
+                          onChange={(e) => handleFieldChange('rating_score', e.target.value)}
+                          placeholder="ex: 4.9 / 5"
+                          className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-700 mb-1">Texte Investisseurs</label>
+                        <input
+                          type="text"
+                          value={s.investors_text ?? "Plus de 450 investisseurs accompagnés"}
+                          onChange={(e) => handleFieldChange('investors_text', e.target.value)}
+                          placeholder="ex: Plus de 450 investisseurs accompagnés"
+                          className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none font-medium text-orange-950"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10.5px] text-gray-500">
+                      Ce texte s’affiche directement dans le macaron d’évaluation de la section.
+                    </p>
+                  </div>
+
+                  {/* Liste des avis clients (1 à 6) */}
+                  <div className="space-y-3">
+                    <span className="text-xs font-bold text-gray-800 block">
+                      Avis clients & Étoiles dynamiques
+                    </span>
+                    {[1, 2, 3, 4, 5, 6].map((num) => (
+                      <div key={num} className="p-3 bg-gray-50 border border-gray-200 rounded space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-gray-800 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded-full bg-orange-100 text-orange-800 text-[10px] flex items-center justify-center font-bold">
+                              {num}
+                            </span>
+                            Avis client #{num}
+                          </span>
+                          {/* Note / Étoiles dynamique */}
+                          <div className="flex items-center gap-1.5">
+                            <label className="text-[10.5px] font-medium text-gray-600">Note :</label>
+                            <select
+                              value={s[`review${num}_rating`] ?? '5'}
+                              onChange={(e) => handleFieldChange(`review${num}_rating`, e.target.value)}
+                              className="border border-gray-300 rounded px-2 py-0.5 text-xs bg-white font-medium text-amber-700 outline-none"
+                            >
+                              <option value="5">⭐⭐⭐⭐⭐ 5/5</option>
+                              <option value="4">⭐⭐⭐⭐ 4/5</option>
+                              <option value="3">⭐⭐⭐ 3/5</option>
+                              <option value="2">⭐⭐ 2/5</option>
+                              <option value="1">⭐ 1/5</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={s[`review${num}_name`] ?? ''}
+                            onChange={(e) => handleFieldChange(`review${num}_name`, e.target.value)}
+                            placeholder="Nom client (ex: Thomas D.)"
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={s[`review${num}_city`] ?? ''}
+                            onChange={(e) => handleFieldChange(`review${num}_city`, e.target.value)}
+                            placeholder="Ville (ex: Paris, France)"
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={s[`review${num}_asset`] ?? ''}
+                            onChange={(e) => handleFieldChange(`review${num}_asset`, e.target.value)}
+                            placeholder="Produit acheté (ex: Lingot d'Or 100g)"
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none text-[#C8732A] font-medium"
+                          />
+                          <input
+                            type="text"
+                            value={s[`review${num}_date`] ?? ''}
+                            onChange={(e) => handleFieldChange(`review${num}_date`, e.target.value)}
+                            placeholder="Date (ex: Il y a 3 jours)"
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none"
+                          />
+                        </div>
+
+                        <textarea
+                          rows={2}
+                          value={s[`review${num}_text`] ?? ''}
+                          onChange={(e) => handleFieldChange(`review${num}_text`, e.target.value)}
+                          placeholder="Témoignage du client..."
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-xs bg-white outline-none text-gray-700"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

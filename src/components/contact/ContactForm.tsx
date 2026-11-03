@@ -79,11 +79,22 @@ export default function ContactForm({ phonePlaceholder }: { phonePlaceholder?: s
             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-orange-500 focus:border-orange-500 text-gray-700" 
           >
             <option value="" disabled>{t('subject_placeholder')}</option>
+            <option value="Demande de devis d'investissement">Demande de devis d'investissement</option>
             <option value={t('subject_order_return')}>{t('subject_order_return')}</option>
             <option value={t('subject_refund')}>{t('subject_refund')}</option>
             <option value={t('subject_info')}>{t('subject_info')}</option>
           </select>
         </div>
+      </div>
+
+      <div className="bg-amber-50/80 border border-amber-200/80 rounded-md p-3 text-xs text-amber-900 flex items-center justify-between">
+        <span className="flex items-center gap-1.5">
+          <span>📜</span>
+          <span>Vous souhaitez un chiffrage officiel en métaux précieux ?</span>
+        </span>
+        <a href="/devis" className="font-bold text-orange-700 hover:text-orange-900 underline whitespace-nowrap ml-2">
+          Formulaire de devis express →
+        </a>
       </div>
 
       <div>

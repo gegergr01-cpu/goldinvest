@@ -175,6 +175,23 @@ export default async function OrderDetailsPage({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8">
       
+      {/* Header with invoice action */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 mb-6 border-b border-gray-100 gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-[#0E2036]">Commande #{orderId}</h1>
+          <p className="text-xs text-gray-500 mt-0.5">Passée le {orderDate} • Statut : <span className="font-semibold text-gray-800">{currentStatus}</span></p>
+        </div>
+        <a
+          href={`/api/invoice/${order.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#C8732A] hover:bg-[#B8641C] text-white text-xs font-semibold transition-colors shadow-sm self-start sm:self-auto"
+        >
+          <span>📄</span>
+          <span>Télécharger la facture (PDF)</span>
+        </a>
+      </div>
+
       {/* Order Intro */}
       <p className="text-gray-600 mb-8 text-sm md:text-base">
         {t.rich('order_intro', {

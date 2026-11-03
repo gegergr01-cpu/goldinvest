@@ -255,7 +255,7 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
     try {
       const pdfBuffer = await generateInvoicePDF(order);
       pdfAttachment = {
-        filename: `rechnung-${orderId}.pdf`,
+        filename: `facture-${orderId}.pdf`,
         content: pdfBuffer,
         contentType: 'application/pdf'
       };
@@ -265,7 +265,7 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
 
     return sendEmail({
       to: userEmail,
-      subject: `Bestellbestätigung #${orderId}`,
+      subject: `Confirmation de commande #${orderId} & Votre Facture`,
       html,
       attachments: pdfAttachment ? [pdfAttachment] : []
     });
@@ -1027,5 +1027,155 @@ export async function sendAdminAlertEmail({
     console.error('Failed to send admin alert email:', err);
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// 10. Quote Email to Client (Devis d'investissement PDF)
+// ─────────────────────────────────────────────────────────────
+export async function sendQuoteEmailToClient(quote: any, pdfBuffer: Buffer) {
+  try {
+    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
+    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold & Silver Invest';
+    const logoHtml = logo ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 50px;" /></div>` : '';
+
+    const quoteId = quote.id.startsWith('#') ? quote.id : `#${quote.id}`;
+    const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(quote.total);
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">Votre Devis d'Investissement</h2>
+          <p style="margin: 6px 0 0 0; color: #E8A63D; font-size: 13px; font-weight: bold;">RÉFÉRENCE : ${quoteId}</p>
+        </div>
+
+        <p style="font-size: 14px;">Bonjour <strong>${escapeHtml(quote.customerName || 'Cher Client')}</strong>,</p>
+        <p style="font-size: 14px; color: #475569;">
+          Nous avons le plaisir de vous transmettre votre devis personnalisé pour votre projet d'investissement en métaux précieux physiques certifiés LBMA.
+        </p>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 18px; margin: 25px 0;">
+          <table style="width: 100%; font-size: 14px;">
+            <tr>
+              <td style="color: #64748B;">Montant total du devis :</td>
+              <td style="text-align: right; font-weight: bold; color: #0E2036; font-size: 16px;">${formattedTotal}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Régime fiscal :</td>
+              <td style="text-align: right; color: #10B981; font-weight: 500;">TVA 0% (Or d'investissement)</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Garantie du cours :</td>
+              <td style="text-align: right; color: #C8732A; font-weight: 500;">72 heures à compter de l'émission</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="font-size: 13px; color: #475569;">
+          📄 Votre devis officiel au format PDF est <strong>joint à cet email</strong>. Vous pouvez également le consulter et le télécharger à tout moment depuis votre <strong>espace client</strong> dans l'onglet « Mes Devis ».
+        </p>
+
+        ${quote.notes ? `
+          <div style="background-color: #FFFBEB; border-left: 3px solid #F59E0B; padding: 12px 16px; margin: 20px 0; font-size: 13px; color: #92400E;">
+            <strong>Note de votre conseiller :</strong><br/>
+            ${escapeHtml(quote.notes)}
+          </div>
+        ` : ''}
+
+        <p style="font-size: 13px; color: #475569;">
+          Pour valider cette offre ou échanger avec votre conseiller dédié, répondez directement à cet email ou contactez notre comptoir au numéro ci-dessous.
+        </p>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
+          <strong>${escapeHtml(storeName)}</strong> — Comptoir Privé des Métaux Précieux<br/>
+          Certification LBMA • Livraison Sécurisée • Stockage en Coffres Haute Sécurité
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: quote.customerEmail,
+      subject: `Votre devis officiel ${quoteId} - Gold & Silver Invest`,
+      html,
+      attachments: [{
+        filename: `devis-${quote.id.replace('#', '')}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    });
+  } catch (err) {
+    console.error('Failed to send quote email to client:', err);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 11. Direct Invoice Email to Client
+// ─────────────────────────────────────────────────────────────
+export async function sendDirectInvoiceEmailToClient(order: any, customerEmail: string, customerName: string, pdfBuffer: Buffer) {
+  try {
+    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
+    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold & Silver Invest';
+    const logoHtml = logo ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 50px;" /></div>` : '';
+
+    const orderId = order.id.slice(-6).toUpperCase();
+    const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(order.total);
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">Votre Facture d'Achat</h2>
+          <p style="margin: 6px 0 0 0; color: #E8A63D; font-size: 13px; font-weight: bold;">RÉFÉRENCE : #FAC-${orderId}</p>
+        </div>
+
+        <p style="font-size: 14px;">Bonjour <strong>${escapeHtml(customerName || 'Cher Client')}</strong>,</p>
+        <p style="font-size: 14px; color: #475569;">
+          Veuillez trouver ci-joint votre facture officielle relative à votre acquisition de métaux précieux physiques.
+        </p>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 18px; margin: 25px 0;">
+          <table style="width: 100%; font-size: 14px;">
+            <tr>
+              <td style="color: #64748B;">N° Facture :</td>
+              <td style="text-align: right; font-weight: bold; color: #0E2036;">#FAC-${orderId}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Montant total :</td>
+              <td style="text-align: right; font-weight: bold; color: #C8732A; font-size: 16px;">${formattedTotal}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Statut :</td>
+              <td style="text-align: right; color: ${order.status === 'PAID' ? '#10B981' : '#F59E0B'}; font-weight: bold;">
+                ${order.status === 'PAID' ? 'PAYÉE' : 'EN ATTENTE DE RÈGLEMENT'}
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="font-size: 13px; color: #475569;">
+          📄 Votre facture au format PDF est <strong>jointe à cet email</strong>. Elle est également enregistrée et consultable à tout moment dans votre <strong>espace client</strong>.
+        </p>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
+          <strong>${escapeHtml(storeName)}</strong> — Comptoir Privé des Métaux Précieux<br/>
+          Certification LBMA • TVA 0% Or d'investissement (Art. 262 ter I du CGI)
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: customerEmail,
+      subject: `Facture d'achat #FAC-${orderId} - Gold & Silver Invest`,
+      html,
+      attachments: [{
+        filename: `facture-${orderId}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    });
+  } catch (err) {
+    console.error('Failed to send direct invoice email to client:', err);
+  }
+}
+
 
 

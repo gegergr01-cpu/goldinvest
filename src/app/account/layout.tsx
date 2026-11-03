@@ -16,6 +16,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const navItems = [
     { name: t('nav_dashboard'), id: 'Dashboard', href: '/account', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
     { name: t('nav_orders'), id: 'Orders', href: '/account/orders', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16' },
+    { name: 'Mes Devis', id: 'Quotes', href: '/account/quotes', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
     { name: t('nav_downloads'), id: 'Downloads', href: '/account/downloads', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4' },
     { name: t('nav_addresses'), id: 'Addresses', href: '/account/addresses', icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z' },
     { name: t('nav_account_details'), id: 'Account details', href: '/account/details', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
