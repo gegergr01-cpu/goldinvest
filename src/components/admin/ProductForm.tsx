@@ -132,11 +132,66 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
   }, [initialData?.id]);
 
   const [productType, setProductType] = useState<'SIMPLE' | 'VARIABLE'>(initialData?.type || 'SIMPLE');
+
+  // Dedicated Precious Metal Specs states
+  const [metalType, setMetalType] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['métal', 'metal'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || 'Or');
+    }
+    return 'Or';
+  });
+
+  const [purity, setPurity] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['pureté', 'purete', 'titrage', 'purity'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || '');
+    }
+    return '';
+  });
+
+  const [fineWeight, setFineWeight] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['poids fin', 'poids or fin', 'fine weight'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || '');
+    }
+    return '';
+  });
+
+  const [grossWeight, setGrossWeight] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['poids brut', 'gross weight'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || '');
+    }
+    return '';
+  });
+
+  const [certification, setCertification] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['certification', 'certificat'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || '');
+    }
+    return 'Certifié LBMA';
+  });
+
+  const [mintYear, setMintYear] = useState<string>(() => {
+    if (initialAttributes && Array.isArray(initialAttributes)) {
+      const a = initialAttributes.find((x: any) => ['année', 'annee', 'year', 'millésime', 'millesime'].includes(String(x?.name || '').toLowerCase()));
+      if (a) return Array.isArray(a.options) ? a.options[0] : (a.options || '');
+    }
+    return '';
+  });
+
   const [attributes, setAttributes] = useState<Array<{ name: string, options: string }>>(
-    initialAttributes.map((a: any) => ({ 
-      name: a?.name || '', 
-      options: Array.isArray(a?.options) ? a.options.join(' | ') : (a?.options || '') 
-    }))
+    initialAttributes
+      .filter((a: any) => {
+        const name = String(a?.name || '').toLowerCase();
+        return !['métal', 'metal', 'pureté', 'purete', 'titrage', 'purity', 'poids fin', 'poids or fin', 'fine weight', 'poids brut', 'gross weight', 'certification', 'certificat', 'année', 'annee', 'year', 'millésime', 'millesime'].includes(name);
+      })
+      .map((a: any) => ({ 
+        name: a?.name || '', 
+        options: Array.isArray(a?.options) ? a.options.join(' | ') : (a?.options || '') 
+      }))
   );
   const [variations, setVariations] = useState<Array<any>>(initialVariations);
   const [tags, setTags] = useState<string[]>(initialTags);
@@ -160,11 +215,35 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
       
       const formData = new FormData(e.currentTarget);
       
-      // Formatting attributes and variations to send as JSON string
-      const formattedAttributes = attributes.map(a => ({
-        name: a.name,
-        options: a.options.split('|').map(o => o.trim()).filter(Boolean)
-      })).filter(a => a.name && a.options.length > 0);
+      // Formatting attributes: combine precious metals specs + generic attributes
+      const formattedAttributes: Array<{ name: string; options: string[] }> = [];
+
+      if (metalType) {
+        formattedAttributes.push({ name: 'Métal', options: [metalType] });
+      }
+      if (purity.trim()) {
+        formattedAttributes.push({ name: 'Pureté', options: [purity.trim()] });
+      }
+      if (fineWeight.trim()) {
+        formattedAttributes.push({ name: 'Poids fin', options: [fineWeight.trim()] });
+      }
+      if (grossWeight.trim()) {
+        formattedAttributes.push({ name: 'Poids brut', options: [grossWeight.trim()] });
+      }
+      if (certification.trim()) {
+        formattedAttributes.push({ name: 'Certification', options: [certification.trim()] });
+      }
+      if (mintYear.trim()) {
+        formattedAttributes.push({ name: 'Millésime', options: [mintYear.trim()] });
+      }
+
+      // Add generic / variable attributes
+      attributes.forEach(a => {
+        const opts = a.options.split('|').map(o => o.trim()).filter(Boolean);
+        if (a.name.trim() && opts.length > 0) {
+          formattedAttributes.push({ name: a.name.trim(), options: opts });
+        }
+      });
       
       let finalBrandId = selectedBrand;
 
@@ -487,6 +566,161 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500 font-mono text-sm"
           />
           <p className="text-xs text-gray-500 mt-1">Si non renseigné, ce champ ne s'affichera pas sur la page produit.</p>
+        </div>
+
+        {/* ================= SECTION : SPÉCIFICATIONS MÉTAUX PRÉCIEUX ================= */}
+        <div className="bg-gradient-to-br from-[#FAF5EB] to-white p-6 rounded-xl border border-[#E8A63D]/40 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8A63D]/25 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="w-9 h-9 rounded-lg bg-[#C8732A]/15 border border-[#C8732A]/30 flex items-center justify-center text-lg shadow-2xs">
+                🪙
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 font-serif">
+                  Spécifications Métaux Précieux
+                </h3>
+                <p className="text-xs text-gray-500">
+                  Renseignez la pureté et le poids pour enrichir automatiquement les cartes produits et la fiche technique.
+                </p>
+              </div>
+            </div>
+            <span className="self-start sm:self-auto text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-[#C8732A]/10 text-[#9C4E0F] border border-[#C8732A]/20">
+              Or & Argent d&apos;investissement
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {/* 1. Métal */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Type de Métal
+              </label>
+              <select
+                value={metalType}
+                onChange={(e) => setMetalType(e.target.value)}
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
+              >
+                <option value="Or">Or (Gold)</option>
+                <option value="Argent">Argent (Silver)</option>
+                <option value="Platine">Platine (Platinum)</option>
+                <option value="Palladium">Palladium</option>
+              </select>
+            </div>
+
+            {/* 2. Pureté / Titrage */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Pureté / Titrage
+                </label>
+                <span className="text-[10px] text-gray-400">ex: 999.9‰</span>
+              </div>
+              <input
+                type="text"
+                value={purity}
+                onChange={(e) => setPurity(e.target.value)}
+                placeholder="ex: 999.9‰ (24K) ou 900‰ (21.6K)"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent font-medium"
+              />
+              {/* Quick Preset Buttons */}
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {['999.9‰ (24K)', '900‰ (21.6K)', '916.7‰ (22K)', 'Argent 999.9‰'].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPurity(p)}
+                    className="text-[10px] px-2 py-0.5 rounded bg-white hover:bg-[#FAF5EB] text-gray-600 hover:text-[#9C4E0F] border border-gray-200 transition-colors cursor-pointer"
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. Poids Fin */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Poids fin en métal pur
+                </label>
+                <span className="text-[10px] text-gray-400">ex: 1 oz, 5.81g</span>
+              </div>
+              <input
+                type="text"
+                value={fineWeight}
+                onChange={(e) => setFineWeight(e.target.value)}
+                placeholder="ex: 1 oz (31,10 g) ou 5,81 g or fin"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent font-medium"
+              />
+              {/* Quick Preset Buttons */}
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {['1 oz (31,10 g)', '1/2 oz (15,55 g)', '5,81 g or fin', '50 g', '100 g', '1 kg'].map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    onClick={() => setFineWeight(w)}
+                    className="text-[10px] px-2 py-0.5 rounded bg-white hover:bg-[#FAF5EB] text-gray-600 hover:text-[#9C4E0F] border border-gray-200 transition-colors cursor-pointer"
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. Poids Brut (optionnel) */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Poids brut total <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
+              </label>
+              <input
+                type="text"
+                value={grossWeight}
+                onChange={(e) => setGrossWeight(e.target.value)}
+                placeholder="ex: 6,45 g (pour Napoléon 20F)"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
+              />
+            </div>
+
+            {/* 5. Certification & Conditionnement */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Certification & Sceau
+              </label>
+              <input
+                type="text"
+                value={certification}
+                onChange={(e) => setCertification(e.target.value)}
+                placeholder="ex: Certifié LBMA, Sous blister scellé"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
+              />
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {['Certifié LBMA', 'Sous blister scellé', 'Sachet scellé sécurisé'].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCertification(c)}
+                    className="text-[10px] px-2 py-0.5 rounded bg-white hover:bg-[#FAF5EB] text-gray-600 hover:text-[#9C4E0F] border border-gray-200 transition-colors cursor-pointer"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 6. Année / Millésime (optionnel) */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Millésime / Année <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
+              </label>
+              <input
+                type="text"
+                value={mintYear}
+                onChange={(e) => setMintYear(e.target.value)}
+                placeholder="ex: 1904, 1883, 2025"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Attributes & Variations */}

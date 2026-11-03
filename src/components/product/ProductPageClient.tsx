@@ -151,6 +151,21 @@ export default function ProductPageClient({ product, enableBuyNow = false, store
               ))}
             </p>
           )}
+          {Array.isArray(product.attributes) && product.attributes.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-700/80 mb-2">
+                Caractéristiques d'investissement
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {product.attributes.map((attr: any, idx: number) => (
+                  <div key={idx} className="bg-[#FAF5EB]/60 px-3 py-1.5 rounded-lg border border-[#E8A63D]/20">
+                    <span className="text-gray-500 block text-[11px] font-medium">{attr.name}</span>
+                    <span className="text-gray-900 font-semibold">{Array.isArray(attr.options) ? attr.options.join(', ') : attr.options}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {product.gtin && (
             <p>
               <span className="font-semibold text-gray-900">GTIN / EAN : </span>
