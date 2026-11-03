@@ -24,14 +24,14 @@ const SERVICES_DATA = [
     ],
     features: [
       'Large sélection de pièces emblématiques (Napoléon 20F, Maple Leaf, Krugerrand, Philharmonique).',
-      'Lingots de 1g à 1kg frappés et coulés sous scellé avec certificat.',
+      'Lingots de 1g à 1kg frappés et coulés sous scellé avec certificat d\'authenticité.',
       'Prix transparents fixés directement sur les cours mondiaux de l\'or et de l\'argent en temps réel.',
       'Aucun intermédiaire bancaire pour vous garantir les meilleures marges du marché.',
     ],
     ctaText: 'Découvrir le catalogue de lingots & pièces',
     ctaUrl: '/shop',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-8 h-8 text-[#E8A63D]">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6 text-[#C8732A]">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ),
@@ -44,7 +44,7 @@ const SERVICES_DATA = [
     desc: 'Store your precious metals outside the banking system in highly secure vaults located in free-trade zones in Zurich, Singapore, New York, or Toronto.',
     fullDesc: 'Protégez votre patrimoine physique contre les faillites bancaires, les crises monétaires et le risque souverain. Vos métaux précieux sont stockés dans des installations ultra-sécurisées de haute sécurité gérées par des opérateurs indépendants de premier ordre (Malca-Amit, Loomis, Brink\'s) au sein de zones franches internationales.',
     highlights: [
-      { label: 'Localisation', value: 'Zurich, Singapour, New York, Toronto' },
+      { label: 'Localisation', value: 'Zurich, Singapour, Genève' },
       { label: 'Propriété directe', value: 'Nom propre (Titulaire 100%)' },
       { label: 'Assurance', value: '100% valeur marchande (Lloyd\'s)' },
       { label: 'Avantage fiscal', value: 'Exemption de TVA en zone franche' },
@@ -58,7 +58,7 @@ const SERVICES_DATA = [
     ctaText: 'Ouvrir un compte de stockage sécurisé',
     ctaUrl: '/contact?subject=storage',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-8 h-8 text-[#E8A63D]">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6 text-[#C8732A]">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
       </svg>
@@ -84,11 +84,11 @@ const SERVICES_DATA = [
       'Suivi GPS confidentiel en temps réel et avertissement par SMS la veille de la livraison.',
     ],
     ctaText: 'Demander un devis avec livraison sécurisée',
-    ctaUrl: '/contact?subject=delivery',
+    ctaUrl: '/devis',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-8 h-8 text-[#E8A63D]">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6 text-[#C8732A]">
         <rect x="1" y="3" width="15" height="13" />
-        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+        <polygon points="16 8 20 8 23 11 23 16 16 16 8" />
         <circle cx="5.5" cy="18.5" r="2.5" />
         <circle cx="18.5" cy="18.5" r="2.5" />
       </svg>
@@ -98,11 +98,11 @@ const SERVICES_DATA = [
     id: 'pickup',
     num: '04',
     title: 'Pickup — Retrait en Main Propre en Coffre',
-    tag: 'Discrétion Absolue & Confiance',
+    tag: 'Discrétion Absolue & Salons Privés',
     desc: 'Visit one of our storage vaults to collect your precious metals order in person in complete discretion, security, and confidentiality.',
     fullDesc: 'Pour les investisseurs exigeant une totale souveraineté sur leurs avoirs sans recourir au transport postal, nous mettons à votre disposition un service de collecte directe dans nos installations de coffres sécurisées partenaires. Vous récupérez vos métaux en toute tranquillité dans un environnement sécurisé de premier ordre.',
     highlights: [
-      { label: 'Points de retrait', value: 'Zurich, Genève, Singapour' },
+      { label: 'Points de retrait', value: 'Zurich, Genève, Paris, Singapour' },
       { label: 'Confidentialité', value: 'Salons privés sécurisés' },
       { label: 'Contrôle', value: 'Vérification contradictoire sur place' },
       { label: 'Rendez-vous', value: 'Accès exclusif et programmé' },
@@ -116,7 +116,7 @@ const SERVICES_DATA = [
     ctaText: 'Prendre rendez-vous pour un retrait physique',
     ctaUrl: '/contact?subject=pickup',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-8 h-8 text-[#E8A63D]">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6 text-[#C8732A]">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
@@ -141,10 +141,10 @@ const SERVICES_DATA = [
       'Prix de rachat transparents indexés en continu sur le fixing de Londres.',
       'Virement SEPA ou international sécurisé directement sur votre compte bancaire nominatif sous 24-48h.',
     ],
-    ctaText: 'Demander une estimation ou revendre',
+    ctaText: 'Demander une estimation de rachat',
     ctaUrl: '/contact?subject=buyback',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-8 h-8 text-[#E8A63D]">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6 text-[#C8732A]">
         <polyline points="23 4 23 10 17 10" />
         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
       </svg>
@@ -154,10 +154,10 @@ const SERVICES_DATA = [
 
 export default function ServicesPage() {
   return (
-    <div className="w-full bg-[#081422] text-white min-h-screen selection:bg-[#C8732A] selection:text-white">
+    <div className="w-full bg-[#FAF9F5] text-[#0E2036] min-h-screen selection:bg-[#C8732A] selection:text-white">
       
-      {/* ================= 1. LUXURY SERVICES HERO ================= */}
-      <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-[#0E2036] via-[#0E2036]/90 to-[#081422]">
+      {/* ================= 1. LUXURY SERVICES HERO (DEEP NAVY & GOLD) ================= */}
+      <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-[#0E2036] via-[#0E2036] to-[#0A182A] text-white border-b border-[#C8732A]/30">
         
         {/* Ambient Gold Radial Glows */}
         <div
@@ -165,8 +165,8 @@ export default function ServicesPage() {
           style={{ background: 'radial-gradient(circle, #C8732A 0%, #E8A63D 50%, transparent 80%)' }}
         />
         <div
-          className="absolute inset-0 pointer-events-none opacity-20"
-          style={{ backgroundImage: 'radial-gradient(circle at 50% 30%, rgba(200, 115, 42, 0.35), transparent 70%)' }}
+          className="absolute inset-0 pointer-events-none opacity-15"
+          style={{ backgroundImage: 'radial-gradient(circle at 50% 30%, rgba(200, 115, 42, 0.4), transparent 70%)' }}
         />
 
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -189,7 +189,7 @@ export default function ServicesPage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-white/75 font-normal max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-base sm:text-lg text-white/80 font-normal max-w-2xl mx-auto leading-relaxed mb-10">
             Une infrastructure souveraine, sécurisée et confidentielle pour acquérir, stocker en coffres privés hors banques, vous faire livrer ou revendre vos métaux précieux au meilleur cours.
           </p>
 
@@ -199,9 +199,9 @@ export default function ServicesPage() {
               <a
                 key={srv.id}
                 href={`#${srv.id}`}
-                className="px-4 py-2 rounded-full bg-white/[0.06] hover:bg-[#C8732A] text-white/80 hover:text-white border border-white/10 hover:border-[#E8A63D] text-[12.5px] sm:text-[13px] font-medium transition-all duration-200 backdrop-blur-md shadow-xs hover:-translate-y-0.5"
+                className="px-4 py-2 rounded-full bg-white/10 hover:bg-[#C8732A] text-white/90 hover:text-white border border-white/15 hover:border-[#E8A63D] text-[12.5px] sm:text-[13px] font-medium transition-all duration-200 backdrop-blur-md shadow-xs hover:-translate-y-0.5"
               >
-                <span className="text-[#E8A63D] font-mono mr-1.5">{srv.num}.</span>
+                <span className="text-[#E8A63D] font-mono mr-1.5 font-bold">{srv.num}.</span>
                 <span>{srv.title.split('—')[0].trim()}</span>
               </a>
             ))}
@@ -210,21 +210,30 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* ================= 2. THE 5 SERVICE BLOCKS (WITH ANCHORS) ================= */}
-      <section className="py-16 md:py-24 max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16 md:space-y-24">
-        {SERVICES_DATA.map((service, index) => {
-          const isEven = index % 2 === 1;
+      {/* ================= 2. THE 5 SERVICE BLOCKS (LUMINOUS WHITE CARDS ON WARM BG) ================= */}
+      <section className="py-16 md:py-24 relative overflow-hidden">
+        
+        {/* Subtle decorative dot pattern watermark like 'Ils nous font confiance' */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.035]"
+          style={{
+            backgroundImage: 'radial-gradient(#C8732A 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }}
+        />
 
-          return (
-            <div
-              key={service.id}
-              id={service.id}
-              className="scroll-mt-28 relative rounded-3xl p-[1.5px] bg-gradient-to-b from-[#C8732A]/50 via-white/10 to-transparent transition-all duration-300"
-            >
-              <div className="relative rounded-[22.5px] bg-[#0E2036]/90 backdrop-blur-xl p-7 sm:p-10 lg:p-12 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                
-                {/* Background Number Watermark */}
-                <span className="absolute -top-6 right-6 font-serif font-bold text-[120px] sm:text-[160px] text-white/[0.03] select-none pointer-events-none leading-none">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 relative z-10">
+          {SERVICES_DATA.map((service, index) => {
+            const isEven = index % 2 === 1;
+
+            return (
+              <div
+                key={service.id}
+                id={service.id}
+                className="scroll-mt-28 relative rounded-3xl bg-white border border-[#E8E4DA] p-7 sm:p-10 lg:p-12 shadow-[0_12px_45px_rgba(14,32,54,0.05)] hover:shadow-[0_20px_50px_rgba(200,115,42,0.12)] hover:border-[#C8732A]/50 transition-all duration-300 overflow-hidden group"
+              >
+                {/* Background Large Number Watermark */}
+                <span className="absolute -top-6 right-6 font-serif font-bold text-[120px] sm:text-[160px] text-[#0E2036]/[0.035] group-hover:text-[#C8732A]/[0.07] select-none pointer-events-none leading-none transition-colors duration-300">
                   {service.num}
                 </span>
 
@@ -234,38 +243,40 @@ export default function ServicesPage() {
                   <div className={`lg:col-span-7 flex flex-col items-start ${isEven ? 'lg:order-2' : ''}`}>
                     
                     {/* Top Tag & Icon */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 shadow-sm">
+                    <div className="flex items-center gap-3.5 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#0E2036]/5 border border-[#0E2036]/10 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-[#C8732A]/10 transition-colors">
                         {service.icon}
                       </div>
                       <div>
-                        <span className="text-[10.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[#E8A63D] border border-[#E8A63D]/30 inline-block">
+                        <span className="text-[10.5px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#C8732A]/10 text-[#C8732A] border border-[#C8732A]/25 inline-block">
                           {service.tag}
                         </span>
-                        <div className="text-white/40 text-[11px] font-mono mt-0.5">
+                        <div className="text-gray-400 text-[11px] font-mono mt-0.5">
                           SERVICE REF. 0{index + 1}
                         </div>
                       </div>
                     </div>
 
                     {/* Service Title */}
-                    <h2 className="font-serif font-bold text-2xl sm:text-3xl text-white tracking-tight mb-4">
+                    <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[#0E2036] tracking-tight mb-3">
                       {service.title}
                     </h2>
 
-                    {/* Main Description */}
-                    <p className="text-[14px] sm:text-[15px] text-[#FFE599] font-serif italic mb-3 leading-snug">
+                    {/* English Sub-hook */}
+                    <p className="text-[14px] sm:text-[15px] text-[#C8732A] font-serif italic mb-3 leading-snug">
                       {service.desc}
                     </p>
-                    <p className="text-[13.5px] sm:text-[14.5px] text-white/75 leading-relaxed mb-6">
+
+                    {/* Main Description */}
+                    <p className="text-[13.5px] sm:text-[14.5px] text-gray-600 leading-relaxed mb-6 font-normal">
                       {service.fullDesc}
                     </p>
 
                     {/* Feature bullets */}
                     <ul className="space-y-2.5 mb-8 w-full">
                       {service.features.map((feat, fIdx) => (
-                        <li key={fIdx} className="flex items-start gap-2.5 text-[13px] sm:text-[13.5px] text-white/85">
-                          <span className="w-5 h-5 rounded-full bg-[#C8732A]/20 border border-[#C8732A]/50 flex items-center justify-center text-[#E8A63D] shrink-0 mt-0.5">
+                        <li key={fIdx} className="flex items-start gap-2.5 text-[13px] sm:text-[13.5px] text-gray-700">
+                          <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-2.5 h-2.5">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
@@ -275,32 +286,33 @@ export default function ServicesPage() {
                       ))}
                     </ul>
 
-                    {/* Action CTA */}
+                    {/* Action CTA with Luxury Arrow */}
                     <Link
                       href={service.ctaUrl}
-                      className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14px] px-6 py-3 rounded-full shadow-lg shadow-[#9C4E0F]/30 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer"
+                      className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14px] px-7 py-3.5 rounded-full shadow-md shadow-[#9C4E0F]/20 border border-[#E8A63D]/40 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 group/btn cursor-pointer"
                     >
                       <span>{service.ctaText}</span>
-                      <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-1" />
+                      <LuxuryArrow className="w-3 h-3 text-white group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
 
                   </div>
 
-                  {/* Highlights Grid Card */}
+                  {/* Highlights Grid Card (Right or Left on alternate) */}
                   <div className={`lg:col-span-5 ${isEven ? 'lg:order-1' : ''}`}>
-                    <div className="bg-[#081422]/70 border border-white/10 rounded-2xl p-6 sm:p-7 backdrop-blur-md">
-                      <div className="text-[11px] font-mono tracking-wider uppercase text-[#E8A63D] font-bold mb-4 border-b border-white/10 pb-2 flex items-center justify-between">
+                    <div className="bg-[#FAF9F5] border border-[#E8E4DA] rounded-2xl p-6 sm:p-7 shadow-xs">
+                      
+                      <div className="text-[11px] font-mono tracking-wider uppercase text-[#C8732A] font-bold mb-4 border-b border-[#E8E4DA] pb-2.5 flex items-center justify-between">
                         <span>Points clés du service</span>
-                        <span className="text-white/40">Garantie Souveraine</span>
+                        <span className="text-gray-400 font-normal">Garantie Souveraine</span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         {service.highlights.map((hl, hIdx) => (
-                          <div key={hIdx} className="bg-white/[0.04] p-3.5 rounded-xl border border-white/5">
-                            <span className="block text-[11px] text-white/50 mb-1">
+                          <div key={hIdx} className="bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs">
+                            <span className="block text-[11px] text-gray-500 mb-1">
                               {hl.label}
                             </span>
-                            <span className="block font-serif font-bold text-[14.5px] text-[#FFE599] leading-tight">
+                            <span className="block font-serif font-bold text-[14.5px] text-[#0E2036] leading-tight">
                               {hl.value}
                             </span>
                           </div>
@@ -308,12 +320,12 @@ export default function ServicesPage() {
                       </div>
 
                       {/* Seal / Trust notice */}
-                      <div className="mt-5 pt-4 border-t border-white/10 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs shrink-0">
+                      <div className="mt-5 pt-4 border-t border-[#E8E4DA] flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-xs font-bold shrink-0">
                           ✓
                         </div>
-                        <p className="text-[11.5px] text-white/60 leading-snug">
-                          Protocole d&apos;assurance vérifié et exécution conforme aux normes de la LBMA.
+                        <p className="text-[12px] text-gray-600 leading-snug">
+                          Protocole d&apos;assurance vérifié et exécution conforme aux normes internationales de la LBMA.
                         </p>
                       </div>
 
@@ -323,34 +335,47 @@ export default function ServicesPage() {
                 </div>
 
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </section>
 
-      {/* ================= 3. BOTTOM ADVISOR REASSURANCE BANNER ================= */}
-      <section className="py-16 bg-[#0E2036] border-t border-white/10">
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-white/[0.05] via-[#C8732A]/10 to-transparent p-8 sm:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+      {/* ================= 3. BOTTOM ADVISOR REASSURANCE BANNER (DEEP NAVY & GOLD) ================= */}
+      <section className="py-16 md:py-20 bg-[#0E2036] text-white border-t border-[#C8732A]/30 relative overflow-hidden">
+        
+        {/* Glow */}
+        <div
+          className="absolute -top-24 right-1/4 w-[400px] h-[300px] pointer-events-none opacity-20 blur-[90px]"
+          style={{ background: 'radial-gradient(circle, #E8A63D 0%, transparent 70%)' }}
+        />
+
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="rounded-3xl bg-white/[0.04] p-8 sm:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
             <div>
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#E8A63D] font-bold block mb-2">
-                ACCOMPAGNEMENT DÉDIÉ
+                ACCOMPAGNEMENT PRIVÉ &amp; SUR-MESURE
               </span>
               <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white mb-2">
                 Vous avez un projet d&apos;investissement spécifique ?
               </h3>
-              <p className="text-[14px] text-white/70 max-w-xl">
-                Nos spécialistes des métaux précieux vous conseillent pour configurer votre portefeuille, vos solutions de garde en coffre ou organiser une livraison personnalisée.
+              <p className="text-[14px] text-white/70 max-w-xl leading-relaxed">
+                Nos spécialistes des métaux précieux vous conseillent pour configurer votre portefeuille, vos solutions de garde en coffre ou organiser une livraison personnalisée avec chiffrage sous 72h.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">
               <Link
+                href="/devis"
+                className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/30 border border-[#E8A63D]/40 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer"
+              >
+                <span>Demander un devis officiel</span>
+                <LuxuryArrow className="w-3 h-3 text-white group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
                 href="/contact"
-                className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/30 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white font-semibold text-[14px] border border-white/15 transition-colors"
               >
                 <span>Contacter un conseiller</span>
-                <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
@@ -360,4 +385,3 @@ export default function ServicesPage() {
     </div>
   );
 }
-
