@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 interface WhyChooseUsProps {
@@ -69,7 +69,7 @@ function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
   switch (type) {
     case 'purchase':
       return (
-        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" fill="none">
           <defs>
             <linearGradient id="srvIconGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#FFE082" />
@@ -83,7 +83,7 @@ function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
       );
     case 'storage':
       return (
-        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
           <rect x="3" y="4" width="18" height="16" rx="3" fill="url(#srvIconGrad)" fillOpacity="0.18" />
           <circle cx="12" cy="12" r="3.5" strokeWidth="1.4" />
           <path d="M12 9v6M9 12h6" strokeLinecap="round" />
@@ -92,7 +92,7 @@ function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
       );
     case 'delivery':
       return (
-        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
           <rect x="2" y="7" width="14" height="11" rx="1.5" fill="url(#srvIconGrad)" fillOpacity="0.18" />
           <path d="M16 10h4l2 3.5V18h-6v-8Z" strokeLinejoin="round" />
           <circle cx="6.5" cy="18" r="2" fill="#0E2036" />
@@ -101,14 +101,14 @@ function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
       );
     case 'pickup':
       return (
-        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
           <path d="M12 21c4-4.5 7-8.5 7-12a7 7 0 1 0-14 0c0 3.5 3 7.5 7 12Z" fill="url(#srvIconGrad)" fillOpacity="0.18" />
           <circle cx="12" cy="9" r="2.5" />
         </svg>
       );
     case 'buyback':
       return (
-        <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" fill="none" stroke="url(#srvIconGrad)" strokeWidth="1.6">
           <path d="M4 12a8 8 0 0 1 14-5.3L20 8" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M20 4v4h-4" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M20 12a8 8 0 0 1-14 5.3L4 16" strokeLinecap="round" strokeLinejoin="round" />
@@ -116,6 +116,72 @@ function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
         </svg>
       );
   }
+}
+
+// Single Luxury Service Card (matching Hero Card styling with rotating beam)
+function LuxuryServiceCard({ service, delay = '0s' }: { service: ServiceItem; delay?: string }) {
+  return (
+    <Link
+      href={service.url}
+      className="relative group rounded-[20px] p-[1.5px] overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1 block text-left h-full w-full"
+    >
+      {/* Base outline border */}
+      <div className="absolute inset-0 rounded-[20px] border border-white/[0.08] pointer-events-none" />
+
+      {/* Soft Golden Halo */}
+      <div
+        className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none blur-[9px] opacity-75 animate-beam-spin"
+        style={{
+          background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+          animationDelay: delay,
+        }}
+      />
+
+      {/* Traveling Light Beam & Copper Trail #C96A2B */}
+      <div
+        className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none animate-beam-spin"
+        style={{
+          background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+          animationDelay: delay,
+        }}
+      />
+
+      {/* Inner Card (Navy #0E2036/94 with backdrop blur) */}
+      <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/94 backdrop-blur-[14px] rounded-[18.5px] p-6 sm:p-7 h-full w-full">
+        {/* Top: Icon + Tag */}
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-sm">
+              <ServiceIcon type={service.iconType} />
+            </div>
+            <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/[0.07] text-[#E8A63D] border border-[#E8A63D]/30">
+              {service.tag}
+            </span>
+          </div>
+
+          {/* Service Title */}
+          <h3 className="font-serif font-bold text-[21px] sm:text-[23px] text-white tracking-[0.01em] group-hover:text-[#FFE599] transition-colors mb-2.5">
+            {service.title}
+          </h3>
+
+          {/* Service Description */}
+          <p className="text-[13px] sm:text-[13.5px] text-white/75 leading-relaxed font-normal">
+            {service.desc}
+          </p>
+        </div>
+
+        {/* Bottom Link: Learn More */}
+        <div className="pt-4 mt-4 border-t border-white/[0.08] flex items-center justify-between text-[#E8A63D] group-hover:text-[#FFE599] font-semibold text-[13px] transition-colors">
+          <span>{service.ctaText}</span>
+          <span className="w-6 h-6 rounded-full bg-white/[0.06] group-hover:bg-[#C8732A] group-hover:text-white flex items-center justify-center transition-all duration-200">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="w-3 h-3">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 export default function WhyChooseUs({ config }: WhyChooseUsProps) {
@@ -128,43 +194,70 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
   const btnText = c.btnText || 'Découvrir nos solutions';
   const btnUrl = c.btnUrl || '/services';
 
-  // Pair carousel state: displays 2 cards at a time, cycling through the 5 services
-  const [startIndex, setStartIndex] = useState(0);
+  // Height of each card slot in pixels for exact mathematical translation
+  const CARD_HEIGHT = 350;
+
+  // Seamless Odometer Reel: 5 items + clone of index 0 at position 5
+  // Col 1 items: [0, 1, 2, 3, 4, 0]
+  // Col 2 items: [1, 2, 3, 4, 0, 1]
+  const col1Items = [...SERVICES, SERVICES[0]];
+  const col2Items = [...SERVICES.slice(1), SERVICES[0], SERVICES[1]];
+
+  const [step, setStep] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const isHandlingTransition = useRef(false);
 
-  const nextPair = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setStartIndex((prev) => (prev + 2) % SERVICES.length);
-      setIsAnimating(false);
-    }, 220);
+  const nextStep = () => {
+    if (isHandlingTransition.current) return;
+    setIsTransitioning(true);
+    setStep((prev) => prev + 1);
   };
 
-  const prevPair = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setStartIndex((prev) => (prev - 2 + SERVICES.length) % SERVICES.length);
-      setIsAnimating(false);
-    }, 220);
+  const prevStep = () => {
+    if (isHandlingTransition.current) return;
+    if (step === 0) {
+      // Instantly jump to clone position without transition, then animate to step 4
+      isHandlingTransition.current = true;
+      setIsTransitioning(false);
+      setStep(SERVICES.length);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsTransitioning(true);
+          setStep(SERVICES.length - 1);
+          isHandlingTransition.current = false;
+        });
+      });
+    } else {
+      setIsTransitioning(true);
+      setStep((prev) => prev - 1);
+    }
   };
 
-  // Automatic rotation every 5.5 seconds unless user hovers
+  // When step hits 5 (the clone), silently reset to 0 without transition
+  const handleTransitionEnd = () => {
+    if (step >= SERVICES.length) {
+      isHandlingTransition.current = true;
+      setIsTransitioning(false);
+      setStep(0);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          isHandlingTransition.current = false;
+        });
+      });
+    }
+  };
+
+  // Automatic odometer tick every 5.5s (paused on hover)
   useEffect(() => {
     if (isPaused) return;
-    const interval = setInterval(() => {
-      nextPair();
+    const timer = setInterval(() => {
+      nextStep();
     }, 5500);
-    return () => clearInterval(interval);
-  }, [isPaused, startIndex]);
+    return () => clearInterval(timer);
+  }, [isPaused, step]);
 
-  // Compute the 2 visible cards
-  const card1 = SERVICES[startIndex % SERVICES.length];
-  const card2 = SERVICES[(startIndex + 1) % SERVICES.length];
-  const visibleCards = [card1, card2];
-
-  const totalSteps = Math.ceil(SERVICES.length / 2);
-  const currentStep = Math.floor(startIndex / 2) % totalSteps;
+  const activeNumber = (step % SERVICES.length) + 1;
 
   return (
     <section 
@@ -188,10 +281,10 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           
-          {/* ================= LEFT COLUMN: Text Copy, Description, CTA, Controls ================= */}
+          {/* ================= LEFT COLUMN: Text Copy, Description, CTA, Counter ================= */}
           <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-4">
             
-            {/* Eyebrow */}
+            {/* Eyebrow with gold accent lines */}
             <div className="inline-flex items-center gap-3 mb-3.5">
               <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#E8A63D]" />
               <span className="font-mono text-[11px] sm:text-[12px] font-bold tracking-[0.18em] text-[#E8A63D] uppercase">
@@ -218,12 +311,27 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
             </p>
 
             {/* Description */}
-            <p className="text-[14.5px] sm:text-[15px] text-white/75 font-normal leading-relaxed mb-8 max-w-[48ch]">
+            <p className="text-[14.5px] sm:text-[15px] text-white/75 font-normal leading-relaxed mb-7 max-w-[48ch]">
               {description}
             </p>
 
-            {/* CTA Button (Cuivre Doré Impérial) & Carousel Controls */}
-            <div className="flex flex-wrap items-center gap-5">
+            {/* Mechanical Odometer Counter Display */}
+            <div className="flex items-center gap-4 mb-7 p-2.5 px-4 rounded-xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#E8A63D] animate-ping" />
+                <span className="text-[11px] font-mono uppercase tracking-wider text-white/60">
+                  Défilement compteur :
+                </span>
+              </div>
+              <div className="flex items-baseline font-serif font-bold text-[#FFE599] tracking-wider text-[20px]">
+                <span className="text-[#E8A63D]">0{activeNumber}</span>
+                <span className="text-white/30 mx-1.5 font-light text-[14px]">/</span>
+                <span className="text-white/45 text-[14px] font-normal">05</span>
+              </div>
+            </div>
+
+            {/* CTA Button (Cuivre Doré Impérial) & Counter Controls */}
+            <div className="flex flex-wrap items-center gap-4">
               <Link
                 href={btnUrl}
                 className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-[14.5px] px-7 py-3.5 rounded-full shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none"
@@ -234,132 +342,124 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
                 </svg>
               </Link>
 
-              {/* Navigation arrows & step pills */}
+              {/* Vertical Counter Step Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={prevPair}
+                  onClick={prevStep}
                   className="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 hover:border-[#E8A63D] text-white/80 hover:text-[#FFE599] flex items-center justify-center transition-all cursor-pointer"
-                  title="Services précédents"
-                  aria-label="Services précédents"
+                  title="Service précédent (Défilement haut)"
+                  aria-label="Service précédent"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                   </svg>
                 </button>
 
                 <button
                   type="button"
-                  onClick={nextPair}
+                  onClick={nextStep}
                   className="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 hover:border-[#E8A63D] text-white/80 hover:text-[#FFE599] flex items-center justify-center transition-all cursor-pointer"
-                  title="Services suivants"
-                  aria-label="Services suivants"
+                  title="Service suivant (Défilement bas)"
+                  aria-label="Service suivant"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
               </div>
             </div>
 
-            {/* Stepper Indicators */}
+            {/* Pill Navigation Dots */}
             <div className="flex items-center gap-2 mt-5">
-              {[0, 1, 2].map((step) => (
+              {[0, 1, 2, 3, 4].map((idx) => (
                 <button
-                  key={step}
+                  key={idx}
                   type="button"
-                  onClick={() => setStartIndex(step * 2)}
+                  onClick={() => {
+                    setIsTransitioning(true);
+                    setStep(idx);
+                  }}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    currentStep === step ? 'w-8 bg-[#E8A63D]' : 'w-2 bg-white/20 hover:bg-white/40'
+                    (step % SERVICES.length) === idx ? 'w-7 bg-[#E8A63D]' : 'w-2 bg-white/20 hover:bg-white/40'
                   }`}
-                  aria-label={`Aller au groupe ${step + 1}`}
+                  aria-label={`Aller au service ${idx + 1}`}
                 />
               ))}
-              <span className="text-[11px] text-white/45 font-mono ml-2">
+              <span className="text-[11px] text-white/40 font-mono ml-2">
                 Auto 5.5s
               </span>
             </div>
 
           </div>
 
-          {/* ================= RIGHT COLUMN: 2 Rotating Cards (Hero Style with Copper-Gold Beam) ================= */}
+          {/* ================= RIGHT COLUMN: 2 Cards Rolling Vertically Like an Odometer Counter ================= */}
           <div 
-            className="lg:col-span-7"
+            className="lg:col-span-7 relative"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 transition-opacity duration-300 ${isAnimating ? 'opacity-30 scale-[0.98]' : 'opacity-100 scale-100'}`}>
-              {visibleCards.map((service, idx) => {
-                const delays = ['0s', '-2.75s'];
-                const delay = delays[idx % delays.length];
+            {/* Top & Bottom Cinematic Shadow Masks creating the mechanical rolling reel effect */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#0A1828] via-[#0A1828]/80 to-transparent z-20 rounded-t-[20px]" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0A1828] via-[#0A1828]/80 to-transparent z-20 rounded-b-[20px]" />
 
-                return (
-                  <Link
-                    key={`${service.id}-${startIndex}-${idx}`}
-                    href={service.url}
-                    className="relative group rounded-[20px] p-[1.5px] overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1.5 block text-left min-h-[300px] flex flex-col"
-                  >
-                    {/* Base outline */}
-                    <div className="absolute inset-0 rounded-[20px] border border-white/[0.08] pointer-events-none" />
-
-                    {/* Soft Golden Halo */}
-                    <div
-                      className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none blur-[9px] opacity-75 animate-beam-spin"
-                      style={{
-                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
-                        animationDelay: delay,
-                      }}
-                    />
-
-                    {/* Traveling Light Beam & Copper Trail #C96A2B */}
-                    <div
-                      className="absolute left-1/2 top-1/2 w-[340%] aspect-square pointer-events-none animate-beam-spin"
-                      style={{
-                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
-                        animationDelay: delay,
-                      }}
-                    />
-
-                    {/* Inner Card (Navy #0E2036 / 94 with backdrop blur) */}
-                    <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/94 backdrop-blur-[14px] rounded-[18.5px] p-6 sm:p-7 h-full w-full flex-1">
-                      
-                      {/* Top: Icon + Tag */}
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-4">
-                          <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-sm">
-                            <ServiceIcon type={service.iconType} />
-                          </div>
-                          <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/[0.07] text-[#E8A63D] border border-[#E8A63D]/30">
-                            {service.tag}
-                          </span>
-                        </div>
-
-                        {/* Service Title */}
-                        <h3 className="font-serif font-bold text-[22px] sm:text-[24px] text-white tracking-[0.01em] group-hover:text-[#FFE599] transition-colors mb-2.5">
-                          {service.title}
-                        </h3>
-
-                        {/* Service Description */}
-                        <p className="text-[13.5px] text-white/75 leading-relaxed font-normal">
-                          {service.desc}
-                        </p>
-                      </div>
-
-                      {/* Bottom Link: Learn More */}
-                      <div className="pt-5 mt-4 border-t border-white/[0.08] flex items-center justify-between text-[#E8A63D] group-hover:text-[#FFE599] font-semibold text-[13.5px] transition-colors">
-                        <span>{service.ctaText}</span>
-                        <span className="w-7 h-7 rounded-full bg-white/[0.06] group-hover:bg-[#C8732A] group-hover:text-white flex items-center justify-center transition-all duration-200">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="w-3.5 h-3.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
-                          </svg>
-                        </span>
-                      </div>
-
+            {/* Dual Column Vertical Reels */}
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 overflow-hidden rounded-[22px]"
+              style={{ height: `${CARD_HEIGHT}px` }}
+            >
+              {/* Reel Column 1 (Starts at index 0) */}
+              <div className="relative h-full overflow-hidden">
+                <div
+                  className={`flex flex-col ${
+                    isTransitioning 
+                      ? 'transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]' 
+                      : ''
+                  }`}
+                  style={{
+                    transform: `translateY(-${step * CARD_HEIGHT}px)`,
+                    transitionDelay: '0ms',
+                  }}
+                  onTransitionEnd={handleTransitionEnd}
+                >
+                  {col1Items.map((service, idx) => (
+                    <div 
+                      key={`col1-${service.id}-${idx}`}
+                      style={{ height: `${CARD_HEIGHT}px` }}
+                      className="p-1 pb-2 shrink-0"
+                    >
+                      <LuxuryServiceCard service={service} delay="0s" />
                     </div>
-                  </Link>
-                );
-              })}
+                  ))}
+                </div>
+              </div>
+
+              {/* Reel Column 2 (Offset by 1, with subtle 90ms mechanical stagger) */}
+              <div className="relative h-full overflow-hidden hidden sm:block">
+                <div
+                  className={`flex flex-col ${
+                    isTransitioning 
+                      ? 'transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]' 
+                      : ''
+                  }`}
+                  style={{
+                    transform: `translateY(-${step * CARD_HEIGHT}px)`,
+                    transitionDelay: isTransitioning ? '90ms' : '0ms',
+                  }}
+                >
+                  {col2Items.map((service, idx) => (
+                    <div 
+                      key={`col2-${service.id}-${idx}`}
+                      style={{ height: `${CARD_HEIGHT}px` }}
+                      className="p-1 pb-2 shrink-0"
+                    >
+                      <LuxuryServiceCard service={service} delay="-2.75s" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
           </div>
 
         </div>
