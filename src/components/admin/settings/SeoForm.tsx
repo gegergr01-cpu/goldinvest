@@ -12,7 +12,7 @@ export default function SeoForm({ initialSettings }: { initialSettings: Record<s
   
   const [metaTitle, setMetaTitle] = useState(initialSettings.HOME_META_TITLE || '');
   const [metaDescription, setMetaDescription] = useState(initialSettings.HOME_META_DESCRIPTION || '');
-  const [ogImage, setOgImage] = useState(initialSettings.HEADER_LOGO_IMAGE || '');
+  const [ogImage, setOgImage] = useState(initialSettings.OG_IMAGE || initialSettings.HEADER_LOGO_IMAGE || '');
   const [googleSiteVerification, setGoogleSiteVerification] = useState(initialSettings.GOOGLE_SITE_VERIFICATION || '');
   const [googleAnalyticsId, setGoogleAnalyticsId] = useState(initialSettings.GOOGLE_ANALYTICS_ID || '');
   
@@ -33,7 +33,7 @@ export default function SeoForm({ initialSettings }: { initialSettings: Record<s
     const settingsMap: Record<string, string> = {
       HOME_META_TITLE: metaTitle,
       HOME_META_DESCRIPTION: metaDescription,
-      HEADER_LOGO_IMAGE: ogImage,
+      OG_IMAGE: ogImage,
       GOOGLE_SITE_VERIFICATION: googleSiteVerification,
       GOOGLE_ANALYTICS_ID: googleAnalyticsId,
       STORE_COUNTRY: storeCountry,

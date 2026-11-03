@@ -2,10 +2,12 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ContactDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  logoImage?: string;
   phone1?: string;
   phone2?: string;
   email?: string;
@@ -16,6 +18,7 @@ interface ContactDrawerProps {
 export default function ContactDrawer({
   isOpen,
   onClose,
+  logoImage,
   phone1 = '+33 6 17 26 47 05',
   phone2 = '+33 6 05 82 51 96',
   email = 'azevia.solutions@gmail.com',
@@ -62,13 +65,26 @@ export default function ContactDrawer({
         <div>
           {/* Head: Logo + Circular White Close Button */}
           <div className="flex items-start justify-between gap-3.5 mb-8">
-            <Link href="/" onClick={onClose} className="flex flex-col items-start gap-1 select-none">
-              <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none">
-                GOLD<span className="text-[#E8A63D]">INVEST</span>
-              </span>
-              <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
-                OR · ARGENT · GROUPAGE
-              </span>
+            <Link href="/" onClick={onClose} className="flex items-center select-none">
+              {logoImage ? (
+                <Image
+                  src={logoImage}
+                  alt="Logo"
+                  width={160}
+                  height={45}
+                  unoptimized
+                  className="max-h-11 w-auto object-contain"
+                />
+              ) : (
+                <div className="flex flex-col items-start gap-1">
+                  <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none">
+                    GOLD<span className="text-[#E8A63D]">INVEST</span>
+                  </span>
+                  <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
+                    OR · ARGENT · GROUPAGE
+                  </span>
+                </div>
+              )}
             </Link>
 
             {/* Circular White Close Button with 90° rotation on hover */}

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useCartStore } from '@/store/cartStore';
@@ -53,6 +54,9 @@ type HeaderProps = {
 };
 
 export default function Header({
+  logoImage = '',
+  headerLogoHeight = '48',
+  mobileLogoHeight = '40',
   menuLinks = [],
   categories = [],
   mobileAboutTitle = '',
@@ -208,14 +212,31 @@ export default function Header({
         >
           <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
-            {/* Logo Line (Left) matching AZ Solutions aesthetic */}
-            <Link href="/" className="flex flex-col items-start gap-1 text-decoration-none flex-none select-none group">
-              <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none group-hover:text-[#E8A63D] transition-colors">
-                GOLD<span className="text-[#E8A63D]">INVEST</span>
-              </span>
-              <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
-                OR · ARGENT · GROUPAGE
-              </span>
+            {/* Logo Line (Left) */}
+            <Link href="/" className="flex items-center flex-none select-none group">
+              {logoImage ? (
+                <div className="relative flex items-center py-1">
+                  <Image
+                    src={logoImage}
+                    alt="Logo"
+                    width={200}
+                    height={55}
+                    priority
+                    unoptimized
+                    className="w-auto object-contain transition-transform group-hover:scale-[1.02]"
+                    style={{ maxHeight: headerLogoHeight ? `${headerLogoHeight}px` : '46px' }}
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-start gap-1">
+                  <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none group-hover:text-[#E8A63D] transition-colors">
+                    GOLD<span className="text-[#E8A63D]">INVEST</span>
+                  </span>
+                  <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
+                    OR · ARGENT · GROUPAGE
+                  </span>
+                </div>
+              )}
             </Link>
 
             {/* Pill Nav Bar (Center & Right, matching Capture 2 & 3 / AZ Solutions .nav-pill) */}
@@ -389,6 +410,7 @@ export default function Header({
       <ContactDrawer
         isOpen={isContactDrawerOpen}
         onClose={() => setIsContactDrawerOpen(false)}
+        logoImage={logoImage}
         phone1={mobileContactPhone || '+33 6 17 26 47 05'}
         email={mobileContactEmail || 'azevia.solutions@gmail.com'}
         address={mobileContactAddress || 'Laval, France'}
@@ -399,6 +421,8 @@ export default function Header({
       <MobileSidebar
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        logoImage={logoImage}
+        logoHeight={mobileLogoHeight}
         menuLinks={activeNavLinks}
         aboutTitle={mobileAboutTitle || ''}
         aboutDesc={mobileAboutDesc || ''}

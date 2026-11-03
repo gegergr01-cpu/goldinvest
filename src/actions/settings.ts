@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-import { revalidatePath, updateTag } from 'next/cache';
+import { revalidatePath, revalidateTag, updateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/utils/supabase/server';
 
@@ -21,7 +21,7 @@ const SENSITIVE_KEYS = new Set([
 export async function getSettings() {
   const settings = await prisma.setting.findMany();
   const settingsMap: Record<string, string> = {};
-  
+
   let isAdmin = false;
   try {
     const { requireAdmin } = await import('@/lib/auth');
@@ -64,6 +64,7 @@ export async function updateSetting(key: string, value: string) {
       create: { key, value }
     });
     revalidatePath('/', 'layout');
+    revalidateTag('settings', { expire: 0 });
     updateTag('settings');
     return { success: true };
   } catch (error: any) {
@@ -81,9 +82,10 @@ export async function updateSettingsBatch(settingsMap: Record<string, string>) {
         create: { key, value }
       });
     });
-    
+
     await prisma.$transaction(transactions);
     revalidatePath('/', 'layout');
+    revalidateTag('settings', { expire: 0 });
     updateTag('settings');
     return { success: true };
   } catch (error: any) {

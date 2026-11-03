@@ -25,14 +25,14 @@ const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settingsDb = await prisma.setting.findMany({
-    where: { key: { in: ['FAVICON_IMAGE', 'HOME_META_TITLE', 'HOME_META_DESCRIPTION', 'HEADER_LOGO_IMAGE', 'GOOGLE_SITE_VERIFICATION'] } }
+    where: { key: { in: ['FAVICON_IMAGE', 'HOME_META_TITLE', 'HOME_META_DESCRIPTION', 'HEADER_LOGO_IMAGE', 'OG_IMAGE', 'GOOGLE_SITE_VERIFICATION'] } }
   });
   
   const settingsMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
   const faviconUrl = settingsMap['FAVICON_IMAGE'];
   const title = settingsMap['HOME_META_TITLE'] || `${storeName} | E-commerce`;
   const description = settingsMap['HOME_META_DESCRIPTION'] || "Découvrez notre vaste sélection de produits de haute qualité sur notre boutique en ligne complète.";
-  const ogImage = settingsMap['HEADER_LOGO_IMAGE'] || '/logo.jpg';
+  const ogImage = settingsMap['OG_IMAGE'] || settingsMap['HEADER_LOGO_IMAGE'] || '/logo.jpg';
 
   const baseUrl = SITE_URL;
 
@@ -139,7 +139,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   const storeSettings = {
     announcement: settingsMap.HEADER_ANNOUNCEMENT || `Welcome to ${storeName}`,
-    logoImage: settingsMap.HEADER_LOGO_IMAGE || '/logo.png',
+    logoImage: settingsMap.HEADER_LOGO_IMAGE || '',
     supportPhone: settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE ?? '+32 2 123 45 67',
     supportEmail: settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL ?? 'info@goldsilversinvest.com',
     menuLinks: menuLinks,
@@ -165,7 +165,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     footerSocialInstagram: settingsMap.FOOTER_SOCIAL_INSTAGRAM || '#',
     footerSocialLinkedin: settingsMap.FOOTER_SOCIAL_LINKEDIN || '#',
     footerColumns: footerColumns,
-    footerLogoImage: settingsMap.FOOTER_LOGO_IMAGE || '',
+    footerLogoImage: settingsMap.FOOTER_LOGO_IMAGE || settingsMap.HEADER_LOGO_IMAGE || '',
     footerDescription: settingsMap.FOOTER_DESCRIPTION || 'Unsere Verpflichtungen : Qualität : Produkte, die aufgrund ihrer Leistung und ihrer Übereinstimmung mit den Umweltstandards ausgewählt wurden. Ökologie : Nachhaltige und verantwortungsvolle Heizlösungen. Nähe : Ein Team, das auf Ihre Bedürfnisse hört und bereit ist, Sie bei Ihren Projekten zu beraten und zu begleiten. Service : Schnelle Lieferung und ein Kundenservice, der immer für Sie da ist.',
     footerShowAddress: settingsMap.FOOTER_SHOW_ADDRESS !== 'false',
     footerShowEmail: settingsMap.FOOTER_SHOW_EMAIL !== 'false',

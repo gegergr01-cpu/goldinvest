@@ -34,30 +34,42 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
     e.preventDefault();
     setIsLoading(true);
 
-    await updateSettingsBatch({
-      SHOP_CARD_STYLE: shopCardStyle,
-      SHOP_CARD_BORDER_COLOR: shopCardBorderColor,
-      THEME_COLOR: themeColor,
-      HEADER_ANNOUNCEMENT: headerAnnouncement,
-      SEARCH_PLACEHOLDER: searchPlaceholder,
-      HEADER_SUPPORT_PHONE: headerSupportPhone,
-      HEADER_SUPPORT_EMAIL: headerSupportEmail,
-      TOP_BAR_BG_COLOR: topBarBgColor,
-      TOP_BAR_TEXT_COLOR: topBarTextColor,
-      SHOW_STORE_LOCATOR: showStoreLocator.toString(),
-      HEADER_LOGO_IMAGE: headerLogoImage,
-      FAVICON_IMAGE: faviconImage
-    });
+    try {
+      const res = await updateSettingsBatch({
+        SHOP_CARD_STYLE: shopCardStyle,
+        SHOP_CARD_BORDER_COLOR: shopCardBorderColor,
+        THEME_COLOR: themeColor,
+        HEADER_ANNOUNCEMENT: headerAnnouncement,
+        SEARCH_PLACEHOLDER: searchPlaceholder,
+        HEADER_SUPPORT_PHONE: headerSupportPhone,
+        HEADER_SUPPORT_EMAIL: headerSupportEmail,
+        TOP_BAR_BG_COLOR: topBarBgColor,
+        TOP_BAR_TEXT_COLOR: topBarTextColor,
+        SHOW_STORE_LOCATOR: showStoreLocator.toString(),
+        HEADER_LOGO_IMAGE: headerLogoImage,
+        FAVICON_IMAGE: faviconImage
+      });
 
-    setMessage(tSettings('update_success'));
-    setIsLoading(false);
-    router.refresh();
+      if (res && res.error) {
+        setMessage('Erreur: ' + res.error);
+      } else {
+        setMessage(tSettings('update_success') || 'Modifications enregistrées avec succès !');
+        router.refresh();
+      }
+    } catch (err: any) {
+      setMessage('Erreur: ' + (err?.message || 'Une erreur est survenue'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <div className="mb-6">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Header & Product Cards Design</h2>
+        <button type="submit" disabled={isLoading} className="px-5 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400 text-sm font-semibold transition-colors shadow-sm">
+          {isLoading ? tSettings('saving') : (tSettings('save_changes') || 'Enregistrer les modifications')}
+        </button>
       </div>
       {message && <div className="bg-green-50 text-green-700 p-4 rounded-md border border-green-200">{message}</div>}
 
@@ -76,9 +88,16 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
                   <Image width={800} height={800} src={headerLogoImage} alt="Header logo" className="max-h-12 object-contain" />
                 </div>
               )}
-              <button type="button" onClick={() => setShowHeaderLogoModal(true)} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                {headerLogoImage ? (tSettings('change_logo') || 'Change Logo') : (tSettings('select_logo') || 'Select Logo')}
-              </button>
+              <div className="flex flex-col gap-1">
+                <button type="button" onClick={() => setShowHeaderLogoModal(true)} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  {headerLogoImage ? (tSettings('change_logo') || 'Change Logo') : (tSettings('select_logo') || 'Select Logo')}
+                </button>
+                {headerLogoImage && (
+                  <button type="button" onClick={() => setHeaderLogoImage('')} className="text-xs text-red-600 hover:text-red-700 text-left underline">
+                    Supprimer le logo
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div>
@@ -89,9 +108,16 @@ export default function DesignHeaderForm({ initialSettings }: { initialSettings:
                   <Image width={800} height={800} src={faviconImage} alt="Favicon" className="max-h-8 max-w-8 object-contain" />
                 </div>
               )}
-              <button type="button" onClick={() => setShowFaviconModal(true)} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                {faviconImage ? (tSettings('change_favicon') || 'Change Favicon') : (tSettings('select_favicon') || 'Select Favicon')}
-              </button>
+              <div className="flex flex-col gap-1">
+                <button type="button" onClick={() => setShowFaviconModal(true)} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  {faviconImage ? (tSettings('change_favicon') || 'Change Favicon') : (tSettings('select_favicon') || 'Select Favicon')}
+                </button>
+                {faviconImage && (
+                  <button type="button" onClick={() => setFaviconImage('')} className="text-xs text-red-600 hover:text-red-700 text-left underline">
+                    Supprimer le favicon
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

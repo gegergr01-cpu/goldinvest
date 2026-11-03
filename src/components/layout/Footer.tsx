@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 
 type FooterProps = {
@@ -39,6 +40,7 @@ type FooterProps = {
 };
 
 export default function Footer({
+  footerLogoImage,
   supportPhone = '+32 2 123 45 67',
   supportEmail = 'info@goldsilversinvest.com',
   footerCopyright = '© 2026 Gold Invest. Tous droits réservés.',
@@ -76,7 +78,20 @@ export default function Footer({
           
           {/* Column 1: Brand & Presentation (col-span-4) */}
           <div className="lg:col-span-4 flex flex-col items-start pr-0 lg:pr-6">
-            <GoldInvestLogo variant="light" size="lg" />
+            {footerLogoImage ? (
+              <Link href="/" className="inline-block">
+                <Image
+                  src={footerLogoImage}
+                  alt="Footer Logo"
+                  width={220}
+                  height={60}
+                  unoptimized
+                  className="max-h-12 w-auto object-contain"
+                />
+              </Link>
+            ) : (
+              <GoldInvestLogo variant="light" size="lg" />
+            )}
             <p className="mt-4 text-xs sm:text-sm text-gray-400 font-light leading-relaxed max-w-sm">
               Investissez en toute sérénité dans l’or et l’argent, des valeurs refuges par excellence.
             </p>
