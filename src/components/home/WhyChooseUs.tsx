@@ -383,9 +383,6 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
                   aria-label={`Aller au service ${idx + 1}`}
                 />
               ))}
-              <span className="text-[11px] text-white/40 font-mono ml-2">
-                Auto 5.5s
-              </span>
             </div>
 
           </div>

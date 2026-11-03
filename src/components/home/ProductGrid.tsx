@@ -23,9 +23,9 @@ type ProductGridProps = {
 };
 
 export default async function ProductGrid({ config }: ProductGridProps) {
-  const { 
-    title = 'Products', 
-    filterType = 'LATEST', 
+  const {
+    title = 'Products',
+    filterType = 'LATEST',
     categoryId,
     variant = '1',
     cardBorderColor = '#ea580c',
@@ -46,7 +46,7 @@ export default async function ProductGrid({ config }: ProductGridProps) {
 
   const settingsDb = await prisma.setting.findMany();
   const settings = settingsDb.reduce((acc: any, s: any) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
-  
+
   if (config) {
     Object.assign(settings, config);
   }
@@ -67,17 +67,17 @@ export default async function ProductGrid({ config }: ProductGridProps) {
   return (
     <section className={`max-w-7xl mx-auto px-4 w-full py-12 font-sans${(config as any)?.hideMobile ? ' hidden sm:block' : ''}`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 
+        <h2
           className="text-gray-900 font-bold text-[length:var(--sz-m)] md:text-[length:var(--sz-t)] lg:text-[length:var(--sz-d)]"
-          style={getResponsiveVars('title', {m: '24px', t: '24px', d: '24px'})}
+          style={getResponsiveVars('title', { m: '24px', t: '24px', d: '24px' })}
         >
           {title}
         </h2>
         {settings.SEE_ALL_TEXT !== '' && (
-          <Link 
-            href={seeAllUrl} 
-            className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-orange-600 transition text-[length:var(--sz-m)] md:text-[length:var(--sz-t)] lg:text-[length:var(--sz-d)] group" 
-            style={getResponsiveVars('SEE_ALL_TEXT', {m: '14px', t: '14px', d: '14px'})}
+          <Link
+            href={seeAllUrl}
+            className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-orange-600 transition text-[length:var(--sz-m)] md:text-[length:var(--sz-t)] lg:text-[length:var(--sz-d)] group"
+            style={getResponsiveVars('SEE_ALL_TEXT', { m: '14px', t: '14px', d: '14px' })}
           >
             <span>{settings.SEE_ALL_TEXT || t('view_all')}</span>
             <LuxuryArrow className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-1" />
@@ -85,14 +85,14 @@ export default async function ProductGrid({ config }: ProductGridProps) {
         )}
       </div>
 
-      <DynamicProductGrid 
+      <DynamicProductGrid
         colsMobile={parseInt(colsMobile, 10) || 1}
         colsTablet={parseInt(colsTablet, 10) || 3}
         colsDesktop={parseInt(colsDesktop, 10) || 5}
       >
         {products.map(p => (
           <div key={p.id} className="h-full">
-            <ProductGridCard 
+            <ProductGridCard
               product={p}
               variant={variant}
               cardBorderColor={cardBorderColor}
