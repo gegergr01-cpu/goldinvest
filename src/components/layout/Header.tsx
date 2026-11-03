@@ -185,7 +185,7 @@ export default function Header({
         On other pages: RELATIVE in normal document flow with solid #0E2036 dark background.
       */}
       <div
-        className={`w-full transition-all duration-300 ${
+        className={`w-full max-w-full overflow-x-hidden transition-all duration-300 ${
           isScrolled
             ? 'fixed top-0 left-0 right-0 z-50'
             : isHomePage
