@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { HeroDailyCard, getDefaultHeroDailyCards } from '@/types/heroCards';
+import { HeroDailyCard } from '@/types/heroCards';
 
 interface GoldHeroProps {
   config?: Record<string, any>;
@@ -90,16 +90,15 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
   const btnText = c.btnText || "Découvrir notre gamme";
   const btnUrl = c.btnUrl || "/shop";
 
-  // 4 Daily Cards (Gold bars, Silver bars, Gold coins, Silver coins)
-  const defaultCards = getDefaultHeroDailyCards(c);
-  const activeCards = (dailyCards && dailyCards.length === 4) ? dailyCards : defaultCards;
+  // Daily Cards: only categories that actually contain real products in DB
+  const activeCards = dailyCards || [];
 
-  const customTitles = [
-    c.card1_title || 'Gold bars',
-    c.card2_title || 'Silver bars',
-    c.card3_title || 'Gold coins',
-    c.card4_title || 'Silver coins',
-  ];
+  const titleMap: Record<string, string | undefined> = {
+    'gold-bars': c.card1_title,
+    'silver-bars': c.card2_title,
+    'gold-coins': c.card3_title,
+    'silver-coins': c.card4_title,
+  };
 
   // Background artwork
   const bgImage = c.bgImage || '/images/hero-bg-luxury.jpg';
@@ -228,20 +227,31 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
 
         </div>
 
-        {/* Bottom Right: 4 Floating Cards Showcase with Rotating Copper-Gold Beam */}
-        <div className="mt-8 sm:mt-12 flex justify-end">
-          <div className="w-full lg:max-w-[920px] xl:max-w-[980px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {activeCards.map((card, idx) => {
-              const delay = delays[idx % delays.length];
-              const title = customTitles[idx] || card.title;
-              const product = card.product;
+        {/* Bottom Right: Floating Cards Showcase with Rotating Copper-Gold Beam (only shown for categories with real products) */}
+        {activeCards.length > 0 && (
+          <div className="mt-8 sm:mt-12 flex justify-end">
+            <div
+              className={`w-full grid gap-3 ${
+                activeCards.length === 1
+                  ? 'max-w-[280px] grid-cols-1'
+                  : activeCards.length === 2
+                  ? 'max-w-[560px] grid-cols-1 sm:grid-cols-2'
+                  : activeCards.length === 3
+                  ? 'max-w-[820px] grid-cols-1 sm:grid-cols-3'
+                  : 'lg:max-w-[940px] xl:max-w-[980px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+              }`}
+            >
+              {activeCards.map((card, idx) => {
+                const delay = delays[idx % delays.length];
+                const title = titleMap[card.id] || card.title;
+                const product = card.product;
 
-              return (
-                <Link
-                  key={card.id}
-                  href={`/product/${product.slug}`}
-                  className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
-                >
+                return (
+                  <Link
+                    key={card.id}
+                    href={`/product/${product.slug}`}
+                    className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
+                  >
                   {/* Outer base border */}
                   <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
 
@@ -307,6 +317,7 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
             })}
           </div>
         </div>
+        )}
 
       </div>
     </section>

@@ -2,11 +2,6 @@ import prisma from '@/lib/prisma';
 import {
   HeroDailyCard,
   HeroDailyProduct,
-  FALLBACK_GOLD_BARS,
-  FALLBACK_SILVER_BARS,
-  FALLBACK_GOLD_COINS,
-  FALLBACK_SILVER_COINS,
-  getDefaultHeroDailyCards,
   pickDailyProduct,
 } from '@/types/heroCards';
 
@@ -23,7 +18,7 @@ function formatPrice(val: number): string {
   }
 }
 
-function mapDbProduct(p: any, defaultImage: string, metal: 'gold' | 'silver'): HeroDailyProduct {
+function mapDbProduct(p: any, metal: 'gold' | 'silver'): HeroDailyProduct {
   const images = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images || '[]') : []);
   const price = typeof p.price === 'number' ? p.price : Number(p.price) || 0;
   return {
@@ -32,14 +27,16 @@ function mapDbProduct(p: any, defaultImage: string, metal: 'gold' | 'silver'): H
     title: p.title,
     price,
     formattedPrice: formatPrice(price),
-    imageUrl: images[0] || defaultImage,
+    imageUrl: images[0] || (metal === 'gold' ? '/images/gold-bars.jpg' : '/images/silver-bars.jpg'),
     metal,
   };
 }
 
 /**
- * Queries database for the 4 categories and picks the product of the day for each.
- * Rotates daily based on current UTC day.
+ * Queries the database for products in each of the 4 precious metals categories.
+ * ONLY returns a card if the category has at least ONE real product in the database.
+ * No fictitious/mock products are created or displayed.
+ * Changes the displayed product daily among existing real products.
  */
 export async function getHeroDailyCards(config?: Record<string, any>): Promise<HeroDailyCard[]> {
   const c = config || {};
@@ -58,11 +55,12 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
                 { title: { contains: 'gold', mode: 'insensitive' } }
               ]
             },
-            { title: { contains: 'hafner', mode: 'insensitive' } }
+            { title: { contains: 'hafner', mode: 'insensitive' } },
+            { title: { contains: 'goldbarren', mode: 'insensitive' } }
           ]
         },
         orderBy: { createdAt: 'desc' },
-        take: 20
+        take: 30
       }),
 
       // 2. Silver Bars
@@ -82,11 +80,12 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
                 { title: { contains: 'silver', mode: 'insensitive' } },
                 { title: { contains: 'bar', mode: 'insensitive' } }
               ]
-            }
+            },
+            { title: { contains: 'silberbarren', mode: 'insensitive' } }
           ]
         },
         orderBy: { createdAt: 'desc' },
-        take: 20
+        take: 30
       }),
 
       // 3. Gold Coins
@@ -101,13 +100,13 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
                 { title: { contains: 'pièce', mode: 'insensitive' } }
               ]
             },
+            { title: { contains: 'goldmünze', mode: 'insensitive' } },
             { title: { contains: 'chervonetz', mode: 'insensitive' } },
-            { title: { contains: 'elefant', mode: 'insensitive' } },
-            { title: { contains: 'napoléon', mode: 'insensitive' } }
+            { title: { contains: 'elefant', mode: 'insensitive' } }
           ]
         },
         orderBy: { createdAt: 'desc' },
-        take: 20
+        take: 30
       }),
 
       // 4. Silver Coins
@@ -119,75 +118,89 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
             {
               AND: [
                 { title: { contains: 'argent', mode: 'insensitive' } },
-                { title: { contains: 'once', mode: 'insensitive' } }
+                { title: { contains: 'pièce', mode: 'insensitive' } }
               ]
             },
             {
               AND: [
                 { title: { contains: 'silver', mode: 'insensitive' } },
-                { title: { contains: 'eagle', mode: 'insensitive' } }
+                { title: { contains: 'coin', mode: 'insensitive' } }
               ]
-            }
+            },
+            { title: { contains: 'silbermünze', mode: 'insensitive' } }
           ]
         },
         orderBy: { createdAt: 'desc' },
-        take: 20
+        take: 30
       })
     ]);
 
-    // Map DB products, fallback to rich defaults if DB had none
-    const goldBars: HeroDailyProduct[] = goldBarsDb.length > 0
-      ? goldBarsDb.map(p => mapDbProduct(p, '/images/gold-bars.jpg', 'gold'))
-      : FALLBACK_GOLD_BARS;
+    const cards: HeroDailyCard[] = [];
 
-    const silverBars: HeroDailyProduct[] = silverBarsDb.length > 0
-      ? silverBarsDb.map(p => mapDbProduct(p, '/images/silver-bars.jpg', 'silver'))
-      : FALLBACK_SILVER_BARS;
+    // Only add a category card if it has at least 1 real product in the DB
+    if (goldBarsDb && goldBarsDb.length > 0) {
+      const products = goldBarsDb.map(p => mapDbProduct(p, 'gold'));
+      const product = pickDailyProduct(products, 0);
+      if (product) {
+        cards.push({
+          id: 'gold-bars',
+          title: c.card1_title || 'Gold bars',
+          categorySlug: 'lingots-dor',
+          iconType: 'gold-bar',
+          metal: 'gold',
+          product,
+        });
+      }
+    }
 
-    const goldCoins: HeroDailyProduct[] = goldCoinsDb.length > 0
-      ? goldCoinsDb.map(p => mapDbProduct(p, '/images/gold-coins.jpg', 'gold'))
-      : FALLBACK_GOLD_COINS;
+    if (silverBarsDb && silverBarsDb.length > 0) {
+      const products = silverBarsDb.map(p => mapDbProduct(p, 'silver'));
+      const product = pickDailyProduct(products, 1);
+      if (product) {
+        cards.push({
+          id: 'silver-bars',
+          title: c.card2_title || 'Silver bars',
+          categorySlug: 'lingots-dargent',
+          iconType: 'silver-bar',
+          metal: 'silver',
+          product,
+        });
+      }
+    }
 
-    const silverCoins: HeroDailyProduct[] = silverCoinsDb.length > 0
-      ? silverCoinsDb.map(p => mapDbProduct(p, '/images/silver-coins.jpg', 'silver'))
-      : FALLBACK_SILVER_COINS;
+    if (goldCoinsDb && goldCoinsDb.length > 0) {
+      const products = goldCoinsDb.map(p => mapDbProduct(p, 'gold'));
+      const product = pickDailyProduct(products, 2);
+      if (product) {
+        cards.push({
+          id: 'gold-coins',
+          title: c.card3_title || 'Gold coins',
+          categorySlug: 'pieces-dor',
+          iconType: 'gold-coin',
+          metal: 'gold',
+          product,
+        });
+      }
+    }
 
-    return [
-      {
-        id: 'gold-bars',
-        title: c.card1_title || 'Gold bars',
-        categorySlug: 'lingots-dor',
-        iconType: 'gold-bar',
-        metal: 'gold',
-        product: pickDailyProduct(goldBars, 0),
-      },
-      {
-        id: 'silver-bars',
-        title: c.card2_title || 'Silver bars',
-        categorySlug: 'lingots-dargent',
-        iconType: 'silver-bar',
-        metal: 'silver',
-        product: pickDailyProduct(silverBars, 1),
-      },
-      {
-        id: 'gold-coins',
-        title: c.card3_title || 'Gold coins',
-        categorySlug: 'pieces-dor',
-        iconType: 'gold-coin',
-        metal: 'gold',
-        product: pickDailyProduct(goldCoins, 2),
-      },
-      {
-        id: 'silver-coins',
-        title: c.card4_title || 'Silver coins',
-        categorySlug: 'pieces-dargent',
-        iconType: 'silver-coin',
-        metal: 'silver',
-        product: pickDailyProduct(silverCoins, 3),
-      },
-    ];
+    if (silverCoinsDb && silverCoinsDb.length > 0) {
+      const products = silverCoinsDb.map(p => mapDbProduct(p, 'silver'));
+      const product = pickDailyProduct(products, 3);
+      if (product) {
+        cards.push({
+          id: 'silver-coins',
+          title: c.card4_title || 'Silver coins',
+          categorySlug: 'pieces-dargent',
+          iconType: 'silver-coin',
+          metal: 'silver',
+          product,
+        });
+      }
+    }
+
+    return cards;
   } catch (error) {
     console.error('Error fetching hero daily cards from DB:', error);
-    return getDefaultHeroDailyCards(config);
+    return [];
   }
 }
