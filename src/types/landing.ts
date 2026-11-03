@@ -173,7 +173,11 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
     settings: {
       badge: "QUESTIONS FRÉQUENTES",
       title: "Tout savoir sur l'investissement dans les métaux précieux",
-      subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."
+      subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat.",
+      cta_title: "Vous avez une question spécifique sur votre investissement ?",
+      cta_desc: "Nos conseillers spécialistes de l'or physique vous accompagnent du lundi au vendredi.",
+      cta_btn_text: "Contacter un conseiller",
+      cta_btn_url: "/contact"
     }
   }
 ];

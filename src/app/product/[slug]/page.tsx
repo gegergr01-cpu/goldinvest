@@ -2,27 +2,23 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ProductPageClient from '@/components/product/ProductPageClient';
-import Price from '@/components/Price';
 import ProductReviews from '@/components/product/ProductReviews';
+import BestDealsCard from '@/components/home/BestDealsCard';
 import { createClient } from '@/utils/supabase/server';
 import { getTranslations } from 'next-intl/server';
 import { safeJsonLd } from '@/lib/security';
-
 import { Metadata } from 'next';
-
 import { getCachedProductBySlug, getCachedSettings, getCachedRelatedProducts } from '@/lib/cache';
-import Image from "next/image";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   
   const product = await getCachedProductBySlug(slug);
-  
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
 
   if (!product) {
     return {
-      title: `Product not found - ${storeName}`,
+      title: `Produit introuvable - ${storeName}`,
     };
   }
 
@@ -39,16 +35,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   
   const product = await getCachedProductBySlug(slug);
-
   const t = await getTranslations('Product');
 
   const settingsMap = await getCachedSettings();
   const enableBuyNow = settingsMap.ENABLE_BUY_NOW_BUTTON === 'true';
   const shippingInfo = [
-    settingsMap.SHIPPING_INFO_1 || '3-5 business days in Germany',
-    settingsMap.SHIPPING_INFO_2 || '5-10 business days in the Eurozone',
-    settingsMap.SHIPPING_INFO_3 || 'Free shipping: Orders over €200.00',
-    settingsMap.SHIPPING_INFO_4 || 'Free returns: within 30 days',
+    settingsMap.SHIPPING_INFO_1 || 'Livraison discrète et sécurisée sous 24-48h',
+    settingsMap.SHIPPING_INFO_2 || 'Colis scellé avec assurance 100% ad valorem',
+    settingsMap.SHIPPING_INFO_3 || 'Option garde en coffres sécurisés en Suisse / Paris',
+    settingsMap.SHIPPING_INFO_4 || 'Rachat garanti permanent sans décote',
   ];
 
   if (!product) {
@@ -59,7 +54,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const categoryIds = (product as any).categories?.map((c: any) => c.id) || [];
   const relatedProducts = await getCachedRelatedProducts(categoryIds, product.id);
 
-  // Lowest shipping rate for DE (default)
+  // Lowest shipping rate for DE / default
   const deZone = await prisma.shippingZone.findFirst({
     where: { name: 'DE', isActive: true },
     include: { methods: { where: { isActive: true }, orderBy: { rate: 'asc' } } }
@@ -71,7 +66,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { data: { user } } = await supabase.auth.getUser();
   const isLoggedIn = !!user;
 
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'My Store';
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold Silver Invest';
 
   const reviews = (product as any).reviews || [];
   const avgRating = reviews.length > 0
@@ -98,9 +93,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       },
       hasMerchantReturnPolicy: {
         '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'DE',
+        applicableCountry: 'FR',
         returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 30,
+        merchantReturnDays: 14,
         returnMethod: 'https://schema.org/ReturnByMail',
         returnFees: 'https://schema.org/FreeReturn'
       },
@@ -113,7 +108,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         },
         shippingDestination: {
           '@type': 'DefinedRegion',
-          addressCountry: 'DE'
+          addressCountry: 'FR'
         },
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
@@ -125,8 +120,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           },
           transitTime: {
             '@type': 'QuantitativeValue',
-            minValue: 3,
-            maxValue: 5,
+            minValue: 1,
+            maxValue: 3,
             unitCode: 'd'
           }
         }
@@ -148,7 +143,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       },
       author: {
         '@type': 'Person',
-        name: r.reviewerName || 'Kunde',
+        name: r.reviewerName || 'Investisseur',
       },
       reviewBody: r.comment || '',
       datePublished: r.createdAt ? new Date(r.createdAt).toISOString().split('T')[0] : undefined,
@@ -167,8 +162,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
-      
+    <div className="min-h-screen bg-[#FAF9F5] font-sans text-gray-900 flex flex-col">
       <main className="flex-grow pb-20">
         <script
           type="application/ld+json"
@@ -186,7 +180,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 {
                   '@type': 'ListItem',
                   position: 1,
-                  name: 'Home',
+                  name: 'Accueil',
                   item: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com',
                 },
                 ...((product as any).categories && (product as any).categories.length > 0 ? [{
@@ -205,29 +199,43 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             })
           }}
         />
-        {/* Breadcrumb */}
-        <div className="bg-gray-50 border-b border-gray-200 mb-10">
-          <div className="max-w-7xl mx-auto px-5 py-4 text-sm text-gray-500 flex items-center gap-2 flex-wrap">
-            <Link href="/" className="hover:text-orange-600 transition">{t('home')}</Link>
-            <span className="text-gray-300">/</span>
-            {(product as any).categories && (product as any).categories.length > 0 ? (
-              <Link 
-                href={`/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`}
-                className="hover:text-orange-600 transition"
-              >
-                {(product as any).categories[0].name}
+
+        {/* Refined Luxury Breadcrumb */}
+        <div className="bg-white border-b border-[#E8E4DA]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 text-xs text-[#6E685F] flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link href="/" className="hover:text-[#C8732A] transition-colors font-medium">
+                {t('home')}
               </Link>
-            ) : (
-              <span>{t('category')}</span>
-            )}
-            <span className="text-gray-300">/</span>
-            <span className="text-gray-900 font-medium">{product.title}</span>
+              <span className="text-[#C8732A]/50">/</span>
+              {(product as any).categories && (product as any).categories.length > 0 ? (
+                <Link 
+                  href={`/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`}
+                  className="hover:text-[#C8732A] transition-colors font-medium"
+                >
+                  {(product as any).categories[0].name}
+                </Link>
+              ) : (
+                <span>{t('category')}</span>
+              )}
+              <span className="text-[#C8732A]/50">/</span>
+              <span className="text-[#0E2036] font-semibold line-clamp-1 max-w-[280px] sm:max-w-md">
+                {product.title}
+              </span>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-[11px] text-[#8C6D23] font-medium bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#E8A63D]/30 shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A]" />
+              <span>Or d&apos;investissement certifié LBMA</span>
+            </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
+        {/* Main Product Container */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
           <div id="cart-notification-portal"></div>
-          <div className="flex flex-col lg:flex-row gap-12">
+          
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
             <ProductPageClient
               product={product as any}
               enableBuyNow={enableBuyNow}
@@ -246,7 +254,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             />
           </div>
 
-          {/* Tabs Section (Description & Reviews) */}
+          {/* Description & Reviews Tabs */}
           <ProductReviews 
             productId={product.id}
             productTitle={product.title}
@@ -255,32 +263,61 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             isLoggedIn={isLoggedIn}
           />
 
-          {/* Related Products Section */}
-          <div className="mt-20">
-            <div className="border-b border-gray-200 pb-4 mb-8">
-              <h2 className="text-xl font-bold text-gray-900">{t('related_products')}</h2>
+          {/* Related Investment Products Section */}
+          <div className="mt-20 pt-12 border-t border-[#E8E4DA]">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+              <div>
+                <span className="text-xs font-serif font-bold uppercase tracking-wider text-[#C8732A] block mb-1">
+                  Diversification de portefeuille
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#0E2036]">
+                  Produits d&apos;investissement similaires
+                </h2>
+                <p className="text-xs sm:text-sm text-[#6E685F] mt-1">
+                  Complétez votre allocation d&apos;actifs physiques avec nos pièces et lingots de même catégorie.
+                </p>
+              </div>
+
+              <Link
+                href="/shop"
+                className="text-xs font-bold text-[#C8732A] hover:text-[#B8641C] hover:underline flex items-center gap-1.5 shrink-0"
+              >
+                <span>Explorer tout le catalogue</span>
+                <span>→</span>
+              </Link>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.length > 0 ? (
-                relatedProducts.map(rp => (
-                  <Link href={`/product/${rp.slug}`} key={rp.id} className="group border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition flex flex-col">
-                    <div className="relative h-48 w-full flex items-center justify-center mb-4">
-                      {rp.images && rp.images[0] ? (
-                        <Image width={800} height={800} src={rp.images[0]} alt={rp.title} className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500" />
-                      ) : (
-                        <div className="text-6xl text-gray-300">🛍️</div>
-                      )}
-                    </div>
-                    <div className="mt-auto">
-                      <p className="text-xs text-blue-500 font-semibold mb-1">{rp.categories && rp.categories.length > 0 ? rp.categories[0].name : t('general')}</p>
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-orange-600 transition">{rp.title}</h3>
-                      <Price amount={rp.price} className="font-bold text-red-600" />
-                    </div>
-                  </Link>
-                ))
+                relatedProducts.map(rp => {
+                  const images = Array.isArray(rp.images) 
+                    ? rp.images 
+                    : (typeof rp.images === 'string' ? JSON.parse(rp.images || '[]') : []);
+                  const primaryCat = rp.categories?.[0]?.name || 'Investissement';
+
+                  return (
+                    <BestDealsCard
+                      key={rp.id}
+                      product={{
+                        id: rp.id,
+                        slug: rp.slug,
+                        title: rp.title,
+                        category: primaryCat,
+                        rawPrice: typeof rp.price === 'number' ? rp.price : Number(rp.price) || 0,
+                        imageUrl: images[0] || '/images/gold-coins.jpg',
+                        badge: primaryCat,
+                        discount: rp.discountLabel || undefined,
+                        stock: rp.stock,
+                        attributes: rp.attributes,
+                      }}
+                      badge={primaryCat}
+                    />
+                  );
+                })
               ) : (
-                <p className="text-gray-500 text-sm">{t('no_related_products')}</p>
+                <div className="col-span-full py-8 text-center bg-white rounded-2xl border border-[#E8E4DA] text-xs text-gray-500">
+                  {t('no_related_products')}
+                </div>
               )}
             </div>
           </div>

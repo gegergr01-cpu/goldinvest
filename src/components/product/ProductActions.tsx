@@ -9,6 +9,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { useCurrency } from '@/components/CurrencyProvider';
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
+import LuxuryArrow from '@/components/ui/LuxuryArrow';
 
 interface ProductActionsProps {
   product: {
@@ -30,7 +31,13 @@ interface ProductActionsProps {
   contactSlug?: string;
 }
 
-export default function ProductActions({ product, enableBuyNow = false, onVariationChange, shippingInfo, contactSlug = 'contact' }: ProductActionsProps) {
+export default function ProductActions({ 
+  product, 
+  enableBuyNow = false, 
+  onVariationChange, 
+  shippingInfo, 
+  contactSlug = 'contact' 
+}: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -39,6 +46,7 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
   const [wishlistedItemName, setWishlistedItemName] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [selectedSaleTogether, setSelectedSaleTogether] = useState<string[]>([]);
+  const [selectedDeliveryMode, setSelectedDeliveryMode] = useState<'delivery' | 'vault' | 'pickup'>('delivery');
   const t = useTranslations('Product');
 
   useEffect(() => {
@@ -50,7 +58,7 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
   
   const isWishlisted = wishlistStore.hasItem(product.id);
 
-  // For variable products, we check if a variation matches the selected attributes
+  // For variable products, check variation match
   const isVariable = product.type === 'VARIABLE';
   const attributes = product.attributes || [];
   const variations = product.variations || [];
@@ -62,7 +70,7 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
     }) || null;
   }
 
-  // Notifier le parent de l'image de la variation courante
+  // Notify parent of active variation image
   useEffect(() => {
     if (onVariationChange) {
       onVariationChange(currentVariation?.image || null);
@@ -70,8 +78,19 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentVariation?.id]);
 
-  // Prix et stock dynamiques
-  const currentPrice = currentVariation ? parseFloat(currentVariation.price) : product.price;
+  // Dynamic price & stock
+  const basePrice = currentVariation ? parseFloat(currentVariation.price) : product.price;
+  
+  // Volume discount calculation
+  let volumeDiscountPct = 0;
+  if (quantity >= 10) {
+    volumeDiscountPct = 0.01; // -1%
+  } else if (quantity >= 5) {
+    volumeDiscountPct = 0.005; // -0.5%
+  }
+  const unitPrice = basePrice * (1 - volumeDiscountPct);
+  const totalPrice = unitPrice * quantity;
+
   const currentStock = currentVariation 
     ? (currentVariation.stock ? parseInt(currentVariation.stock) : null) 
     : product.stock;
@@ -88,13 +107,10 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
   });
 
   const getLinkedItemsForCart = (qty: number) => {
-    // Les forceSales sont forcés et prennent la quantité du produit principal
     const fsItems = (product.forceSales || []).map(fs => getCartItemBase(fs, fs.price, qty));
-    
-    // Les saleTogether cochés
     const stItems = (product.saleTogether || [])
       .filter(st => selectedSaleTogether.includes(st.id))
-      .map(st => getCartItemBase(st, st.price, 1)); // ou `qty` selon la logique métier, mettons 1 par défaut pour un accessoire
+      .map(st => getCartItemBase(st, st.price, 1));
 
     return [...fsItems, ...stItems];
   };
@@ -105,7 +121,7 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
       return;
     }
 
-    const mainItem = getCartItemBase(product, currentPrice, quantity, currentVariation, currentVariation ? selectedAttributes : undefined);
+    const mainItem = getCartItemBase(product, unitPrice, quantity, currentVariation, currentVariation ? selectedAttributes : undefined);
     const linkedItems = getLinkedItemsForCart(quantity);
     
     cartStore.addItem(mainItem, linkedItems);
@@ -123,11 +139,10 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
       return;
     }
 
-    const mainItem = getCartItemBase(product, currentPrice, quantity, currentVariation, currentVariation ? selectedAttributes : undefined);
+    const mainItem = getCartItemBase(product, unitPrice, quantity, currentVariation, currentVariation ? selectedAttributes : undefined);
     const linkedItems = getLinkedItemsForCart(quantity);
     
     cartStore.addItem(mainItem, linkedItems);
-    
     router.push('/checkout');
   };
 
@@ -137,7 +152,6 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
     const wasWishlisted = wishlistStore.hasItem(product.id);
     wishlistStore.toggleItem(product.id);
     
-    // Only show notification and open drawer when ADDING to wishlist
     if (!wasWishlisted) {
       setWishlistedItemName(product.title);
       wishlistStore.setIsOpen(true);
@@ -149,82 +163,174 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
 
   return (
     <div>
+      {/* Toast Add to Cart */}
       {addedItemName && notificationPortal && createPortal(
-        <div className="bg-[#1b8448] text-white px-6 py-4 mb-8 flex flex-col sm:flex-row items-center justify-between shadow-sm rounded-sm">
+        <div className="bg-[#0E2036] text-white px-6 py-4 mb-8 flex flex-col sm:flex-row items-center justify-between shadow-lg rounded-xl border border-[#C8732A]/30">
           <div className="flex items-center gap-3 text-sm font-medium">
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+            <span className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+            </span>
             <span>{t('added_to_cart', { name: addedItemName })}</span>
           </div>
-          <Link href="/cart" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-black/10 hover:bg-black/20 transition-colors px-6 py-3 rounded-sm">
+          <Link href="/cart" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white px-5 py-2.5 rounded-lg shadow-sm">
             {t('view_cart_caps')}
           </Link>
         </div>,
         notificationPortal
       )}
 
+      {/* Toast Wishlist */}
       {wishlistedItemName && notificationPortal && createPortal(
-        <div className="bg-orange-600 text-white px-6 py-4 mb-8 flex flex-col sm:flex-row items-center justify-between shadow-sm rounded-sm">
+        <div className="bg-[#FAF5EB] text-[#8C6D23] px-6 py-4 mb-8 flex flex-col sm:flex-row items-center justify-between shadow-md rounded-xl border border-[#E8A63D]/40">
           <div className="flex items-center gap-3 text-sm font-medium">
-            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+            <svg className="w-5 h-5 text-[#C8732A] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
             <span>{t('added_to_wishlist', { name: wishlistedItemName })}</span>
           </div>
-          <Link href="/wishlist" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-black/10 hover:bg-black/20 transition-colors px-6 py-3 rounded-sm">
+          <Link href="/wishlist" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-[#0E2036] text-white px-5 py-2.5 rounded-lg shadow-sm">
             {t('view_wishlist_caps')}
           </Link>
         </div>,
         notificationPortal
       )}
 
-      {/* Price Display */}
-      <div className="mb-6 flex flex-col gap-1">
-        <div className="flex items-center">
-          {product.compareAtPrice && !currentVariation && (
-            <span className="text-2xl text-gray-500 line-through mr-3">{formatPrice(product.compareAtPrice)}</span>
-          )}
-          <span className="text-3xl font-bold text-red-600">{formatPrice(currentPrice)}</span>
-        </div>
-        
-        {/* Total dynamique si des produits saleTogether sont cochés */}
-        {selectedSaleTogether.length > 0 && (
-          <div className="text-sm font-semibold text-gray-600 mt-2 bg-gray-50 p-2 rounded-md inline-block">
-            {t('total_with_options')} <span className="text-red-600 ml-1">{formatPrice(
-              (currentPrice * quantity) + 
-              (product.saleTogether || []).filter(st => selectedSaleTogether.includes(st.id)).reduce((acc, curr) => acc + curr.price, 0)
-            )}</span>
-          </div>
-        )}
+      {/* Live Market Bar */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Cours spot direct de la bourse
+        </span>
+        <span className="text-xs text-[#8A847A] font-medium hidden sm:inline">
+          Actualisé en temps réel
+        </span>
       </div>
 
-      {/* Force Sales UI */}
-      {product.forceSales && product.forceSales.length > 0 && (
-        <div className="mb-6 border-2 border-orange-500 bg-orange-50 rounded-lg p-4">
-          <h4 className="text-sm font-bold text-orange-700 uppercase tracking-wide mb-3 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-            {t('force_sales_title')}
-          </h4>
-          <div className="space-y-3">
-            {product.forceSales.map(fs => (
-              <div key={fs.id} className="flex items-center gap-3 bg-white p-2 rounded shadow-sm border border-orange-100">
-                {fs.images?.[0] && <Image width={800} height={800} src={fs.images[0]} alt={fs.title} className="w-12 h-12 object-cover rounded" />}
-                <div>
-                  <div className="text-sm font-medium text-gray-900 leading-tight">{fs.title}</div>
-                  <div className="text-sm font-bold text-gray-700">{formatPrice(fs.price)}</div>
-                </div>
-              </div>
-            ))}
+      {/* Price Display */}
+      <div className="p-5 bg-gradient-to-br from-[#FAF9F5] to-[#F5F2EB] border border-[#E8E4DA] rounded-2xl mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+          <div>
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-[#0E2036] tracking-tight">
+                {formatPrice(unitPrice)}
+              </span>
+              {product.compareAtPrice && !currentVariation && (
+                <span className="text-xl text-gray-400 line-through font-serif">
+                  {formatPrice(product.compareAtPrice)}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 mt-1.5 text-xs text-[#8C6D23] font-medium">
+              <span className="font-semibold text-emerald-700">TVA 0%</span>
+              <span>•</span>
+              <span>Or d&apos;investissement (Art. 262 ter I du CGI)</span>
+            </div>
           </div>
-          <p className="text-xs text-orange-700 mt-3 leading-relaxed">
-            {t('force_sales_msg')}
-          </p>
+
+          <div className="text-left sm:text-right">
+            {currentStock === null || currentStock > 0 ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {currentStock === null ? 'En stock immédiat' : `${currentStock} exemplaires disponibles`}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                Sur commande (délai 4-7 jours)
+              </span>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Volume pricing tier table */}
+        <div className="mt-4 pt-4 border-t border-[#E8E4DA]/80">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E685F] block mb-2">
+            Tarifs dégressifs par volume d&apos;investissement :
+          </span>
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className={`p-2 rounded-lg border transition-colors ${quantity < 5 ? 'bg-white border-[#C8732A] shadow-xs' : 'bg-white/60 border-[#E8E4DA]'}`}>
+              <div className="text-[11px] text-gray-500">1 à 4 pièces</div>
+              <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice)} /u</div>
+            </div>
+            <div className={`p-2 rounded-lg border transition-colors ${quantity >= 5 && quantity < 10 ? 'bg-white border-[#C8732A] shadow-xs ring-1 ring-[#C8732A]' : 'bg-white/60 border-[#E8E4DA]'}`}>
+              <div className="text-[11px] text-[#C8732A] font-medium">5 à 9 pièces (-0.5%)</div>
+              <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice * 0.995)} /u</div>
+            </div>
+            <div className={`p-2 rounded-lg border transition-colors ${quantity >= 10 ? 'bg-white border-[#C8732A] shadow-xs ring-1 ring-[#C8732A]' : 'bg-white/60 border-[#E8E4DA]'}`}>
+              <div className="text-[11px] text-emerald-700 font-medium">10+ pièces (-1.0%)</div>
+              <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice * 0.99)} /u</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mode de détention / Delivery Selector */}
+      <div className="mb-6">
+        <label className="text-xs font-bold uppercase tracking-wider text-[#0E2036] block mb-2.5">
+          Mode de détention :
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button
+            type="button"
+            onClick={() => setSelectedDeliveryMode('delivery')}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              selectedDeliveryMode === 'delivery'
+                ? 'border-[#C8732A] bg-white ring-2 ring-[#C8732A]/20 shadow-sm'
+                : 'border-[#E8E4DA] bg-white/70 hover:bg-white text-gray-700'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-base">🚚</span>
+              <span className="text-xs font-bold text-[#0E2036]">Livraison assurée</span>
+            </div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">
+              Colis scellé neutre à domicile, assurée 100%
+            </p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedDeliveryMode('vault')}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              selectedDeliveryMode === 'vault'
+                ? 'border-[#C8732A] bg-white ring-2 ring-[#C8732A]/20 shadow-sm'
+                : 'border-[#E8E4DA] bg-white/70 hover:bg-white text-gray-700'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-base">🏦</span>
+              <span className="text-xs font-bold text-[#0E2036]">Coffres sécurisés</span>
+            </div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">
+              Zurich, Genève, Paris hors banques, 0% TVA
+            </p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedDeliveryMode('pickup')}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              selectedDeliveryMode === 'pickup'
+                ? 'border-[#C8732A] bg-white ring-2 ring-[#C8732A]/20 shadow-sm'
+                : 'border-[#E8E4DA] bg-white/70 hover:bg-white text-gray-700'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-base">🤝</span>
+              <span className="text-xs font-bold text-[#0E2036]">Retrait en agence</span>
+            </div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">
+              Salons privatifs sur rendez-vous sécurisé
+            </p>
+          </button>
+        </div>
+      </div>
 
       {/* Attributes Selection (Only if Variable) */}
       {isVariable && attributes.length > 0 && (
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4 mb-6 p-4 bg-white rounded-xl border border-[#E8E4DA]">
           {attributes.map(attr => (
             <div key={attr.name}>
-              <span className="text-sm text-gray-500 mb-2 block">{attr.name} {selectedAttributes[attr.name] && <span className="text-gray-900 font-semibold ml-1">: {selectedAttributes[attr.name]}</span>}</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0E2036] mb-2 block">
+                {attr.name} {selectedAttributes[attr.name] && <span className="text-[#C8732A] font-semibold ml-1">: {selectedAttributes[attr.name]}</span>}
+              </span>
               <div className="flex flex-wrap gap-2">
                 {attr.options.map((opt: string) => {
                   const isSelected = selectedAttributes[attr.name] === opt;
@@ -232,8 +338,10 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
                     <button
                       key={opt}
                       onClick={() => setSelectedAttributes({ ...selectedAttributes, [attr.name]: opt })}
-                      className={`px-3 py-1 border rounded-md text-sm transition ${
-                        isSelected ? 'border-orange-500 bg-orange-50 text-orange-700 font-semibold ring-1 ring-orange-500' : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                      className={`px-3.5 py-1.5 border rounded-lg text-xs font-medium transition cursor-pointer ${
+                        isSelected 
+                          ? 'border-[#C8732A] bg-[#FAF5EB] text-[#8C6D23] font-bold ring-1 ring-[#C8732A]' 
+                          : 'border-[#E8E4DA] text-gray-700 hover:border-[#C8732A]/50 bg-white'
                       }`}
                     >
                       {opt}
@@ -246,87 +354,139 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
         </div>
       )}
 
-      {/* Stock status */}
-      <p className="text-teal-600 font-semibold mb-6">
-        {currentStock === null ? t('in_stock') : t('in_stock_count', { count: currentStock })}
-      </p>
-
-      {/* Shipping Info */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8 space-y-3">
-        {shippingInfo?.[0] && (
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-              {shippingInfo[0]}
-            </div>
-          </div>
-        )}
-        {shippingInfo?.[1] && (
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-              {shippingInfo[1]}
-            </div>
-          </div>
-        )}
-        {shippingInfo?.[2] && (
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /></svg>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-              {shippingInfo[2]}
-            </div>
-          </div>
-        )}
-        {shippingInfo?.[3] && (
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-              {shippingInfo[3]}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Actions (Quantity + Cart + Buy) */}
-      <div className="flex flex-col gap-4 mb-6">
-        <div className="flex gap-4 w-full">
-          {/* Qty */}
-          <div className="flex border border-gray-300 rounded-md overflow-hidden bg-gray-50 w-32 shrink-0">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-2 text-gray-600 hover:bg-gray-200 font-bold">-</button>
-            <input type="text" value={quantity} readOnly className="w-full text-center bg-transparent font-semibold border-x border-gray-300" />
-            <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-2 text-gray-600 hover:bg-gray-200 font-bold">+</button>
+      {/* Main Actions: Quantity + Cart + Quote */}
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          {/* Quantity Stepper */}
+          <div className="flex items-center border border-[#E8E4DA] rounded-xl overflow-hidden bg-white w-full sm:w-36 shrink-0 shadow-2xs h-13">
+            <button 
+              type="button"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+              className="px-4 h-full text-gray-500 hover:text-[#0E2036] hover:bg-gray-100 font-bold transition text-lg cursor-pointer"
+              aria-label="Diminuer la quantité"
+            >
+              -
+            </button>
+            <input 
+              type="text" 
+              value={quantity} 
+              readOnly 
+              className="w-full text-center bg-transparent font-serif font-bold text-[#0E2036] text-base border-x border-[#E8E4DA]" 
+            />
+            <button 
+              type="button"
+              onClick={() => setQuantity(quantity + 1)} 
+              className="px-4 h-full text-gray-500 hover:text-[#0E2036] hover:bg-gray-100 font-bold transition text-lg cursor-pointer"
+              aria-label="Augmenter la quantité"
+            >
+              +
+            </button>
           </div>
           
+          {/* Primary CTA: Add to Investment Cart */}
           <button 
+            type="button"
             onClick={handleAddToCart}
             disabled={isVariable && !currentVariation}
-            className={`flex-1 font-semibold rounded-md transition shadow-sm py-3 px-4 ${
+            className={`flex-1 h-13 font-semibold rounded-xl transition-all shadow-md py-3 px-6 flex items-center justify-center gap-3 cursor-pointer ${
               (isVariable && !currentVariation)
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-[#0f172a] hover:bg-[#1e293b] text-white'
+                : 'bg-gradient-to-r from-[#0E2036] via-[#1B365D] to-[#0E2036] hover:from-[#132A47] hover:to-[#1B365D] text-white border border-[#C8732A]/40 hover:shadow-lg'
             }`}
           >
-            {(isVariable && !currentVariation) ? t('select_options_btn') : t('add_to_cart')}
+            <span className="w-5 h-5 rounded-full bg-[#C8732A] text-white flex items-center justify-center text-xs shrink-0 shadow-2xs">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </span>
+            <span className="text-sm font-bold tracking-wide">
+              {(isVariable && !currentVariation) ? t('select_options_btn') : `Ajouter au Panier (${formatPrice(totalPrice)})`}
+            </span>
+            <LuxuryArrow className="w-3.5 h-3.5 text-[#E8A63D]" />
           </button>
         </div>
-        
-        {enableBuyNow && (
-          <button 
-            onClick={handleBuyNow}
-            className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold rounded-md transition shadow-sm py-3"
+
+        {/* Secondary CTA: Demande de Devis d'Investissement */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            href={`/devis?product=${encodeURIComponent(product.title)}&amount=${Math.round(totalPrice)}`}
+            className="h-11 px-4 rounded-xl border border-[#C8732A] bg-[#FAF5EB] hover:bg-[#F5ECD7] text-[#8C6D23] font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs"
           >
-            {t('buy_now')}
-          </button>
-        )}
+            <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            <span>Demander un Devis d&apos;Investissement</span>
+          </Link>
+
+          {enableBuyNow ? (
+            <button 
+              type="button"
+              onClick={handleBuyNow}
+              className="h-11 px-4 rounded-xl bg-gradient-to-r from-[#C8732A] to-[#B8641C] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+            >
+              <span>Acheter immédiatement</span>
+              <LuxuryArrow className="w-3 h-3 text-white" />
+            </button>
+          ) : (
+            <Link
+              href="/services"
+              className="h-11 px-4 rounded-xl border border-[#E8E4DA] bg-white hover:bg-gray-50 text-[#0E2036] font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+            >
+              <span>Découvrir nos services de stockage</span>
+              <LuxuryArrow className="w-3 h-3 text-[#C8732A]" />
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Reassurance Grid (4 Pillars) */}
+      <div className="grid grid-cols-2 gap-3 p-4 bg-white rounded-2xl border border-[#E8E4DA] mb-6 shadow-2xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] border border-[#E8A63D]/30 text-[#C8732A] flex items-center justify-center shrink-0 text-sm">
+            🛡️
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#0E2036]">Or Certifié LBMA</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">Poinçon officiel & numéro de série unique</p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] border border-[#E8A63D]/30 text-[#C8732A] flex items-center justify-center shrink-0 text-sm">
+            💶
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#0E2036]">Fiscalité 0% TVA</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">Exonéré selon l&apos;art. 262 ter I du CGI</p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] border border-[#E8A63D]/30 text-[#C8732A] flex items-center justify-center shrink-0 text-sm">
+            🔁
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#0E2036]">Rachat Garanti</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">Liquidité continue aux cours de la bourse</p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] border border-[#E8A63D]/30 text-[#C8732A] flex items-center justify-center shrink-0 text-sm">
+            🔒
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#0E2036]">Paiement Sécurisé</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">Virement instantané ou CB 3D Secure</p>
+          </div>
+        </div>
       </div>
 
       {/* Sale Together UI */}
       {product.saleTogether && product.saleTogether.length > 0 && (
-        <div className="mb-8 border border-gray-200 rounded-lg p-4 bg-gray-50/50">
-          <h4 className="text-sm font-bold text-gray-900 mb-4">{t('frequently_bought_together')}</h4>
-          <div className="space-y-3">
+        <div className="mb-6 border border-[#E8E4DA] rounded-2xl p-4 bg-white shadow-2xs">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0E2036] mb-3">
+            Complétez votre commande d&apos;investissement :
+          </h4>
+          <div className="space-y-2.5">
             {product.saleTogether.map(st => (
-              <label key={st.id} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition border border-transparent hover:border-gray-200">
+              <label key={st.id} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-[#FAF9F5] rounded-xl transition border border-transparent hover:border-[#E8E4DA]">
                 <input 
                   type="checkbox"
                   checked={selectedSaleTogether.includes(st.id)}
@@ -334,12 +494,12 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
                     if (e.target.checked) setSelectedSaleTogether(prev => [...prev, st.id]);
                     else setSelectedSaleTogether(prev => prev.filter(id => id !== st.id));
                   }}
-                  className="w-5 h-5 text-orange-700 rounded border-gray-300 focus:ring-orange-500"
+                  className="w-4 h-4 text-[#C8732A] rounded border-[#E8E4DA] focus:ring-[#C8732A]"
                 />
-                {st.images?.[0] && <Image width={800} height={800} src={st.images[0]} alt={st.title} className="w-12 h-12 object-cover rounded bg-white border border-gray-100" />}
+                {st.images?.[0] && <Image width={80} height={80} src={st.images[0]} alt={st.title} className="w-10 h-10 object-contain rounded bg-white border border-[#E8E4DA] p-1" />}
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900 leading-tight line-clamp-1">{st.title}</div>
-                  <div className="text-sm font-bold text-gray-700">{formatPrice(st.price)}</div>
+                  <div className="text-xs font-medium text-gray-900 leading-tight line-clamp-1">{st.title}</div>
+                  <div className="text-xs font-bold text-[#8C6D23] font-serif">{formatPrice(st.price)}</div>
                 </div>
               </label>
             ))}
@@ -347,32 +507,28 @@ export default function ProductActions({ product, enableBuyNow = false, onVariat
         </div>
       )}
 
-      {/* Secondary Actions */}
-      <div className="flex flex-wrap gap-3 mb-8">
+      {/* Quick Action Links: Wishlist / Question */}
+      <div className="flex items-center gap-3 pt-2">
         <button 
+          type="button"
           onClick={handleToggleWishlist}
-          className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-md border transition ${
-            isWishlisted ? 'bg-orange-500 text-white border-orange-500' : 'text-gray-600 hover:text-orange-600 bg-orange-50/50 border-orange-100'
+          className={`flex-1 flex items-center justify-center gap-2 text-xs font-semibold py-2.5 px-4 rounded-xl border transition-all cursor-pointer ${
+            isWishlisted 
+              ? 'bg-[#C8732A] text-white border-[#C8732A] shadow-sm' 
+              : 'text-[#6E685F] hover:text-[#C8732A] bg-white border-[#E8E4DA] hover:border-[#C8732A]/50'
           }`}
         >
           <svg className="w-4 h-4" fill={isWishlisted ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-          {isWishlisted ? t('remove_wishlist') : t('add_wishlist')}
+          <span>{isWishlisted ? 'Dans vos favoris' : 'Ajouter aux favoris'}</span>
         </button>
-        <button 
-          type="button"
-          onClick={() => router.push('/compare')}
-          className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange-600 bg-orange-50/50 px-4 py-2 rounded-md border border-orange-100 transition"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-          {t('compare')}
-        </button>
+
         <button 
           type="button"
           onClick={() => router.push(`/${contactSlug}`)}
-          className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange-600 bg-orange-50/50 px-4 py-2 rounded-md border border-orange-100 transition"
+          className="flex-1 flex items-center justify-center gap-2 text-xs font-semibold text-[#6E685F] hover:text-[#0E2036] bg-white py-2.5 px-4 rounded-xl border border-[#E8E4DA] hover:border-[#0E2036]/50 transition-all cursor-pointer"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          {t('ask_question')}
+          <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+          <span>Consulter un expert</span>
         </button>
       </div>
     </div>

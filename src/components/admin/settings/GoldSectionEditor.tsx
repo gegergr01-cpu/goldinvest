@@ -1285,6 +1285,48 @@ export default function GoldSectionEditor({
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
+                  
+                  <div className="pt-3 border-t border-gray-200 space-y-2">
+                    <span className="text-[11px] font-bold text-gray-800 block">Bloc de contact (Colonne gauche)</span>
+                    <div>
+                      <label className="block text-[10.5px] text-gray-600 mb-0.5">Titre carte contact</label>
+                      <input
+                        type="text"
+                        value={s.cta_title ?? "Vous avez une question spécifique sur votre investissement ?"}
+                        onChange={(e) => handleFieldChange('cta_title', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10.5px] text-gray-600 mb-0.5">Description contact</label>
+                      <textarea
+                        rows={2}
+                        value={s.cta_desc ?? "Nos conseillers spécialistes de l'or physique vous accompagnent du lundi au vendredi."}
+                        onChange={(e) => handleFieldChange('cta_desc', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10.5px] text-gray-600 mb-0.5">Texte bouton</label>
+                        <input
+                          type="text"
+                          value={s.cta_btn_text ?? "Contacter un conseiller"}
+                          onChange={(e) => handleFieldChange('cta_btn_text', e.target.value)}
+                          className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10.5px] text-gray-600 mb-0.5">Lien bouton</label>
+                        <input
+                          type="text"
+                          value={s.cta_btn_url ?? "/contact"}
+                          onChange={(e) => handleFieldChange('cta_btn_url', e.target.value)}
+                          className="w-full border border-gray-300 rounded px-2.5 py-1 text-xs bg-white outline-none font-mono text-[11px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </ElementorAccordion>
