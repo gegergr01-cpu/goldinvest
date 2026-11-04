@@ -13,6 +13,7 @@ import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import Price from '@/components/Price';
 import TopBarTicker from './TopBarTicker';
 import ContactDrawer from './ContactDrawer';
+import LanguageSelector from './LanguageSelector';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), { ssr: false });
@@ -365,11 +366,15 @@ export default function Header({
                   )}
                 </button>
 
+                {/* Multilingual Selector (9 languages) */}
+                <LanguageSelector variant="header" />
+
               </div>
             </div>
 
-            {/* Mobile Right Controls: 4-Squares + Hamburger */}
+            {/* Mobile Right Controls: Language + 4-Squares + Hamburger */}
             <div className="flex lg:hidden items-center gap-2">
+              <LanguageSelector variant="header" />
               <button
                 type="button"
                 onClick={() => setIsContactDrawerOpen(true)}

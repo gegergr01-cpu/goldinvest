@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE, type Locale } from '@/i18n/config'
 
 // Initialize Redis and Ratelimit if env vars are present
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
@@ -16,14 +17,36 @@ if (redisUrl && redisToken) {
   });
 }
 
+function detectPreferredLocale(request: NextRequest): Locale {
+  // 1. Check NEXT_LOCALE cookie
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  if (cookieLocale && (SUPPORTED_LOCALES as readonly string[]).includes(cookieLocale)) {
+    return cookieLocale as Locale;
+  }
+
+  // 2. Check Accept-Language header
+  const acceptLang = request.headers.get('accept-language');
+  if (acceptLang) {
+    const preferred = acceptLang
+      .split(',')
+      .map(part => part.split(';')[0].trim().substring(0, 2).toLowerCase());
+
+    for (const code of preferred) {
+      if ((SUPPORTED_LOCALES as readonly string[]).includes(code)) {
+        return code as Locale;
+      }
+    }
+  }
+
+  // 3. Fallback to default
+  return DEFAULT_LOCALE;
+}
+
 export async function middleware(request: NextRequest) {
   // 1. Rate Limiting Check (Protection anti-DDoS / Brute force)
   if (ratelimit) {
-    // Get IP address from headers (Vercel sets x-forwarded-for)
     const forwardedFor = request.headers.get('x-forwarded-for');
     const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : (request as any).ip ?? '127.0.0.1';
-    
-    // Check limit for this IP
     const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`);
     
     if (!success) {
@@ -43,27 +66,81 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Update Supabase session
-  const response = await updateSession(request)
+  const { pathname, search } = request.nextUrl;
 
-  // Custom route protection logic
-  // For example, redirect unauthenticated users away from /account
-  const url = request.nextUrl.clone()
-  
-  if (url.pathname.startsWith('/account')) {
-    // We can parse the session cookies to see if there is an auth token
-    const hasSession = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'))
-    
-    if (!hasSession) {
-      url.pathname = '/login'
-      return Response.redirect(url)
-    }
+  // 2. Exclude non-page routes (API, Admin, Next internals, static files)
+  const isExcluded =
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/_next') ||
+    pathname.includes('.');
+
+  if (isExcluded) {
+    const response = await updateSession(request);
+    response.headers.set('x-pathname', pathname);
+    return response;
   }
 
-  // Set x-pathname to be used by i18n
-  response.headers.set('x-pathname', url.pathname)
+  // 3. Check if pathname starts with a supported locale (/fr, /en, /de, etc.)
+  const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)(.*)/);
+  const possibleLocale = localeMatch ? localeMatch[1] : null;
+  const isLocalePrefixed = possibleLocale && (SUPPORTED_LOCALES as readonly string[]).includes(possibleLocale);
 
-  return response
+  if (isLocalePrefixed) {
+    const activeLocale = possibleLocale as Locale;
+    const rawRest = localeMatch ? localeMatch[2] : '';
+    const internalPath = rawRest ? `/${rawRest}` : '/';
+
+    // Account route protection
+    if (internalPath.startsWith('/account')) {
+      const hasSession = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
+      if (!hasSession) {
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = `/${activeLocale}/login`;
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+
+    // Rewrite internally to the base path while maintaining the locale in URL
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = internalPath;
+
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-locale', activeLocale);
+    requestHeaders.set('x-pathname', internalPath);
+
+    const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
+
+    // Update Supabase session and copy cookies
+    const sessionResponse = await updateSession(request);
+    sessionResponse.cookies.getAll().forEach((cookie) => {
+      rewriteResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+
+    // Set cookie for active locale
+    rewriteResponse.cookies.set('NEXT_LOCALE', activeLocale, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+    });
+
+    rewriteResponse.headers.set('x-locale', activeLocale);
+    rewriteResponse.headers.set('x-pathname', internalPath);
+
+    return rewriteResponse;
+  }
+
+  // 4. If path has no locale prefix, redirect to /{locale}{pathname}
+  const preferredLocale = detectPreferredLocale(request);
+  const redirectUrl = request.nextUrl.clone();
+  redirectUrl.pathname = `/${preferredLocale}${pathname === '/' ? '' : pathname}`;
+  redirectUrl.search = search;
+
+  return NextResponse.redirect(redirectUrl);
 }
 
 export const config = {
@@ -73,7 +150,6 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
+import LanguageSelector from './LanguageSelector';
 
 type FooterProps = {
   supportPhone?: string;
@@ -359,6 +360,16 @@ export default function Footer({
             </div>
           </div>
 
+        </div>
+      </div>
+
+      {/* 2.5 Multilingual Languages Bar */}
+      <div className="w-full border-t border-white/[0.08] py-4 px-4 sm:px-6 lg:px-8 bg-[#121315]">
+        <div className="max-w-[1280px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <span className="text-white/50 font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <span>🌐</span> Langues / International :
+          </span>
+          <LanguageSelector variant="footer" />
         </div>
       </div>
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import { useTranslations } from 'next-intl';
+import LanguageSelector from './LanguageSelector';
 
 type MobileSidebarProps = {
   isOpen: boolean;
@@ -159,6 +160,11 @@ export default function MobileSidebar({
             ))}
           </ul>
         </nav>
+
+        {/* Language Selector */}
+        <div className="px-6 py-4 bg-gray-900 border-t border-white/10 text-white">
+          <LanguageSelector variant="mobile" />
+        </div>
 
         {/* Contact Info */}
         <div className="p-6 bg-gray-50 mt-auto">
