@@ -176,3 +176,80 @@ export async function uploadMediaAction(formData: FormData) {
     return { error: 'Erreur lors de l\'upload' };
   }
 }
+
+
+export async function uploadMultipleMediaAction(formData: FormData) {
+  await requireAdmin();
+  
+  try {
+    let files = formData.getAll('files') as File[];
+    if (!files || files.length === 0) {
+      files = formData.getAll('file') as File[];
+    }
+    if (!files || files.length === 0) return { error: 'Aucun fichier fourni' };
+
+    const ALLOWED_MIME_TYPES = new Set([
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
+      'application/pdf'
+    ]);
+
+    const results: { url: string; media: any }[] = [];
+    const errors: string[] = [];
+
+    for (const file of files) {
+      if (!file || typeof file.arrayBuffer !== 'function' || file.size === 0) continue;
+
+      if (!ALLOWED_MIME_TYPES.has(file.type)) {
+        errors.push(`${file.name}: format non autorisé`);
+        continue;
+      }
+
+      if (file.size > 15 * 1024 * 1024) {
+        errors.push(`${file.name}: fichier trop volumineux (max 15 Mo)`);
+        continue;
+      }
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const secureUrl = await new Promise<string>((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            { folder: 'topkaminbrennstoffe/media' },
+            (error, result) => {
+              if (error || !result) reject(error);
+              else resolve(result.secure_url);
+            }
+          ).end(buffer);
+        });
+
+        const media = await prisma.media.create({
+          data: {
+            url: secureUrl,
+            title: file.name,
+          }
+        });
+
+        results.push({ url: secureUrl, media });
+      } catch (uploadErr: any) {
+        console.error(`Failed to upload ${file.name}:`, uploadErr);
+        errors.push(`${file.name}: échec du téléversement`);
+      }
+    }
+
+    if (results.length > 0) {
+      revalidatePath('/admin/media');
+    }
+
+    return {
+      success: results.length > 0,
+      urls: results.map(r => r.url),
+      mediaItems: results.map(r => r.media),
+      errors: errors.length > 0 ? errors : undefined,
+    };
+  } catch (error: any) {
+    console.error('Error uploading multiple media:', error);
+    return { error: 'Erreur lors de l\'upload groupé' };
+  }
+}

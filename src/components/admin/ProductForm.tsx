@@ -1,8 +1,9 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCategories, getBrands, createBrandAction, createProduct, uploadImage, getMinimalProducts, quickCreateCategoryAction } from '@/actions/admin';
+import { uploadMultipleMediaAction } from '@/actions/media';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
 import MediaPickerModal from './MediaPickerModal';
@@ -86,6 +87,31 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
   const [existingImages, setExistingImages] = useState<string[]>(parseJSON(initialData?.images));
   const [draggedImageIdx, setDraggedImageIdx] = useState<number | null>(null);
   const [showProductMediaPicker, setShowProductMediaPicker] = useState(false);
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
+  const [galleryUploadCount, setGalleryUploadCount] = useState(0);
+  const galleryFileInputRef = useRef<HTMLInputElement>(null);
+  const [isDraggingOverGallery, setIsDraggingOverGallery] = useState(false);
+
+  const handleDirectGalleryUpload = async (files: File[]) => {
+    if (!files || files.length === 0) return;
+    setIsGalleryUploading(true);
+    setGalleryUploadCount(files.length);
+    try {
+      const formData = new FormData();
+      files.forEach(f => formData.append('files', f));
+      const res = await uploadMultipleMediaAction(formData);
+      if (res.urls && res.urls.length > 0) {
+        setExistingImages(prev => [...prev, ...res.urls]);
+      } else if (res.error) {
+        alert(res.error);
+      }
+    } catch (err) {
+      console.error('Error uploading gallery images:', err);
+      alert('Erreur lors du téléversement des photos.');
+    } finally {
+      setIsGalleryUploading(false);
+    }
+  };
   const isEditing = !!initialData;
 
   const [title, setTitle] = useState(initialData?.title || '');
@@ -870,24 +896,102 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
               ))}
             </div>
           )}
-          <div className="flex items-center gap-4">
-            <button 
-              type="button" 
-              onClick={() => setShowProductMediaPicker(true)}
-              className="px-4 py-2 border border-orange-500 rounded-md text-sm font-semibold bg-orange-50 text-orange-700 hover:bg-orange-100 h-[42px] transition flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              Ajouter une image
-            </button>
+          {/* Multi-upload dropzone & actions */}
+          <input 
+            type="file" 
+            ref={galleryFileInputRef} 
+            multiple 
+            accept="image/*" 
+            className="hidden" 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleDirectGalleryUpload(Array.from(e.target.files));
+                e.target.value = '';
+              }
+            }} 
+          />
+
+          <div 
+            onDragOver={(e) => { e.preventDefault(); setIsDraggingOverGallery(true); }}
+            onDragLeave={() => setIsDraggingOverGallery(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingOverGallery(false);
+              const droppedFiles = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
+              if (droppedFiles.length > 0) {
+                handleDirectGalleryUpload(droppedFiles);
+              }
+            }}
+            className={`p-4 border-2 border-dashed rounded-xl transition-all flex flex-col sm:flex-row items-center justify-between gap-4 ${
+              isDraggingOverGallery 
+                ? 'border-[#C8732A] bg-amber-50/70 scale-[1.01]' 
+                : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 text-[#C8732A] flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-800">
+                  {isDraggingOverGallery 
+                    ? "Déposez vos images ici pour les ajouter..." 
+                    : "Ajoutez plusieurs photos à la galerie"}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Glissez-déposez plusieurs fichiers ou choisissez depuis vos dossiers / la médiathèque
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              <button 
+                type="button" 
+                disabled={isGalleryUploading}
+                onClick={() => galleryFileInputRef.current?.click()}
+                className="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-[#C8732A] to-[#A85514] hover:from-[#D88334] hover:to-[#B8641C] text-white rounded-lg text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span>Téléverser des photos</span>
+              </button>
+
+              <button 
+                type="button" 
+                disabled={isGalleryUploading}
+                onClick={() => setShowProductMediaPicker(true)}
+                className="flex-1 sm:flex-none px-4 py-2 border border-[#C8732A]/50 bg-white hover:bg-amber-50 text-[#C8732A] rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>Médiathèque</span>
+              </button>
+            </div>
           </div>
+
+          {isGalleryUploading && (
+            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3 text-amber-900 text-sm animate-pulse">
+              <div className="w-5 h-5 border-2 border-[#C8732A] border-t-transparent rounded-full animate-spin shrink-0"></div>
+              <span>Téléversement en cours de {galleryUploadCount} image(s)... Veuillez patienter.</span>
+            </div>
+          )}
 
           {showProductMediaPicker && (
             <MediaPickerModal 
+              multiple={true}
               onClose={() => setShowProductMediaPicker(false)} 
               onSelect={(url) => {
-                setExistingImages([...existingImages, url]);
+                setExistingImages(prev => [...prev, url]);
                 setShowProductMediaPicker(false);
-              }} 
+              }}
+              onSelectMultiple={(urls) => {
+                setExistingImages(prev => [...prev, ...urls]);
+                setShowProductMediaPicker(false);
+              }}
             />
           )}
         </div>
