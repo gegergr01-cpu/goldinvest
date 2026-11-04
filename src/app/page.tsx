@@ -48,6 +48,36 @@ export default async function Home() {
     layout = DEFAULT_SECTIONS;
   }
 
+  // Ensure SilverDeals is included right after BestDeals if a custom layout only had Gold
+  const hasBestDeals = layout.some((s) => s && s.type === 'BestDeals' && s.settings?.metal !== 'silver');
+  const hasSilverDeals = layout.some((s) => s && (s.type === 'SilverDeals' || (s.type === 'BestDeals' && s.settings?.metal === 'silver')));
+
+  if (hasBestDeals && !hasSilverDeals) {
+    const goldIdx = layout.findIndex((s) => s && s.type === 'BestDeals' && s.settings?.metal !== 'silver');
+    const autoSilverSection: SectionConfig = {
+      id: 'sec_silver_deals_auto',
+      type: 'SilverDeals',
+      name: "L'Argent d'Investissement (Pièces & Lingots)",
+      enabled: true,
+      settings: {
+        metal: 'silver',
+        badge: "L'ARGENT D'INVESTISSEMENT",
+        title: "Nos Produits d'Argent d'Investissement",
+        highlight: "Argent d'Investissement",
+        subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
+        cardBadge: "Investissement",
+        tab1_title: "Pièces d'argent",
+        tab2_title: "Lingots d'argent",
+        tab1_btn_text: "Voir toutes les pièces d'argent",
+        tab1_btn_url: "/shop?category=pieces-dargent",
+        tab2_btn_text: "Voir tous les lingots d'argent",
+        tab2_btn_url: "/shop?category=lingots-dargent",
+        maxProducts: '4'
+      }
+    };
+    layout.splice(goldIdx + 1, 0, autoSilverSection);
+  }
+
   // Filter only enabled sections
   const activeSections = layout.filter((s) => s && s.enabled);
 
@@ -70,11 +100,15 @@ export default async function Home() {
       case 'Faq':
         return <FaqSection key={section.id} config={section.settings} />;
 
+      // Product Showcases with Tabs
+      case 'BestDeals':
+        return <BestDeals key={section.id} config={section.settings} />;
+      case 'SilverDeals':
+        return <BestDeals key={section.id} config={{ ...section.settings, metal: 'silver' }} />;
+
       // Legacy / alternate sections
       case 'Hero':
         return <Hero key={section.id} config={section.settings} />;
-      case 'BestDeals':
-        return <BestDeals key={section.id} config={section.settings} />;
       case 'BestSeller':
         return <BestSeller key={section.id} config={section.settings} />;
       case 'LatestBlogs':

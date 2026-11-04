@@ -537,23 +537,32 @@ export default function GoldSectionEditor({
                 </>
               )}
 
-              {section.type === 'BestDeals' && (
+              {(section.type === 'BestDeals' || section.type === 'SilverDeals') && (
                 <>
+                  <div className="bg-amber-50/60 p-2.5 rounded-lg border border-amber-200/80 mb-2">
+                    <span className="text-[11px] font-bold text-amber-900 block mb-0.5">
+                      {section.type === 'SilverDeals' || s.metal === 'silver' ? 'Argent d’Investissement' : 'Or d’Investissement'}
+                    </span>
+                    <p className="text-[10px] text-amber-800">
+                      Cette section intègre 2 onglets interactifs permettant au visiteur de basculer entre Pièces et Lingots.
+                    </p>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
                     <input
                       type="text"
-                      value={s.badge ?? "NOS PIÈCES D'OR"}
+                      value={s.badge ?? (section.type === 'SilverDeals' ? "L'ARGENT D'INVESTISSEMENT" : "L'OR D'INVESTISSEMENT")}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur accent)</label>
                     <input
                       type="text"
-                      value={s.highlight ?? "l'excellence"}
+                      value={s.highlight ?? (section.type === 'SilverDeals' ? "Argent d'Investissement" : "Or d'Investissement")}
                       onChange={(e) => handleFieldChange('highlight', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -563,7 +572,7 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
                     <input
                       type="text"
-                      value={s.title ?? "Investissez dans l'excellence"}
+                      value={s.title ?? (section.type === 'SilverDeals' ? "Nos Produits d'Argent d'Investissement" : "Nos Produits d'Or d'Investissement")}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -573,39 +582,79 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
                     <textarea
                       rows={2}
-                      value={s.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
+                      value={s.subtitle ?? (section.type === 'SilverDeals' ? "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine." : "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé pour sécuriser votre épargne.")}
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes</label>
-                    <input
-                      type="text"
-                      value={s.cardBadge ?? "Investissement"}
-                      onChange={(e) => handleFieldChange('cardBadge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  {categories && categories.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Catégorie ciblée (Optionnel)</label>
-                      <select
-                        value={s.categoryId || ''}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                      >
-                        <option value="">Toutes les pièces / Tous les produits</option>
-                        {categories.map((cat: any) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName || cat.name}
-                          </option>
-                        ))}
-                      </select>
+                  <div className="space-y-2 pt-2 border-t border-gray-200">
+                    <div className="p-2.5 bg-white rounded border border-gray-200">
+                      <span className="text-[11px] font-bold text-gray-800 block mb-1.5">🪙 Onglet 1 (Pièces)</span>
+                      <div className="space-y-1.5">
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Nom de l'onglet</label>
+                          <input
+                            type="text"
+                            value={s.tab1_title ?? (section.type === 'SilverDeals' ? "Pièces d'argent" : "Pièces d'or")}
+                            onChange={(e) => handleFieldChange('tab1_title', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Texte du bouton CTA</label>
+                          <input
+                            type="text"
+                            value={s.tab1_btn_text ?? (section.type === 'SilverDeals' ? "Voir toutes les pièces d'argent" : "Voir toutes les pièces d'or")}
+                            onChange={(e) => handleFieldChange('tab1_btn_text', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Lien du bouton</label>
+                          <input
+                            type="text"
+                            value={s.tab1_btn_url ?? (section.type === 'SilverDeals' ? "/shop?category=pieces-dargent" : "/shop?category=pieces-dor")}
+                            onChange={(e) => handleFieldChange('tab1_btn_url', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  )}
+
+                    <div className="p-2.5 bg-white rounded border border-gray-200">
+                      <span className="text-[11px] font-bold text-gray-800 block mb-1.5">🧱 Onglet 2 (Lingots)</span>
+                      <div className="space-y-1.5">
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Nom de l'onglet</label>
+                          <input
+                            type="text"
+                            value={s.tab2_title ?? (section.type === 'SilverDeals' ? "Lingots d'argent" : "Lingots d'or")}
+                            onChange={(e) => handleFieldChange('tab2_title', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Texte du bouton CTA</label>
+                          <input
+                            type="text"
+                            value={s.tab2_btn_text ?? (section.type === 'SilverDeals' ? "Voir tous les lingots d'argent" : "Voir tous les lingots d'or")}
+                            onChange={(e) => handleFieldChange('tab2_btn_text', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600">Lien du bouton</label>
+                          <input
+                            type="text"
+                            value={s.tab2_btn_url ?? (section.type === 'SilverDeals' ? "/shop?category=lingots-dargent" : "/shop?category=lingots-dor")}
+                            onChange={(e) => handleFieldChange('tab2_btn_url', e.target.value)}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
@@ -641,91 +690,6 @@ export default function GoldSectionEditor({
                       onChange={(e) => handleFieldChange('title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
-                  </div>
-                </>
-              )}
-
-              {section.type === 'BestDeals' && (
-                <>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
-                    <input
-                      type="text"
-                      value={s.badge ?? "NOS PIÈCES D'OR"}
-                      onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
-                    <input
-                      type="text"
-                      value={s.highlight ?? "l'excellence"}
-                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
-                    <input
-                      type="text"
-                      value={s.title ?? "Investissez dans l'excellence"}
-                      onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
-                    <textarea
-                      rows={2}
-                      value={s.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes</label>
-                    <input
-                      type="text"
-                      value={s.cardBadge ?? "Investissement"}
-                      onChange={(e) => handleFieldChange('cardBadge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  {categories && categories.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Catégorie ciblée (Optionnel)</label>
-                      <select
-                        value={s.categoryId || ''}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                      >
-                        <option value="">Toutes les pièces / Tous les produits</option>
-                        {categories.map((cat: any) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName || cat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
-                    <select
-                      value={s.maxProducts || '4'}
-                      onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                    >
-                      <option value="4">4 produits (1 rangée standard - comme la maquette)</option>
-                      <option value="8">8 produits (2 rangées)</option>
-                      <option value="12">12 produits (3 rangées)</option>
-                    </select>
                   </div>
                 </>
               )}
@@ -771,91 +735,6 @@ export default function GoldSectionEditor({
                 </>
               )}
 
-              {section.type === 'BestDeals' && (
-                <>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
-                    <input
-                      type="text"
-                      value={s.badge ?? "NOS PIÈCES D'OR"}
-                      onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
-                    <input
-                      type="text"
-                      value={s.highlight ?? "l'excellence"}
-                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
-                    <input
-                      type="text"
-                      value={s.title ?? "Investissez dans l'excellence"}
-                      onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
-                    <textarea
-                      rows={2}
-                      value={s.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes</label>
-                    <input
-                      type="text"
-                      value={s.cardBadge ?? "Investissement"}
-                      onChange={(e) => handleFieldChange('cardBadge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  {categories && categories.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Catégorie ciblée (Optionnel)</label>
-                      <select
-                        value={s.categoryId || ''}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                      >
-                        <option value="">Toutes les pièces / Tous les produits</option>
-                        {categories.map((cat: any) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName || cat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
-                    <select
-                      value={s.maxProducts || '4'}
-                      onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                    >
-                      <option value="4">4 produits (1 rangée standard - comme la maquette)</option>
-                      <option value="8">8 produits (2 rangées)</option>
-                      <option value="12">12 produits (3 rangées)</option>
-                    </select>
-                  </div>
-                </>
-              )}
-
               {section.type === 'CtaBanner' && (
                 <>
                   <div>
@@ -875,91 +754,6 @@ export default function GoldSectionEditor({
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
-                  </div>
-                </>
-              )}
-
-              {section.type === 'BestDeals' && (
-                <>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
-                    <input
-                      type="text"
-                      value={s.badge ?? "NOS PIÈCES D'OR"}
-                      onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
-                    <input
-                      type="text"
-                      value={s.highlight ?? "l'excellence"}
-                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
-                    <input
-                      type="text"
-                      value={s.title ?? "Investissez dans l'excellence"}
-                      onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
-                    <textarea
-                      rows={2}
-                      value={s.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes</label>
-                    <input
-                      type="text"
-                      value={s.cardBadge ?? "Investissement"}
-                      onChange={(e) => handleFieldChange('cardBadge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  {categories && categories.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Catégorie ciblée (Optionnel)</label>
-                      <select
-                        value={s.categoryId || ''}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                      >
-                        <option value="">Toutes les pièces / Tous les produits</option>
-                        {categories.map((cat: any) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName || cat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
-                    <select
-                      value={s.maxProducts || '4'}
-                      onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                    >
-                      <option value="4">4 produits (1 rangée standard - comme la maquette)</option>
-                      <option value="8">8 produits (2 rangées)</option>
-                      <option value="12">12 produits (3 rangées)</option>
-                    </select>
                   </div>
                 </>
               )}
@@ -1000,91 +794,6 @@ export default function GoldSectionEditor({
                       onChange={(e) => handleFieldChange('subtitle', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
-                  </div>
-                </>
-              )}
-
-              {section.type === 'BestDeals' && (
-                <>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
-                    <input
-                      type="text"
-                      value={s.badge ?? "NOS PIÈCES D'OR"}
-                      onChange={(e) => handleFieldChange('badge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Mots mis en valeur (couleur or)</label>
-                    <input
-                      type="text"
-                      value={s.highlight ?? "l'excellence"}
-                      onChange={(e) => handleFieldChange('highlight', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
-                    <input
-                      type="text"
-                      value={s.title ?? "Investissez dans l'excellence"}
-                      onChange={(e) => handleFieldChange('title', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sous-titre</label>
-                    <textarea
-                      rows={2}
-                      value={s.subtitle ?? "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine."}
-                      onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur les cartes</label>
-                    <input
-                      type="text"
-                      value={s.cardBadge ?? "Investissement"}
-                      onChange={(e) => handleFieldChange('cardBadge', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-
-                  {categories && categories.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Catégorie ciblée (Optionnel)</label>
-                      <select
-                        value={s.categoryId || ''}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
-                        className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                      >
-                        <option value="">Toutes les pièces / Tous les produits</option>
-                        {categories.map((cat: any) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName || cat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
-                    <select
-                      value={s.maxProducts || '4'}
-                      onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
-                    >
-                      <option value="4">4 produits (1 rangée standard - comme la maquette)</option>
-                      <option value="8">8 produits (2 rangées)</option>
-                      <option value="12">12 produits (3 rangées)</option>
-                    </select>
                   </div>
                 </>
               )}

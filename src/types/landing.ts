@@ -9,6 +9,7 @@ export type SectionType =
   | 'Faq'
   | 'Hero'
   | 'BestDeals'
+  | 'SilverDeals'
   | 'BestSeller'
   | 'LatestBlogs'
   | 'Newsletter'
@@ -87,6 +88,48 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       card4_desc: "Un investissement accessible",
       card4_img: "/images/silver-coins.jpg",
       card4_url: "/shop?category=pieces-dargent"
+    }
+  },
+  {
+    id: 'sec_gold_deals',
+    type: 'BestDeals',
+    name: "L'Or d'Investissement (Pièces & Lingots)",
+    enabled: true,
+    settings: {
+      metal: 'gold',
+      badge: "L'OR D'INVESTISSEMENT",
+      title: "Nos Produits d'Or d'Investissement",
+      highlight: "Or d'Investissement",
+      subtitle: "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé.",
+      cardBadge: "Investissement",
+      tab1_title: "Pièces d'or",
+      tab2_title: "Lingots d'or",
+      tab1_btn_text: "Voir toutes les pièces d'or",
+      tab1_btn_url: "/shop?category=pieces-dor",
+      tab2_btn_text: "Voir tous les lingots d'or",
+      tab2_btn_url: "/shop?category=lingots-dor",
+      maxProducts: '4'
+    }
+  },
+  {
+    id: 'sec_silver_deals',
+    type: 'SilverDeals',
+    name: "L'Argent d'Investissement (Pièces & Lingots)",
+    enabled: true,
+    settings: {
+      metal: 'silver',
+      badge: "L'ARGENT D'INVESTISSEMENT",
+      title: "Nos Produits d'Argent d'Investissement",
+      highlight: "Argent d'Investissement",
+      subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
+      cardBadge: "Investissement",
+      tab1_title: "Pièces d'argent",
+      tab2_title: "Lingots d'argent",
+      tab1_btn_text: "Voir toutes les pièces d'argent",
+      tab1_btn_url: "/shop?category=pieces-dargent",
+      tab2_btn_text: "Voir tous les lingots d'argent",
+      tab2_btn_url: "/shop?category=lingots-dargent",
+      maxProducts: '4'
     }
   },
   {

@@ -227,17 +227,47 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."
       };
     } else if (type === 'BestDeals') {
-      newSec.name = "Nos Pièces d'or";
+      newSec.name = "L'Or d'Investissement (Pièces & Lingots)";
       newSec.settings = { 
-        badge: "NOS PIÈCES D'OR",
-        title: "Nos Pièces d'Or", 
-        highlight: "Pièces d'Or",
-        subtitle: "Des pièces d'or authentiques, sélectionnées avec soin pour préserver votre patrimoine.",
+        metal: 'gold',
+        badge: "L'OR D'INVESTISSEMENT",
+        title: "Nos Produits d'Or d'Investissement", 
+        highlight: "Or d'Investissement",
+        subtitle: "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé.",
         cardBadge: "Investissement",
+        tab1_title: "Pièces d'or",
+        tab2_title: "Lingots d'or",
+        tab1_btn_text: "Voir toutes les pièces d'or",
+        tab1_btn_url: "/shop?category=pieces-dor",
+        tab2_btn_text: "Voir tous les lingots d'or",
+        tab2_btn_url: "/shop?category=lingots-dor",
         btnText: "Voir toutes les pièces d'or",
         SEE_ALL_TEXT: "Voir toutes les pièces d'or",
         seeAllUrl: "/shop?category=pieces-dor",
         btnUrl: "/shop?category=pieces-dor",
+        maxProducts: '4',
+        filterType: 'ALL', 
+        categoryId: '' 
+      };
+    } else if (type === 'SilverDeals') {
+      newSec.name = "L'Argent d'Investissement (Pièces & Lingots)";
+      newSec.settings = { 
+        metal: 'silver',
+        badge: "L'ARGENT D'INVESTISSEMENT",
+        title: "Nos Produits d'Argent d'Investissement", 
+        highlight: "Argent d'Investissement",
+        subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
+        cardBadge: "Investissement",
+        tab1_title: "Pièces d'argent",
+        tab2_title: "Lingots d'argent",
+        tab1_btn_text: "Voir toutes les pièces d'argent",
+        tab1_btn_url: "/shop?category=pieces-dargent",
+        tab2_btn_text: "Voir tous les lingots d'argent",
+        tab2_btn_url: "/shop?category=lingots-dargent",
+        btnText: "Voir toutes les pièces d'argent",
+        SEE_ALL_TEXT: "Voir toutes les pièces d'argent",
+        seeAllUrl: "/shop?category=pieces-dargent",
+        btnUrl: "/shop?category=pieces-dargent",
         maxProducts: '4',
         filterType: 'ALL', 
         categoryId: '' 
@@ -447,6 +477,14 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
                     <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                     Sélection Or & Argent
                   </button>
+                  <button onClick={() => addSection('BestDeals')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Or (Tabs Pièces / Lingots)
+                  </button>
+                  <button onClick={() => addSection('SilverDeals')} className="border border-slate-300 rounded bg-slate-50 hover:bg-slate-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-slate-800 font-semibold cursor-pointer">
+                    <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    Argent (Tabs Pièces / Lingots)
+                  </button>
                   <button onClick={() => addSection('WhyChooseUs')} className="border border-amber-200 rounded bg-amber-50/60 hover:bg-amber-100 p-2 text-center text-[10px] flex flex-col items-center gap-1 transition text-amber-900 font-semibold cursor-pointer">
                     <svg className="w-5 h-5 text-[#c59a3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                     Partenaire confiance
@@ -478,10 +516,6 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
                   <button onClick={() => addSection('PromoBanners')} className="border rounded bg-gray-50 hover:bg-gray-100 p-1.5 text-center text-[10px] flex flex-col items-center gap-1 transition text-gray-600 hover:text-gray-900 hover:border-gray-300">
                     <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
                     Banners
-                  </button>
-                  <button onClick={() => addSection('BestDeals')} className="border rounded bg-gray-50 hover:bg-gray-100 p-1.5 text-center text-[10px] flex flex-col items-center gap-1 transition text-gray-600 hover:text-gray-900 hover:border-gray-300">
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    Promos
                   </button>
                   <button onClick={() => addSection('BestSeller')} className="border rounded bg-gray-50 hover:bg-gray-100 p-1.5 text-center text-[10px] flex flex-col items-center gap-1 transition text-gray-600 hover:text-gray-900 hover:border-gray-300">
                     <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>

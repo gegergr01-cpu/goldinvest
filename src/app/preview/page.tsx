@@ -102,6 +102,9 @@ export default async function PreviewPage() {
       case 'BestDeals':
         content = <BestDeals config={section.settings} />;
         break;
+      case 'SilverDeals':
+        content = <BestDeals config={{ ...section.settings, metal: 'silver' }} />;
+        break;
       case 'BestSeller':
         content = <BestSeller config={section.settings} />;
         break;
