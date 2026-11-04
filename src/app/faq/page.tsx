@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import FaqPageClient, { FAQ_DATA } from '@/components/faq/FaqPageClient';
+import FaqPageClient from '@/components/faq/FaqPageClient';
+import { FAQ_DATA } from '@/lib/faqData';
 import { safeJsonLd } from '@/lib/security';
 
 export const metadata: Metadata = {
@@ -40,4 +41,3 @@ export default function FaqPage() {
     </>
   );
 }
-

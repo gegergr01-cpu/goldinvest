@@ -85,8 +85,8 @@ async function getStoreLogoAndInfo() {
     ];
     for (const p of candidatePaths) {
       try {
-        if (fs.existsSync(p)) {
-          logoBuffer = fs.readFileSync(p);
+        if (fs.existsSync(/*turbopackIgnore: true*/ p)) {
+          logoBuffer = fs.readFileSync(/*turbopackIgnore: true*/ p);
           break;
         }
       } catch (e) {
