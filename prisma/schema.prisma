@@ -29,6 +29,7 @@ model Category {
   parent          Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children        Category[] @relation("CategoryHierarchy")
   products        Product[]  @relation("ProductCategories")
+  translations    CategoryTranslation[]
 }
 
 model Brand {
@@ -79,6 +80,7 @@ model Product {
   tags                   Tag[]       @relation("ProductTags")
   Product_SaleTogether_A Product[]   @relation("SaleTogether")
   Product_SaleTogether_B Product[]   @relation("SaleTogether")
+  translations           ProductTranslation[]
 
   @@index([isDeleted])
 }
@@ -354,4 +356,41 @@ enum NotificationType {
 enum AbandonedCartStatus {
   ABANDONED
   RECOVERED
+}
+
+model ProductTranslation {
+  id               String   @id @default(uuid()) @db.Uuid
+  productId        String   @db.Uuid
+  locale           String   // fr, en, de, es, it, nl, pt, da, hu
+  title            String
+  slug             String
+  shortDescription String?
+  description      String?
+  metaTitle        String?
+  metaDescription  String?
+  attributes       Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@index([locale, slug])
+}
+
+model CategoryTranslation {
+  id              String   @id @default(uuid()) @db.Uuid
+  categoryId      String   @db.Uuid
+  locale          String   // fr, en, de, es, it, nl, pt, da, hu
+  name            String
+  slug            String
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale, slug])
 }
