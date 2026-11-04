@@ -157,7 +157,7 @@ export default function ServicesPage() {
     <div className="w-full bg-[#FAF9F5] text-[#0E2036] min-h-screen selection:bg-[#C8732A] selection:text-white">
       
       {/* ================= 1. LUXURY SERVICES HERO (DEEP NAVY & GOLD) ================= */}
-      <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-[#0E2036] via-[#0E2036] to-[#0A182A] text-white border-b border-[#C8732A]/30">
+      <section className="relative pt-16 pb-12 sm:pt-20 sm:pb-14 md:pt-24 md:pb-16 overflow-hidden bg-gradient-to-b from-[#0E2036] via-[#0E2036] to-[#0A182A] text-white border-b border-[#C8732A]/30">
         
         {/* Ambient Gold Radial Glows */}
         <div
@@ -172,7 +172,7 @@ export default function ServicesPage() {
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-3 mb-4">
+          <div className="inline-flex items-center gap-3 mb-3">
             <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#E8A63D]" />
             <span className="font-mono text-[11px] sm:text-[12px] font-bold tracking-[0.2em] text-[#E8A63D] uppercase">
               ÉCOSYSTÈME COMPLET D&apos;INVESTISSEMENT
@@ -181,7 +181,7 @@ export default function ServicesPage() {
           </div>
 
           {/* Main Title */}
-          <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.15] mb-6 max-w-4xl mx-auto">
+          <h1 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15] mb-4 max-w-4xl mx-auto">
             Nos Services{' '}
             <span className="bg-gradient-to-r from-[#fae5a2] via-[#E8A63D] to-[#c59a3f] bg-clip-text text-transparent italic drop-shadow-[0_2px_18px_rgba(232,166,61,0.35)]">
               d&apos;Investissement
@@ -189,17 +189,17 @@ export default function ServicesPage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-white/80 font-normal max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-sm sm:text-base text-white/80 font-normal max-w-2xl mx-auto leading-relaxed mb-6">
             Une infrastructure souveraine, sécurisée et confidentielle pour acquérir, stocker en coffres privés hors banques, vous faire livrer ou revendre vos métaux précieux au meilleur cours.
           </p>
 
           {/* Quick Anchor Navigation Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-4xl mx-auto pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 max-w-4xl mx-auto pt-1">
             {SERVICES_DATA.map((srv) => (
               <a
                 key={srv.id}
                 href={`#${srv.id}`}
-                className="px-4 py-2 rounded-full bg-white/10 hover:bg-[#C8732A] text-white/90 hover:text-white border border-white/15 hover:border-[#E8A63D] text-[12.5px] sm:text-[13px] font-medium transition-all duration-200 backdrop-blur-md shadow-xs hover:-translate-y-0.5"
+                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-[#C8732A] text-white/90 hover:text-white border border-white/15 hover:border-[#E8A63D] text-[12px] sm:text-[12.5px] font-medium transition-all duration-200 backdrop-blur-md shadow-xs hover:-translate-y-0.5"
               >
                 <span className="text-[#E8A63D] font-mono mr-1.5 font-bold">{srv.num}.</span>
                 <span>{srv.title.split('—')[0].trim()}</span>
@@ -211,7 +211,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ================= 2. THE 5 SERVICE BLOCKS (LUMINOUS WHITE CARDS ON WARM BG) ================= */}
-      <section className="py-16 md:py-24 relative overflow-hidden">
+      <section className="py-10 md:py-16 relative overflow-hidden">
         
         {/* Subtle decorative dot pattern watermark like 'Ils nous font confiance' */}
         <div 
@@ -222,7 +222,7 @@ export default function ServicesPage() {
           }}
         />
 
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 relative z-10">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12 relative z-10">
           {SERVICES_DATA.map((service, index) => {
             const isEven = index % 2 === 1;
 
@@ -230,7 +230,7 @@ export default function ServicesPage() {
               <div
                 key={service.id}
                 id={service.id}
-                className="scroll-mt-28 relative rounded-3xl bg-white border border-[#E8E4DA] p-7 sm:p-10 lg:p-12 shadow-[0_12px_45px_rgba(14,32,54,0.05)] hover:shadow-[0_20px_50px_rgba(200,115,42,0.12)] hover:border-[#C8732A]/50 transition-all duration-300 overflow-hidden group"
+                className="scroll-mt-24 relative rounded-3xl bg-white border border-[#E8E4DA] p-6 sm:p-8 lg:p-10 shadow-[0_12px_45px_rgba(14,32,54,0.05)] hover:shadow-[0_20px_50px_rgba(200,115,42,0.12)] hover:border-[#C8732A]/50 transition-all duration-300 overflow-hidden group"
               >
                 {/* Background Large Number Watermark */}
                 <span className="absolute -top-6 right-6 font-serif font-bold text-[120px] sm:text-[160px] text-[#0E2036]/[0.035] group-hover:text-[#C8732A]/[0.07] select-none pointer-events-none leading-none transition-colors duration-300">
@@ -306,15 +306,22 @@ export default function ServicesPage() {
                         <span className="text-gray-400 font-normal">Garantie Souveraine</span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div className="grid grid-cols-1 gap-3">
                         {service.highlights.map((hl, hIdx) => (
-                          <div key={hIdx} className="bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs">
-                            <span className="block text-[11px] text-gray-500 mb-1">
-                              {hl.label}
-                            </span>
-                            <span className="block font-serif font-bold text-[14.5px] text-[#0E2036] leading-tight">
-                              {hl.value}
-                            </span>
+                          <div key={hIdx} className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-200/80 shadow-xs flex items-center justify-between gap-4 hover:border-[#C8732A]/40 transition-colors">
+                            <div>
+                              <span className="block text-[11px] text-gray-500 mb-0.5">
+                                {hl.label}
+                              </span>
+                              <span className="block font-serif font-bold text-[14px] sm:text-[15px] text-[#0E2036] leading-tight">
+                                {hl.value}
+                              </span>
+                            </div>
+                            <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] border border-[#E8A63D]/25 flex items-center justify-center text-[#C8732A] shrink-0">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
                           </div>
                         ))}
                       </div>
