@@ -15,7 +15,7 @@ export default function MediaPageClient() {
   const [isUploading, setIsUploading] = useState(false);
   const [isBulkSelectMode, setIsBulkSelectMode] = useState(false);
   const t = useTranslations('AdminMedia');
-  
+
   const [selectedMedia, setSelectedMedia] = useState<any[]>([]);
 
   const toggleSelection = (m: any) => {
@@ -43,12 +43,12 @@ export default function MediaPageClient() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    // validated files
-    
+    // multiple files ready
+
     setIsUploading(true);
     const formData = new FormData();
     files.forEach(f => formData.append('files', f));
-    
+
     const res = await uploadMultipleMediaAction(formData);
     if (res.success) {
       setPage(1);
@@ -85,7 +85,7 @@ export default function MediaPageClient() {
 
   const handleDeleteMultiple = async () => {
     if (!confirm(t('delete_confirm'))) return;
-    
+
     const ids = selectedMedia.map(m => m.id);
     const res = await deleteMultipleMediaAction(ids);
     if (res.success) {
@@ -111,7 +111,7 @@ export default function MediaPageClient() {
         </div>
 
         {/* Filters */}
-        <select 
+        <select
           className="border border-gray-300 rounded px-3 py-1.5 text-gray-700 outline-none"
           value={mediaType}
           onChange={(e) => { setMediaType(e.target.value); setPage(1); }}
@@ -122,8 +122,8 @@ export default function MediaPageClient() {
           <option value="documents">{t('filter_documents', { defaultMessage: 'Documents' })}</option>
           <option value="audios">{t('filter_audios', { defaultMessage: 'Audios' })}</option>
         </select>
-        
-        <select 
+
+        <select
           className="border border-gray-300 rounded px-3 py-1.5 text-gray-700 outline-none"
           value={dateFilter}
           onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}
@@ -134,7 +134,7 @@ export default function MediaPageClient() {
           <option value="last_year">{t('filter_last_year', { defaultMessage: 'L\'année dernière' })}</option>
         </select>
 
-        <button 
+        <button
           onClick={() => {
             setIsBulkSelectMode(true);
             setSelectedMedia([]);
@@ -152,8 +152,8 @@ export default function MediaPageClient() {
           </label>
 
           <div className="relative">
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder={t('search_media', { defaultMessage: 'Rechercher des médias' })}
               className="border border-gray-300 rounded px-3 py-1.5 outline-none w-64 pr-8"
               value={search}
@@ -174,14 +174,14 @@ export default function MediaPageClient() {
 
       {isBulkSelectMode && (
         <div className="bg-white border border-gray-200 p-3 flex items-center gap-4 mb-4 shadow-sm rounded">
-          <button 
+          <button
             onClick={handleDeleteMultiple}
             disabled={selectedMedia.length === 0}
             className="bg-[#2271b1] text-white px-4 py-1.5 rounded font-medium hover:bg-[#135e96] disabled:opacity-50 transition"
           >
             {t('delete_permanently', { defaultMessage: 'Supprimer définitivement' })}
           </button>
-          <button 
+          <button
             onClick={() => { setIsBulkSelectMode(false); setSelectedMedia([]); }}
             className="border border-[#2271b1] text-[#2271b1] px-4 py-1.5 rounded font-medium hover:bg-[#f6f7f7] transition"
           >
@@ -201,8 +201,8 @@ export default function MediaPageClient() {
             media.map(m => {
               const isSelected = selectedMedia.some(item => item.id === m.id);
               return (
-                <div 
-                  key={m.id} 
+                <div
+                  key={m.id}
                   onClick={() => {
                     if (isBulkSelectMode) {
                       toggleSelection(m);
@@ -210,9 +210,8 @@ export default function MediaPageClient() {
                       setSelectedMedia([m]);
                     }
                   }}
-                  className={`relative aspect-square border overflow-hidden cursor-pointer transition-all bg-white shadow-sm ${
-                    isSelected ? 'border-[#2271b1] border-4' : 'border-gray-200 hover:border-gray-400'
-                  }`}
+                  className={`relative aspect-square border overflow-hidden cursor-pointer transition-all bg-white shadow-sm ${isSelected ? 'border-[#2271b1] border-4' : 'border-gray-200 hover:border-gray-400'
+                    }`}
                 >
                   <Image width={800} height={800} unoptimized src={m.url} alt={m.altText || m.title || 'media'} className="object-contain w-full h-full bg-gray-50" />
                   {isSelected && (
@@ -237,15 +236,15 @@ export default function MediaPageClient() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            
+
             <div className="p-4">
               <Image width={800} height={800} src={selectedMedia[0].url} className="w-full h-auto mb-4 border bg-gray-50" alt="Aperçu" />
-              
+
               <div className="mb-4">
                 <span className="text-xs text-gray-500 block mb-1 font-medium">{t('file_url')}</span>
                 <div className="flex">
                   <input type="text" readOnly value={selectedMedia[0].url} className="w-full text-xs p-2 border border-gray-300 rounded-l bg-gray-50 outline-none" />
-                  <button 
+                  <button
                     onClick={() => { navigator.clipboard.writeText(selectedMedia[0].url); alert(t('copied')); }}
                     className="bg-gray-100 px-3 text-xs border border-gray-300 border-l-0 rounded-r hover:bg-gray-200"
                   >
@@ -259,22 +258,22 @@ export default function MediaPageClient() {
                   <label className="block font-medium mb-1 text-gray-700">{t('media_title')}</label>
                   <input type="text" name="title" defaultValue={selectedMedia[0].title || ''} className="w-full p-2 border border-gray-300 rounded outline-none" />
                 </div>
-                
+
                 <div>
                   <label className="block font-medium mb-1 text-gray-700">{t('alt_text')}</label>
                   <input type="text" name="altText" defaultValue={selectedMedia[0].altText || ''} className="w-full p-2 border border-gray-300 rounded outline-none" />
                 </div>
-                
+
                 <div>
                   <label className="block font-medium mb-1 text-gray-700">{t('legend')}</label>
                   <input type="text" name="legend" defaultValue={selectedMedia[0].legend || ''} className="w-full p-2 border border-gray-300 rounded outline-none" />
                 </div>
-                
+
                 <div>
                   <label className="block font-medium mb-1 text-gray-700">{t('description')}</label>
                   <textarea name="description" defaultValue={selectedMedia[0].description || ''} className="w-full p-2 border border-gray-300 rounded outline-none" rows={3}></textarea>
                 </div>
-                
+
                 <div>
                   <label className="block font-medium mb-1 text-gray-700">{t('link')}</label>
                   <input type="text" name="link" defaultValue={selectedMedia[0].link || ''} className="w-full p-2 border border-gray-300 rounded outline-none" />

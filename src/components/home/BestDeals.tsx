@@ -274,6 +274,46 @@ function formatProduct(p: any, defaultImage: string, defaultBadge: string) {
   };
 }
 
+function isGoldProduct(p: any): boolean {
+  let metalAttr = '';
+  if (p.attributes) {
+    const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
+    if (Array.isArray(parsed)) {
+      const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
+      if (m) {
+        metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+      }
+    }
+  }
+  const title = String(p.title || '').toLowerCase();
+  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
+
+  if (metalAttr.toLowerCase().includes('or') || metalAttr.toLowerCase().includes('gold')) return true;
+  if (title.includes('feingold') || title.includes('goldbarren') || title.includes('goldmünze') || title.includes('goldm-nze')) return true;
+  if (catSlugs.includes('pieces-dor') || catSlugs.includes('lingots-dor') || catSlugs.includes('anlagegold')) return true;
+  return false;
+}
+
+function isSilverProduct(p: any): boolean {
+  let metalAttr = '';
+  if (p.attributes) {
+    const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
+    if (Array.isArray(parsed)) {
+      const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
+      if (m) {
+        metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+      }
+    }
+  }
+  const title = String(p.title || '').toLowerCase();
+  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
+
+  if (metalAttr.toLowerCase().includes('argent') || metalAttr.toLowerCase().includes('silver')) return true;
+  if (title.includes('feinsilber') || title.includes('silberbarren') || title.includes('silbermünze') || title.includes('silbermuenze')) return true;
+  if (catSlugs.includes('pieces-dargent') || catSlugs.includes('lingots-dargent')) return true;
+  return false;
+}
+
 export default async function BestDeals({ config }: BestDealsProps) {
   const c = config || {};
 
@@ -372,12 +412,15 @@ export default async function BestDeals({ config }: BestDealsProps) {
         }),
       ]);
 
-      tab1Products = silverCoinsDb && silverCoinsDb.length > 0
-        ? silverCoinsDb.map((p) => formatProduct(p, '/images/silver-coins.jpg', cardBadge))
+      const filteredSilverCoins = (silverCoinsDb || []).filter((p) => !isGoldProduct(p));
+      const filteredSilverBars = (silverBarsDb || []).filter((p) => !isGoldProduct(p));
+
+      tab1Products = filteredSilverCoins.length > 0
+        ? filteredSilverCoins.map((p) => formatProduct(p, '/images/silver-coins.jpg', cardBadge))
         : fallbackSilverCoins.slice(0, maxNum);
 
-      tab2Products = silverBarsDb && silverBarsDb.length > 0
-        ? silverBarsDb.map((p) => formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié'))
+      tab2Products = filteredSilverBars.length > 0
+        ? filteredSilverBars.map((p) => formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié'))
         : fallbackSilverBars.slice(0, maxNum);
     } else {
       // Gold Showcase
@@ -431,12 +474,15 @@ export default async function BestDeals({ config }: BestDealsProps) {
         }),
       ]);
 
-      tab1Products = goldCoinsDb && goldCoinsDb.length > 0
-        ? goldCoinsDb.map((p) => formatProduct(p, '/images/gold-coins.jpg', cardBadge))
+      const filteredGoldCoins = (goldCoinsDb || []).filter((p) => !isSilverProduct(p));
+      const filteredGoldBars = (goldBarsDb || []).filter((p) => !isSilverProduct(p));
+
+      tab1Products = filteredGoldCoins.length > 0
+        ? filteredGoldCoins.map((p) => formatProduct(p, '/images/gold-coins.jpg', cardBadge))
         : fallbackGoldCoins.slice(0, maxNum);
 
-      tab2Products = goldBarsDb && goldBarsDb.length > 0
-        ? goldBarsDb.map((p) => formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié'))
+      tab2Products = filteredGoldBars.length > 0
+        ? filteredGoldBars.map((p) => formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié'))
         : fallbackGoldBars.slice(0, maxNum);
     }
   } catch (err) {
