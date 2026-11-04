@@ -1,19 +1,19 @@
-export type SectionType = 
-  | 'GoldHero' 
-  | 'ReassuranceBar' 
-  | 'SelectionGrid' 
-  | 'WhyChooseUs' 
-  | 'PreciousMetalsTicker' 
-  | 'CtaBanner' 
+export type SectionType =
+  | 'GoldHero'
+  | 'ReassuranceBar'
+  | 'SelectionGrid'
+  | 'WhyChooseUs'
+  | 'PreciousMetalsTicker'
+  | 'CtaBanner'
   | 'Testimonials'
   | 'Faq'
-  | 'Hero' 
-  | 'BestDeals' 
-  | 'BestSeller' 
-  | 'LatestBlogs' 
-  | 'Newsletter' 
-  | 'PromoBanners' 
-  | 'ProductGrid' 
+  | 'Hero'
+  | 'BestDeals'
+  | 'BestSeller'
+  | 'LatestBlogs'
+  | 'Newsletter'
+  | 'PromoBanners'
+  | 'ProductGrid'
   | 'FullWidthBanner';
 
 export interface SectionConfig {
@@ -25,19 +25,19 @@ export interface SectionConfig {
 }
 
 export const DEFAULT_SECTIONS: SectionConfig[] = [
-  { 
-    id: 'sec_gold_hero', 
-    type: 'GoldHero', 
-    name: 'Hero (Investissez dans la valeur sûre)', 
-    enabled: true, 
-    settings: { 
-      title: "Investissez dans la valeur sûre", 
-      highlight: "valeur sûre", 
-      subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
-      btnText: "Découvrir notre gamme", 
-      btnUrl: "/shop", 
+  {
+    id: 'sec_gold_hero',
+    type: 'GoldHero',
+    name: 'Hero (Investissez dans la valeur sûre)',
+    enabled: true,
+    settings: {
+      title: "Investissez dans la valeur sûre",
+      highlight: "valeur sûre",
+      subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix",
+      btnText: "Découvrir notre gamme",
+      btnUrl: "/shop",
       btn2Text: "Demander un devis",
-      btn2Url: "/devis", 
+      btn2Url: "/devis",
       image: "/images/hero-gold-silver.jpg",
       bgImage: "/images/hero-bg-luxury.jpg",
       bgColor: "#0a0a0a",
@@ -45,13 +45,13 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       highlightColor: "#c59a3f",
       btnBgColor: "#c59a3f",
       btnTextColor: "#000000"
-    } 
+    }
   },
-  { 
-    id: 'sec_reassurance', 
-    type: 'ReassuranceBar', 
-    name: 'Barre de réassurance (4 avantages)', 
-    enabled: true, 
+  {
+    id: 'sec_reassurance',
+    type: 'ReassuranceBar',
+    name: 'Barre de réassurance (4 avantages)',
+    enabled: true,
     settings: {
       item1_title: 'Qualité garantie',
       item1_desc: 'Des produits certifiés et authentiques',
@@ -61,15 +61,15 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       item3_desc: 'Partout en Europe',
       item4_title: 'Service client réactif',
       item4_desc: 'Notre équipe à votre écoute'
-    } 
+    }
   },
-  { 
-    id: 'sec_selection', 
-    type: 'SelectionGrid', 
-    name: 'Notre sélection (Or & Argent)', 
-    enabled: true, 
-    settings: { 
-      badge: "Notre sélection", 
+  {
+    id: 'sec_selection',
+    type: 'SelectionGrid',
+    name: 'Notre sélection (Or & Argent)',
+    enabled: true,
+    settings: {
+      badge: "Notre sélection",
       title: "Or & Argent",
       card1_title: "Pièces d'or",
       card1_desc: "Un patrimoine intemporel",
@@ -87,63 +87,63 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       card4_desc: "Un investissement accessible",
       card4_img: "/images/silver-coins.jpg",
       card4_url: "/shop?category=pieces-dargent"
-    } 
+    }
   },
-  { 
-    id: 'sec_why_choose', 
-    type: 'WhyChooseUs', 
-    name: 'Nos services (Purchase, Storage, Delivery, Pickup, Buyback)', 
-    enabled: true, 
-    settings: { 
-      badge: "NOS SERVICES EXCLUSIFS", 
+  {
+    id: 'sec_why_choose',
+    type: 'WhyChooseUs',
+    name: 'Nos services (Purchase, Storage, Delivery, Pickup, Buyback)',
+    enabled: true,
+    settings: {
+      badge: "NOS SERVICES EXCLUSIFS",
       title: "Nos services",
       subtitle: "L'excellence et la maîtrise de vos investissements en métaux précieux.",
       description: "De l'achat de lingots et pièces certifiés au gardiennage en coffre sécurisé hors système bancaire, nous vous offrons un écosystème haut de gamme complet, liquide et transparent.",
       btnText: "Découvrir nos solutions",
       btnUrl: "/services"
-    } 
+    }
   },
-  { 
-    id: 'sec_metals_ticker', 
-    type: 'PreciousMetalsTicker', 
-    name: 'Cours des métaux précieux (Widget)', 
-    enabled: true, 
-    settings: { 
+  {
+    id: 'sec_metals_ticker',
+    type: 'PreciousMetalsTicker',
+    name: 'Cours des métaux précieux (Widget)',
+    enabled: true,
+    settings: {
       mode: "auto",
-      title: "Cours des métaux précieux", 
+      title: "Cours des métaux précieux",
       subtitle: "Actualisé en temps réel",
       defaultUnit: "oz",
       showCharts: true,
       bgColor: "#fcfbf9",
-      gold_price: "€ 2 720,45", 
-      gold_change: "+0,42%", 
-      silver_price: "€ 32,17", 
+      gold_price: "€ 2 720,45",
+      gold_change: "+0,42%",
+      silver_price: "€ 32,17",
       silver_change: "+1,12%",
       btnText: "Voir les cours en détail",
       btnUrl: "/shop"
-    } 
+    }
   },
-  { 
-    id: 'sec_cta_banner', 
-    type: 'CtaBanner', 
-    name: 'Bannière CTA (Investissez dès aujourd’hui)', 
-    enabled: true, 
-    settings: { 
-      title: "Investissez dès aujourd’hui", 
+  {
+    id: 'sec_cta_banner',
+    type: 'CtaBanner',
+    name: 'Bannière CTA (Investissez dès aujourd’hui)',
+    enabled: true,
+    settings: {
+      title: "Investissez dès aujourd’hui",
       subtitle: "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent.",
-      btnText: "Découvrir notre gamme", 
-      btnUrl: "/shop", 
+      btnText: "Découvrir notre gamme",
+      btnUrl: "/shop",
       btn2Text: "Demander un devis",
       btn2Url: "/devis",
-      image: "/images/gold-banner-cta.jpg" 
-    } 
+      image: "/images/gold-banner-cta.jpg"
+    }
   },
-  { 
-    id: 'sec_testimonials', 
-    type: 'Testimonials', 
-    name: 'Témoignages (Ils nous font confiance)', 
-    enabled: true, 
-    settings: { 
+  {
+    id: 'sec_testimonials',
+    type: 'Testimonials',
+    name: 'Témoignages (Ils nous font confiance)',
+    enabled: true,
+    settings: {
       badge: "AVIS CLIENTS VÉRIFIÉS",
       title: "Ils nous font confiance",
       subtitle: "Découvrez les retours d’expérience de nos clients investisseurs en métaux précieux physiques.",
@@ -167,7 +167,7 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       review3_text: "« Excellent accompagnement pour la diversification de mon patrimoine. Prix très compétitifs face aux comptoirs bancaires traditionnels. Je recommande les yeux fermés. »",
       review3_rating: "5",
       review3_date: "Il y a 2 semaines"
-    } 
+    }
   },
   {
     id: 'sec_faq',

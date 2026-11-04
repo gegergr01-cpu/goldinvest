@@ -161,10 +161,10 @@ export default function FaqSection({ config }: FaqSectionProps) {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* 2-COLUMN SPLIT LAYOUT (Gauche: Titre & Support CTA / Droite: Accordéons avec Autoslide) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start lg:items-stretch">
 
-          {/* ── COLONNE GAUCHE (STICKY SUR DESKTOP) ── */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-8 lg:sticky lg:top-28">
+          {/* ── COLONNE GAUCHE ── */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
             
             {/* Header Block */}
             <div className="space-y-4">
@@ -198,7 +198,7 @@ export default function FaqSection({ config }: FaqSectionProps) {
             </div>
 
             {/* Reassurance Card avec CTA Compris */}
-            <div className="relative rounded-2xl p-6 sm:p-7 bg-[#132438]/70 border border-[#233B58]/80 backdrop-blur-md shadow-xl overflow-hidden space-y-4">
+            <div className="mt-8 relative rounded-2xl p-6 sm:p-7 bg-[#132438]/70 border border-[#233B58]/80 backdrop-blur-md shadow-xl overflow-hidden space-y-4">
               
               {/* Subtle ambient amber corner glow */}
               <div 
@@ -247,10 +247,10 @@ export default function FaqSection({ config }: FaqSectionProps) {
           </div>
 
           {/* ── COLONNE DROITE (ACCORDÉONS DE LA FAQ + AUTOSLIDE) ── */}
-          <div className="lg:col-span-7 flex flex-col justify-between">
+          <div className="lg:col-span-7 flex flex-col lg:justify-end">
             
             {/* 4 Cards Grid for the Active Slide */}
-            <div className="space-y-3.5 min-h-[380px]">
+            <div className="space-y-3 sm:space-y-3.5">
               {activeQuestions.map((item, idx) => {
                 const isOpen = openIndex === idx;
 
@@ -307,8 +307,8 @@ export default function FaqSection({ config }: FaqSectionProps) {
               })}
             </div>
 
-            {/* Autoslide Navigation Buttons at the Bottom Right (Pure WHITE as requested) */}
-            <div className="flex items-center justify-end gap-2 pt-6">
+            {/* Autoslide Navigation Buttons at the Bottom Right (Pure WHITE, aligned with bottom of left card) */}
+            <div className="flex items-center justify-end gap-2 pt-4 sm:pt-5 pb-1">
               {FAQ_SLIDES.map((_, slideIdx) => {
                 const isActive = currentSlide === slideIdx;
                 return (

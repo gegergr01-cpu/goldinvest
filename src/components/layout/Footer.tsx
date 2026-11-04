@@ -132,7 +132,7 @@ export default function Footer({
                 </Link>
               </li>
               <li>
-                <Link href="/#faq" className="hover:text-[#E8A63D] transition-colors">
+                <Link href="/faq" className="hover:text-[#E8A63D] transition-colors">
                   FAQ
                 </Link>
               </li>
