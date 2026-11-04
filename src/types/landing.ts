@@ -36,6 +36,8 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       subtitle: "Pièces d'or, lingots d'or et d'argent au meilleur prix", 
       btnText: "Découvrir notre gamme", 
       btnUrl: "/shop", 
+      btn2Text: "Demander un devis",
+      btn2Url: "/devis", 
       image: "/images/hero-gold-silver.jpg",
       bgImage: "/images/hero-bg-luxury.jpg",
       bgColor: "#0a0a0a",
@@ -130,7 +132,9 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
       title: "Investissez dès aujourd’hui", 
       subtitle: "Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent.",
       btnText: "Découvrir notre gamme", 
-      btnUrl: "/shop",
+      btnUrl: "/shop", 
+      btn2Text: "Demander un devis",
+      btn2Url: "/devis",
       image: "/images/gold-banner-cta.jpg" 
     } 
   },

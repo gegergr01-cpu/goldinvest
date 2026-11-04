@@ -69,7 +69,7 @@ export default function HeroMobileSliderWrapper({ children, childCount }: { chil
         {Array.from({ length: childCount }).map((_, i) => (
           <div 
             key={i} 
-            className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-6 bg-orange-500' : 'w-2 bg-gray-300/80'}`}
+            className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-6 bg-white shadow-sm' : 'w-2 bg-white/40'}`}
           />
         ))}
       </div>

@@ -58,8 +58,8 @@ export default function HeroBlockSlider({ slide1, slide2, autoSlideInterval = 50
           aria-label="Slide 1"
           className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
             currentIndex === 0
-              ? 'w-6 bg-[#fed700]'
-              : 'w-2.5 bg-gray-400/80 hover:bg-gray-500'
+              ? 'w-6 bg-white shadow-sm'
+              : 'w-2.5 bg-white/40 hover:bg-white/70'
           }`}
         />
         <button
@@ -72,8 +72,8 @@ export default function HeroBlockSlider({ slide1, slide2, autoSlideInterval = 50
           aria-label="Slide 2"
           className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
             currentIndex === 1
-              ? 'w-6 bg-[#fed700]'
-              : 'w-2.5 bg-gray-400/80 hover:bg-gray-500'
+              ? 'w-6 bg-white shadow-sm'
+              : 'w-2.5 bg-white/40 hover:bg-white/70'
           }`}
         />
       </div>

@@ -91,6 +91,9 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
   const btnText = c.btnText || "Découvrir notre gamme";
   const btnUrl = c.btnUrl || "/shop";
 
+  const btn2Text = c.btn2Text || "Demander un devis";
+  const btn2Url = c.btn2Url || "/devis";
+
   // Daily Cards: only categories that actually contain real products in DB
   const activeCards = dailyCards || [];
 
@@ -202,24 +205,26 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
               <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-0.5" />
             </Link>
 
-            {/* Button 2: Create an account */}
+            {/* Button 2: Demander un devis (ou configurable depuis l'admin) */}
             <Link
-              href="/login"
-              className="inline-flex items-center justify-center gap-2.5 bg-white/[0.07] hover:bg-[#E8A63D]/15 text-[#FFE699] hover:text-white font-semibold text-[14.5px] px-7 py-3 rounded-full border border-[#E8A63D]/60 hover:border-[#E8A63D] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none shadow-sm"
+              href={btn2Url}
+              className="inline-flex items-center justify-center gap-2.5 bg-white/[0.07] hover:bg-[#E8A63D]/15 text-[#FFE699] hover:text-white font-semibold text-[14.5px] px-7 py-3 rounded-full border border-[#E8A63D]/60 hover:border-[#E8A63D] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer select-none shadow-sm group"
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-4 h-4 text-[#E8A63D]"
+                className="w-4 h-4 text-[#E8A63D] group-hover:scale-110 transition-transform"
               >
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
               </svg>
-              <span>Create an account</span>
+              <span>{btn2Text}</span>
             </Link>
 
           </div>

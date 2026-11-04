@@ -1493,42 +1493,47 @@ export default function GoldSectionEditor({
                   <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton principal</label>
                   <input
                     type="text"
-                    value={s.btnText ?? (section.type === 'GoldHero' ? "Demander un devis" : "Découvrir notre gamme")}
+                    value={s.btnText ?? "Découvrir notre gamme"}
                     onChange={(e) => handleFieldChange('btnText', e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                   />
                 </div>
 
-                {section.type === 'GoldHero' && (
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Numéro WhatsApp (bouton secondaire)</label>
-                    <input
-                      type="text"
-                      value={s.whatsappNumber ?? "33617264705"}
-                      onChange={(e) => handleFieldChange('whatsappNumber', e.target.value)}
-                      placeholder="33617264705"
-                      className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                    />
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Lien de redirection (URL)</label>
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="text"
-                      value={s.btnUrl ?? "/shop"}
-                      onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
-                      className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
-                      placeholder="/shop"
-                    />
-                    <div className="p-2 border border-gray-300 rounded bg-gray-50 text-gray-500" title="Paramètres de lien">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      </svg>
+                  <input
+                    type="text"
+                    value={s.btnUrl ?? "/shop"}
+                    onChange={(e) => handleFieldChange('btnUrl', e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                    placeholder="/shop"
+                  />
+                </div>
+
+                {section.type === 'GoldHero' && (
+                  <div className="pt-2 border-t border-gray-200 space-y-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Texte du bouton secondaire</label>
+                      <input
+                        type="text"
+                        value={s.btn2Text ?? "Demander un devis"}
+                        onChange={(e) => handleFieldChange('btn2Text', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                        placeholder="Demander un devis ou Nous contacter"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Lien du bouton secondaire (URL)</label>
+                      <input
+                        type="text"
+                        value={s.btn2Url ?? "/devis"}
+                        onChange={(e) => handleFieldChange('btn2Url', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
+                        placeholder="/devis ou /contact"
+                      />
                     </div>
                   </div>
-                </div>
+                )}
               </ElementorAccordion>
             )}
           </div>
