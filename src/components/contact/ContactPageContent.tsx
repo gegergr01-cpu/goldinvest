@@ -18,7 +18,39 @@ export default async function ContactPageContent() {
     ? settings.address.split('\n').filter((l: string) => l.trim() !== '')
     : [];
 
-  const cleanPhone = settings.phone ? settings.phone.replace(/[^\d+]/g, '') : '';
+  const hasPhone = Boolean(settings.phone && settings.phone.trim() !== '');
+  const hasEmail = Boolean(settings.emailDisplay && settings.emailDisplay.trim() !== '');
+  const hasAddress = Boolean(settings.address && settings.address.trim() !== '');
+  const cleanPhone = hasPhone ? settings.phone.replace(/[^\d+]/g, '') : '';
+
+  // Parse font sizes if configured by admin
+  const heroTitleStyle = settings.heroTitleFontSize
+    ? { fontSize: `clamp(24px, 5vw, ${settings.heroTitleFontSize}px)`, lineHeight: 1.15 }
+    : undefined;
+
+  const heroSubtitleStyle = settings.heroSubtitleFontSize
+    ? { fontSize: `${settings.heroSubtitleFontSize}px` }
+    : undefined;
+
+  const titleStyle = settings.titleFontSize
+    ? { fontSize: `${settings.titleFontSize}px` }
+    : undefined;
+
+  const textStyle = settings.textFontSize
+    ? { fontSize: `${settings.textFontSize}px` }
+    : undefined;
+
+  const formTitleStyle = settings.formTitleFontSize
+    ? { fontSize: `${settings.formTitleFontSize}px` }
+    : undefined;
+
+  const formSubtitleStyle = settings.formSubtitleFontSize
+    ? { fontSize: `${settings.formSubtitleFontSize}px` }
+    : undefined;
+
+  const bottomTextStyle = settings.bottomTextFontSize
+    ? { fontSize: `${settings.bottomTextFontSize}px` }
+    : undefined;
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans">
@@ -46,13 +78,19 @@ export default async function ContactPageContent() {
             </div>
 
             {/* Main Title */}
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.15]">
-              {t('hero_title')}
+            <h1
+              style={heroTitleStyle}
+              className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.15]"
+            >
+              {settings.heroTitle || t('hero_title')}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-6 font-normal">
-              {t('hero_subtitle')}
+            <p
+              style={heroSubtitleStyle}
+              className="text-base sm:text-lg text-white/80 leading-relaxed mb-6 font-normal"
+            >
+              {settings.heroSubtitle || t('hero_subtitle')}
             </p>
 
             {/* Trading Desk Live Status */}
@@ -82,12 +120,18 @@ export default async function ContactPageContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
-                <h2 className="font-serif text-xl font-bold text-[#0E2036]">
+                <h2
+                  style={titleStyle}
+                  className="font-serif text-xl font-bold text-[#0E2036]"
+                >
                   {settings.title || t('advisor_title')}
                 </h2>
               </div>
 
-              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+              <div
+                style={textStyle}
+                className="space-y-3 text-sm text-gray-600 leading-relaxed"
+              >
                 {textParagraphs.length > 0 ? (
                   textParagraphs.map((paragraph: string, idx: number) => (
                     <p key={idx}>{paragraph}</p>
@@ -101,8 +145,8 @@ export default async function ContactPageContent() {
             {/* Direct Contact Channels Cards */}
             <div className="space-y-3.5">
               
-              {/* Phone Channel */}
-              {settings.phone && (
+              {/* Phone Channel - ONLY DISPLAY IF PHONE IS DEFINED */}
+              {hasPhone && (
                 <div className="bg-white border border-gray-200/90 hover:border-[#E8A63D]/60 rounded-2xl p-5 shadow-xs transition-all group">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8A63D]/20 to-[#C8732A]/25 border border-[#E8A63D]/40 flex items-center justify-center shrink-0 text-[#C8732A] group-hover:scale-105 transition-transform">
@@ -129,7 +173,7 @@ export default async function ContactPageContent() {
               )}
 
               {/* Email Channel */}
-              {settings.emailDisplay && (
+              {hasEmail && (
                 <div className="bg-white border border-gray-200/90 hover:border-[#E8A63D]/60 rounded-2xl p-5 shadow-xs transition-all group">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8A63D]/20 to-[#C8732A]/25 border border-[#E8A63D]/40 flex items-center justify-center shrink-0 text-[#C8732A] group-hover:scale-105 transition-transform">
@@ -157,7 +201,7 @@ export default async function ContactPageContent() {
               )}
 
               {/* Counters & Physical Address */}
-              {settings.address && (
+              {hasAddress && (
                 <div className="bg-white border border-gray-200/90 hover:border-[#E8A63D]/60 rounded-2xl p-5 shadow-xs transition-all group">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8A63D]/20 to-[#C8732A]/25 border border-[#E8A63D]/40 flex items-center justify-center shrink-0 text-[#C8732A] group-hover:scale-105 transition-transform">
@@ -221,11 +265,17 @@ export default async function ContactPageContent() {
                   <span>✉️</span>
                   <span>Formulaire Officiel</span>
                 </div>
-                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0E2036] mb-2">
-                  {t('form_title')}
+                <h2
+                  style={formTitleStyle}
+                  className="font-serif text-2xl sm:text-3xl font-bold text-[#0E2036] mb-2"
+                >
+                  {settings.formTitle || t('form_title')}
                 </h2>
-                <p className="text-sm text-gray-600">
-                  {t('form_subtitle')}
+                <p
+                  style={formSubtitleStyle}
+                  className="text-sm text-gray-600"
+                >
+                  {settings.formSubtitle || t('form_subtitle')}
                 </p>
               </div>
 
@@ -323,7 +373,10 @@ export default async function ContactPageContent() {
         {/* 5. Optional Bottom Custom Text from Admin Settings */}
         {settings.bottomText && (
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="max-w-3xl mx-auto prose prose-amber text-xs text-gray-500 leading-relaxed">
+            <div
+              style={bottomTextStyle}
+              className="max-w-3xl mx-auto prose prose-amber text-xs text-gray-500 leading-relaxed"
+            >
               <SafeHTML html={settings.bottomText} />
             </div>
           </div>
