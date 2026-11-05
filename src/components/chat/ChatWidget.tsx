@@ -150,44 +150,57 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
   }
 
   return (
-    <div className={`fixed bottom-24 lg:bottom-6 right-6 z-50 font-sans ${visibilityClasses}`}>
+    <div className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 font-sans ${visibilityClasses}`}>
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           aria-label={t('open_chat') || "Open Chat"}
-          className="bg-orange-600 hover:bg-orange-700 text-white rounded-full p-4 shadow-lg transition-transform hover:scale-105 flex items-center justify-center"
+          className="relative group w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white shadow-[0_8px_25px_rgba(200,115,42,0.4)] border border-[#E8A63D]/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+          {/* Ambient subtle glow */}
+          <span className="absolute inset-0 rounded-full bg-[#E8A63D] blur-[6px] opacity-30 group-hover:opacity-60 transition-opacity pointer-events-none" />
+
+          {/* Live presence indicator */}
+          <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0E2036] shadow-2xs z-20">
+            <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
+          </span>
+
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 relative z-10 transition-transform group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
         </button>
       )}
 
       {isOpen && (
-        <div className="bg-white w-80 sm:w-96 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100" style={{ height: '500px', maxHeight: '80vh' }}>
+        <div className="bg-white w-[calc(100vw-2rem)] sm:w-96 rounded-2xl shadow-[0_20px_60px_rgba(14,32,54,0.35)] flex flex-col overflow-hidden border border-[#E8E4DA]" style={{ height: '520px', maxHeight: '80vh' }}>
           {/* Header */}
-          <div className="bg-orange-600 p-4 text-white flex justify-between items-center">
+          <div className="bg-gradient-to-r from-[#0E2036] via-[#1B365D] to-[#0E2036] p-4 text-white flex justify-between items-center border-b border-[#E8A63D]/30 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-orange-400">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border-2 border-[#E8A63D]/60 shadow-2xs">
                 {storeIcon ? (
                   <Image width={800} height={800} src={storeIcon} alt="Store Icon" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-orange-700 font-bold text-xl">{storeName.charAt(0)}</span>
+                  <span className="text-[#FFE599] font-bold text-lg font-serif">{storeName.charAt(0)}</span>
                 )}
               </div>
               <div>
-                <h3 className="font-bold leading-tight">{storeName}</h3>
-                <p className="text-xs text-orange-200">{t('we_reply_quickly')}</p>
+                <h3 className="font-serif font-bold text-sm text-white leading-tight">{storeName}</h3>
+                <p className="text-[11px] text-[#E8A63D] font-medium flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  {t('we_reply_quickly')}
+                </p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-orange-100 hover:text-white transition">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <button onClick={() => setIsOpen(false)} className="text-white/70 hover:text-white transition cursor-pointer p-1 rounded-lg hover:bg-white/10">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
           {/* Body */}
           {!hasRegistered ? (
-            <div className="flex-1 p-6 bg-gray-50 flex flex-col justify-center">
-              <h4 className="font-bold text-gray-800 mb-2">{t('welcome')}</h4>
-              <p className="text-sm text-gray-600 mb-4">{t('please_enter_details')}</p>
+            <div className="flex-1 p-6 bg-[#FAF9F5] flex flex-col justify-center">
+              <h4 className="font-serif font-bold text-base text-[#0E2036] mb-1.5">{t('welcome')}</h4>
+              <p className="text-xs text-gray-600 mb-5 leading-relaxed">{t('please_enter_details')}</p>
               <form onSubmit={handleRegister} className="flex flex-col gap-3">
                 <input
                   type="text"
@@ -195,7 +208,7 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
                   placeholder={t('your_name')}
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 text-sm"
+                  className="w-full px-4 py-2.5 border border-[#E8E4DA] bg-white rounded-xl focus:ring-1 focus:ring-[#C8732A] focus:border-[#C8732A] text-xs outline-hidden"
                 />
                 <input
                   type="email"
@@ -203,11 +216,11 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
                   placeholder={t('your_email')}
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 text-sm"
+                  className="w-full px-4 py-2.5 border border-[#E8E4DA] bg-white rounded-xl focus:ring-1 focus:ring-[#C8732A] focus:border-[#C8732A] text-xs outline-hidden"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-orange-600 text-white font-semibold py-2 rounded-md hover:bg-orange-700 transition mt-2"
+                  className="w-full bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-xs py-3 rounded-xl shadow-md transition-all cursor-pointer mt-2"
                 >
                   {t('start_chat')}
                 </button>
@@ -216,9 +229,9 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
           ) : (
             <>
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3">
+              <div className="flex-1 overflow-y-auto p-4 bg-[#FAF9F5] flex flex-col gap-3">
                 {messages.length === 0 && (
-                  <div className="text-center text-gray-500 text-sm mt-8">
+                  <div className="text-center text-gray-400 text-xs mt-8">
                     {t('send_message_prompt')}
                   </div>
                 )}
@@ -226,12 +239,14 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
                   const isCustomer = msg.sender === ChatSender.CUSTOMER;
                   return (
                     <div key={msg.id} className={`flex flex-col ${isCustomer ? 'items-end' : 'items-start'}`}>
-                      <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
-                        isCustomer ? 'bg-orange-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                      <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs shadow-2xs leading-relaxed ${
+                        isCustomer 
+                          ? 'bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white rounded-br-none' 
+                          : 'bg-white text-[#0E2036] border border-[#E8E4DA] rounded-bl-none'
                       }`}>
                         {msg.content}
                       </div>
-                      <span className="text-[10px] text-gray-500 mt-1 px-1">
+                      <span className="text-[10px] text-gray-400 mt-1 px-1">
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -241,21 +256,21 @@ export default function ChatWidget({ enabled, storeName, storeIcon }: ChatWidget
               </div>
 
               {/* Input */}
-              <div className="p-3 bg-white border-t border-gray-100">
+              <div className="p-3 bg-white border-t border-[#E8E4DA]">
                 <form onSubmit={handleSend} className="flex items-center gap-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder={t('your_message')}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                    className="flex-1 bg-[#FAF9F5] border border-[#E8E4DA] rounded-full px-4 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-[#C8732A] focus:border-[#C8732A] transition"
                   />
                   <button
                     type="submit"
                     disabled={!newMessage.trim()}
-                    className="bg-orange-600 text-white p-2 rounded-full hover:bg-orange-700 disabled:opacity-50 disabled:hover:bg-orange-600 transition flex items-center justify-center"
+                    className="w-8 h-8 rounded-full bg-gradient-to-r from-[#C8732A] to-[#B8641C] hover:from-[#D88334] hover:to-[#A85514] disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shrink-0 shadow-2xs"
                   >
-                    <svg className="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                    <svg className="w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                   </button>
                 </form>
               </div>
