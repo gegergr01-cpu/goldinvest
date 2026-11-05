@@ -1978,5 +1978,14 @@
     "legal_text": "L'oro da investimento è legalmente esente da IVA (Direttiva 2006/112/CE). I tuoi dati sono strettamente confidenziali e non saranno oggetto di comunicazioni commerciali indesiderate.",
     "btn_loading": "Invio in corso...",
     "btn_submit": "Ricevi il preventivo ufficiale di investimento"
+  },
+  "BottomNav": {
+    "home": "Home",
+    "cart": "Carrello",
+    "search": "Cerca",
+    "wishlist": "Preferiti",
+    "login": "Accedi",
+    "account": "Profilo",
+    "admin": "Admin"
   }
 }

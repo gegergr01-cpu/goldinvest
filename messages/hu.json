@@ -1988,5 +1988,14 @@
     "legal_text": "A befektetési arany törvényileg mentes az áfa alól az EU irányelvei szerint. Az Ön adatai szigorúan bizalmasak, nem képezik kéretlen reklámok tárgyát.",
     "btn_loading": "Küldés folyamatban...",
     "btn_submit": "Hivatalos befektetési árajánlatom kérése"
+  },
+  "BottomNav": {
+    "home": "Kezdőlap",
+    "cart": "Kosár",
+    "search": "Keresés",
+    "wishlist": "Kívánságlista",
+    "login": "Belépés",
+    "account": "Fiók",
+    "admin": "Admin"
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
@@ -105,6 +105,42 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
 
   // Daily Cards: only categories that actually contain real products in DB
   const activeCards = dailyCards || [];
+
+  // Mobile Autoslide state & Touch swipe handlers
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (activeCards.length <= 1 || isPaused) return;
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % activeCards.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [activeCards.length, isPaused]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 45) {
+      // Swiped left -> next
+      setActiveSlide((prev) => (prev + 1) % activeCards.length);
+    } else if (diff < -45) {
+      // Swiped right -> prev
+      setActiveSlide((prev) => (prev - 1 + activeCards.length) % activeCards.length);
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   const categoryTitleMap: Record<string, string> = {
     'gold-bars': t('card_gold_bars'),
@@ -248,99 +284,171 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
         </div>
 
         {/* Bottom Right: Floating Cards Showcase with Rotating Copper-Gold Beam (only shown for categories with real products) */}
-        {activeCards.length > 0 && (
-          <div className="mt-8 sm:mt-12 flex justify-end">
-            <div
-              className={`w-full grid gap-3 ${
-                activeCards.length === 1
-                  ? 'max-w-[280px] grid-cols-1'
-                  : activeCards.length === 2
-                  ? 'max-w-[560px] grid-cols-1 sm:grid-cols-2'
-                  : activeCards.length === 3
-                  ? 'max-w-[820px] grid-cols-1 sm:grid-cols-3'
-                  : 'lg:max-w-[940px] xl:max-w-[980px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-              }`}
-            >
-              {activeCards.map((card, idx) => {
-                const delay = delays[idx % delays.length];
-                const title = titleMap[card.id] || card.title;
-                const product = card.product;
-                const localizedTrans = product.translations?.find((tr) => tr.locale === locale);
-                const productTitle = localizedTrans?.title || product.title;
-                const productSlug = localizedTrans?.slug || product.slug;
+        {activeCards.length > 0 && (() => {
+          const renderCard = (card: (typeof activeCards)[0], idx: number) => {
+            const delay = delays[idx % delays.length];
+            const title = titleMap[card.id] || card.title;
+            const product = card.product;
+            const localizedTrans = product.translations?.find((tr) => tr.locale === locale);
+            const productTitle = localizedTrans?.title || product.title;
+            const productSlug = localizedTrans?.slug || product.slug;
 
-                return (
-                  <Link
-                    key={card.id}
-                    href={`${localePrefix}/product/${productSlug}`}
-                    className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
-                  >
-                  {/* Outer base border */}
-                  <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
+            return (
+              <Link
+                key={card.id}
+                href={`${localePrefix}/product/${productSlug}`}
+                className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left w-full h-full"
+              >
+                {/* Outer base border */}
+                <div className="absolute inset-0 rounded-[16px] border border-white/[0.08] pointer-events-none" />
 
-                  {/* Soft Golden Halo */}
-                  <div
-                    className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
-                    style={{
-                      background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
-                      animationDelay: delay,
-                    }}
-                  />
+                {/* Soft Golden Halo */}
+                <div
+                  className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none blur-[8px] opacity-70 animate-beam-spin"
+                  style={{
+                    background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 300deg, rgba(201,106,43,0.3) 330deg, rgba(214,162,58,0.7) 356deg, transparent 360deg)',
+                    animationDelay: delay,
+                  }}
+                />
 
-                  {/* Traveling Light Beam & Copper Trail #C96A2B */}
-                  <div
-                    className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
-                    style={{
-                      background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
-                      animationDelay: delay,
-                    }}
-                  />
+                {/* Traveling Light Beam & Copper Trail #C96A2B */}
+                <div
+                  className="absolute left-1/2 top-1/2 w-[320%] aspect-square pointer-events-none animate-beam-spin"
+                  style={{
+                    background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(201,106,43,0.08) 290deg, rgba(201,106,43,0.45) 322deg, #C96A2B 345deg, #FFF0B8 357deg, rgba(201,106,43,0.6) 360deg)',
+                    animationDelay: delay,
+                  }}
+                />
 
-                  {/* Inner Card (Translucent Navy #0E2036) */}
-                  <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/92 backdrop-blur-[12px] rounded-[14.5px] p-3 sm:p-3.5 h-full w-full">
-                    
-                    {/* Header: Icon + Category Title + 24h indicator */}
-                    <div className="flex items-center justify-between gap-1.5 mb-2.5">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <CategoryIcon type={card.iconType} />
-                        <span className="font-serif font-bold text-[14px] sm:text-[15px] text-white tracking-[0.01em] truncate group-hover:text-[#FFE599] transition-colors">
-                          {title}
-                        </span>
-                      </div>
-                      <span className="shrink-0 text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-white/[0.08] text-[#E8A63D] border border-[#E8A63D]/30 flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-[#E8A63D] animate-ping" />
-                        24h
+                {/* Inner Card (Translucent Navy #0E2036) */}
+                <div className="relative z-10 flex flex-col justify-between bg-[#0E2036]/92 backdrop-blur-[12px] rounded-[14.5px] p-3 sm:p-3.5 h-full w-full">
+                  
+                  {/* Header: Icon + Category Title + 24h indicator */}
+                  <div className="flex items-center justify-between gap-1.5 mb-2.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <CategoryIcon type={card.iconType} />
+                      <span className="font-serif font-bold text-[14px] sm:text-[15px] text-white tracking-[0.01em] truncate group-hover:text-[#FFE599] transition-colors">
+                        {title}
                       </span>
                     </div>
+                    <span className="shrink-0 text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-white/[0.08] text-[#E8A63D] border border-[#E8A63D]/30 flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-[#E8A63D] animate-ping" />
+                      24h
+                    </span>
+                  </div>
 
-                    {/* Product of the day */}
-                    <div className="flex items-center gap-2.5 pt-2 border-t border-white/[0.08]">
-                      <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-black/40">
-                        <Image
-                          src={product.imageUrl}
-                          alt={productTitle}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          sizes="40px"
-                        />
+                  {/* Product of the day */}
+                  <div className="flex items-center gap-2.5 pt-2 border-t border-white/[0.08]">
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                      <Image
+                        src={product.imageUrl}
+                        alt={productTitle}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        sizes="40px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11.5px] font-medium text-white/85 truncate group-hover:text-white transition-colors" title={productTitle}>
+                        {productTitle}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[11.5px] font-medium text-white/85 truncate group-hover:text-white transition-colors" title={productTitle}>
-                          {productTitle}
-                        </div>
-                        <div className="text-[12.5px] font-bold text-[#F3BA2F] tracking-tight mt-0.5 font-mono">
-                          <Price amount={product.price} />
-                        </div>
+                      <div className="text-[12.5px] font-bold text-[#F3BA2F] tracking-tight mt-0.5 font-mono">
+                        <Price amount={product.price} />
                       </div>
                     </div>
-
                   </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-        )}
+
+                </div>
+              </Link>
+            );
+          };
+
+          return (
+            <div className="mt-8 sm:mt-12 flex justify-end w-full">
+              {/* Mobile: Autoslide Carousel (1 card visible at a time) */}
+              <div 
+                className="block sm:hidden w-full max-w-[340px] mx-auto"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="overflow-hidden rounded-[18px]">
+                  <div 
+                    className="flex transition-transform duration-500 ease-out"
+                    style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+                  >
+                    {activeCards.map((card, idx) => (
+                      <div key={card.id} className="w-full shrink-0 px-0.5">
+                        {renderCard(card, idx)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mobile Slider Controls: Luxury Indicators & Arrows */}
+                {activeCards.length > 1 && (
+                  <div className="flex items-center justify-between px-2 mt-3">
+                    <div className="flex items-center gap-1.5">
+                      {activeCards.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setActiveSlide(i)}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            i === activeSlide 
+                              ? 'w-6 bg-gradient-to-r from-[#E8A63D] to-[#C96A2B] shadow-[0_0_8px_rgba(232,166,61,0.6)]' 
+                              : 'w-1.5 bg-white/25 hover:bg-white/50'
+                          }`}
+                          aria-label={`Slide ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-mono text-white/60">
+                        <strong className="text-[#E8A63D]">{activeSlide + 1}</strong> / {activeCards.length}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setActiveSlide((prev) => (prev - 1 + activeCards.length) % activeCards.length)}
+                          className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition text-xs cursor-pointer"
+                          aria-label="Précédent"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveSlide((prev) => (prev + 1) % activeCards.length)}
+                          className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition text-xs cursor-pointer"
+                          aria-label="Suivant"
+                        >
+                          ›
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Tablet & Desktop: Multi-column Grid */}
+              <div
+                className={`hidden sm:grid gap-3 w-full ${
+                  activeCards.length === 1
+                    ? 'max-w-[280px] grid-cols-1'
+                    : activeCards.length === 2
+                    ? 'max-w-[560px] grid-cols-2'
+                    : activeCards.length === 3
+                    ? 'max-w-[820px] grid-cols-3'
+                    : 'lg:max-w-[940px] xl:max-w-[980px] grid-cols-2 lg:grid-cols-4'
+                }`}
+              >
+                {activeCards.map((card, idx) => renderCard(card, idx))}
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
     </section>

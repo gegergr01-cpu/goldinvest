@@ -1978,5 +1978,14 @@
     "legal_text": "Investment gold is legally exempt from VAT under European tax directives. Your personal data remains strictly confidential and will never be subject to unsolicited marketing.",
     "btn_loading": "Submitting request...",
     "btn_submit": "Receive my official investment quote"
+  },
+  "BottomNav": {
+    "home": "Home",
+    "cart": "Cart",
+    "search": "Search",
+    "wishlist": "Wishlist",
+    "login": "Sign In",
+    "account": "Account",
+    "admin": "Admin"
   }
 }

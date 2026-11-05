@@ -1978,5 +1978,14 @@
     "legal_text": "Anlagegold ist nach geltendem EU-Steuerrecht von der Mehrwertsteuer befreit. Ihre Angaben sind streng vertraulich und werden niemals unbefugt weitergegeben.",
     "btn_loading": "Übermittlung läuft...",
     "btn_submit": "Mein offizielles Anlageangebot anfordern"
+  },
+  "BottomNav": {
+    "home": "Start",
+    "cart": "Warenkorb",
+    "search": "Suche",
+    "wishlist": "Merkliste",
+    "login": "Anmelden",
+    "account": "Konto",
+    "admin": "Admin"
   }
 }

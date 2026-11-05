@@ -1978,5 +1978,14 @@
     "legal_text": "Beleggingsgoud is wettelijk vrijgesteld van btw. Uw gegevens zijn strikt vertrouwelijk en worden nooit voor ongewenste commerciële doeleinden gebruikt.",
     "btn_loading": "Verzenden...",
     "btn_submit": "Mijn officiële beleggingsofferte ontvangen"
+  },
+  "BottomNav": {
+    "home": "Home",
+    "cart": "Winkelmand",
+    "search": "Zoeken",
+    "wishlist": "Verlanglijst",
+    "login": "Inloggen",
+    "account": "Account",
+    "admin": "Admin"
   }
 }

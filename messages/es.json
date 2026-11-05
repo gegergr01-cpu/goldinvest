@@ -1978,5 +1978,14 @@
     "legal_text": "El oro de inversión está legalmente exento de IVA según la normativa europea. Sus datos son estrictamente confidenciales y no se realizará ninguna prospección abusiva.",
     "btn_loading": "Enviando solicitud...",
     "btn_submit": "Recibir mi presupuesto oficial de inversión"
+  },
+  "BottomNav": {
+    "home": "Inicio",
+    "cart": "Carrito",
+    "search": "Buscar",
+    "wishlist": "Favoritos",
+    "login": "Acceso",
+    "account": "Cuenta",
+    "admin": "Admin"
   }
 }

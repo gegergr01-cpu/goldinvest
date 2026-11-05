@@ -1978,5 +1978,14 @@
     "legal_text": "Investeringsguld er lovmæssigt momsfritaget i henhold til gældende EU-regler. Dine oplysninger behandles strengt fortroligt og videregives ikke.",
     "btn_loading": "Sender anmodning...",
     "btn_submit": "Modtag mit officielle investeringstilbud"
+  },
+  "BottomNav": {
+    "home": "Hjem",
+    "cart": "Kurv",
+    "search": "Søg",
+    "wishlist": "Ønskeliste",
+    "login": "Log ind",
+    "account": "Konto",
+    "admin": "Admin"
   }
 }

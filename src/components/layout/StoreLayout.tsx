@@ -134,7 +134,7 @@ export default function StoreLayout({ children, settings, userRole }: StoreLayou
         allCategoriesBgColor={settings.allCategoriesBgColor}
         allCategoriesTextColor={settings.allCategoriesTextColor}
       />
-      <main className="flex-grow">
+      <main className="flex-grow pb-16 lg:pb-0">
         {children}
       </main>
       <Footer 

@@ -1978,5 +1978,14 @@
     "legal_text": "L'or d'investissement est légalement exonéré de TVA (CGI art. 262 ter I). Vos informations sont strictement confidentielles et ne feront l'objet d'aucun démarchage commercial abusif.",
     "btn_loading": "Transmission en cours...",
     "btn_submit": "Recevoir mon devis d'investissement officiel"
+  },
+  "BottomNav": {
+    "home": "Accueil",
+    "cart": "Panier",
+    "search": "Recherche",
+    "wishlist": "Favoris",
+    "login": "Connexion",
+    "account": "Compte",
+    "admin": "Admin"
   }
 }

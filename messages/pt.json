@@ -1978,5 +1978,14 @@
     "legal_text": "O ouro de investimento está legalmente isento de IVA. As suas informações são estritamente confidenciais e nunca serão utilizadas para prospeção não solicitada.",
     "btn_loading": "A enviar...",
     "btn_submit": "Receber a minha proposta oficial de investimento"
+  },
+  "BottomNav": {
+    "home": "Início",
+    "cart": "Carrinho",
+    "search": "Pesquisa",
+    "wishlist": "Favoritos",
+    "login": "Entrar",
+    "account": "Conta",
+    "admin": "Admin"
   }
 }

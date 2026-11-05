@@ -22,6 +22,7 @@ const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), { ssr: 
 const CartDrawer = dynamic(() => import('@/components/cart/CartDrawer'), { ssr: false });
 const WishlistDrawer = dynamic(() => import('@/components/wishlist/WishlistDrawer'), { ssr: false });
 const MobileSidebar = dynamic(() => import('@/components/layout/MobileSidebar'), { ssr: false });
+const MobileBottomNav = dynamic(() => import('@/components/layout/MobileBottomNav'), { ssr: false });
 
 type HeaderProps = {
   announcement?: string;
@@ -393,6 +394,15 @@ export default function Header({
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* 6. MOBILE BOTTOM NAVIGATION BAR */}
+      <MobileBottomNav
+        onSearchClick={() => setIsSearchModalOpen(true)}
+        onLoginClick={handleAccountClick}
+        onCartClick={() => cartStore.setIsOpen(true)}
+        onWishlistClick={() => wishlistStore.setIsOpen(true)}
+        userRole={actualUserRole}
       />
     </>
   );
