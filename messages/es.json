@@ -673,7 +673,7 @@
     "variation_price_placeholder": "Ej: 15.00",
     "variation_stock_label": "Stock",
     "variation_stock_placeholder": "Dejar vacío = ilimitado",
-    "image_gallery_label": "Galería de imágenes (Cloudinary - máx 20)",
+    "image_gallery_label": "Galería",
     "new_files_selected": "nuevo(s) archivo(s) seleccionado(s)",
     "add_tag_btn": "Añadir",
     "no_tags_yet": "Sin etiquetas todavía.",
