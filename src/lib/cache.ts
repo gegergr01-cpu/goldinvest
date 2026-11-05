@@ -29,7 +29,7 @@ export const getCachedSettings = unstable_cache(
 
 // We need a helper for dynamic tags per slug since unstable_cache tags must be statically defined in the wrapper
 // A common pattern is a factory function:
-export const getCachedProductBySlug = async (slug: string) => {
+export const getCachedProductBySlug = async (slug: string, locale: string = 'fr') => {
   return unstable_cache(
     async () => {
       const encodedSlugLower = encodeURIComponent(slug).toLowerCase();
@@ -43,11 +43,18 @@ export const getCachedProductBySlug = async (slug: string) => {
             { slug: slug },
             { slug: encodedSlugLower },
             { slug: encodedSlugUpper },
-            { slug: decodedSlug }
+            { slug: decodedSlug },
+            { translations: { some: { slug: slug } } },
+            { translations: { some: { slug: decodedSlug } } },
           ]
         },
         include: {
-          categories: true,
+          translations: true,
+          categories: {
+            include: {
+              translations: true
+            }
+          },
           Product_ForceSales_A: true,
           Product_SaleTogether_A: true,
           brand: true,
@@ -62,6 +69,29 @@ export const getCachedProductBySlug = async (slug: string) => {
 
       if (!product) return null;
 
+      // Overlay translation if available for requested locale
+      const activeTranslation = product.translations.find(t => t.locale === locale);
+
+      const localizedTitle = activeTranslation?.title || product.title;
+      const localizedSlug = activeTranslation?.slug || product.slug;
+      const localizedShortDesc = activeTranslation?.shortDescription ?? product.shortDescription;
+      const localizedDesc = activeTranslation?.description ?? product.description;
+      const localizedMetaTitle = activeTranslation?.metaTitle ?? product.metaTitle;
+      const localizedMetaDesc = activeTranslation?.metaDescription ?? product.metaDescription;
+      const localizedAttributes = activeTranslation?.attributes ?? product.attributes;
+
+      // Localize categories
+      const localizedCategories = product.categories.map(cat => {
+        const catTrans = (cat as any).translations?.find((t: any) => t.locale === locale);
+        return {
+          ...cat,
+          name: catTrans?.name || cat.name,
+          slug: catTrans?.slug || cat.slug,
+          metaTitle: catTrans?.metaTitle || cat.metaTitle,
+          metaDescription: catTrans?.metaDescription || cat.metaDescription
+        };
+      });
+
       // RGPD: Never leak raw emails to client RSC payload
       const sanitizedReviews = product.reviews.map(r => ({
         id: r.id,
@@ -74,11 +104,19 @@ export const getCachedProductBySlug = async (slug: string) => {
 
       return {
         ...product,
+        title: localizedTitle,
+        slug: localizedSlug,
+        shortDescription: localizedShortDesc,
+        description: localizedDesc,
+        metaTitle: localizedMetaTitle,
+        metaDescription: localizedMetaDesc,
+        attributes: localizedAttributes,
+        categories: localizedCategories,
         reviews: sanitizedReviews,
       };
     },
-    ['product-details', slug],
-    { tags: ['products', `product-${slug}`], revalidate: 3600 }
+    ['product-details', slug, locale],
+    { tags: ['products', `product-${slug}`, `product-locale-${locale}`], revalidate: 3600 }
   )();
 };
 

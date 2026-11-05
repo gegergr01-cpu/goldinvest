@@ -191,26 +191,24 @@ export default function Header({
         On other pages: RELATIVE in normal document flow with solid #0E2036 dark background.
       */}
       <div
-        className={`w-full max-w-full overflow-x-hidden transition-all duration-300 ${
-          isScrolled
+        className={`w-full max-w-full overflow-x-hidden transition-all duration-300 ${isScrolled
             ? 'fixed top-0 left-0 right-0 z-50'
             : isHomePage
-            ? 'absolute top-0 left-0 right-0 z-40'
-            : 'relative z-40'
-        }`}
+              ? 'absolute top-0 left-0 right-0 z-40'
+              : 'relative z-40'
+          }`}
       >
         {/* 1. TOP BAR TICKER (Cycles in infinite scroll through EUR, DKK, Forint, GBP, USD, CAD) */}
         {!isScrolled && <TopBarTicker />}
 
         {/* 2. HEADER: Transparent over Hero on Homepage, Solid #0E2036 when scrolled */}
         <header
-          className={`w-full transition-all duration-300 ${
-            isScrolled
+          className={`w-full transition-all duration-300 ${isScrolled
               ? 'bg-[#0E2036] shadow-[0_6px_24px_rgba(0,0,0,0.35)] py-2.5 border-b border-white/10'
               : isHomePage
-              ? 'bg-transparent py-4 border-b border-white/5'
-              : 'bg-[#0E2036] py-3 border-b border-white/10'
-          }`}
+                ? 'bg-transparent py-4 border-b border-white/5'
+                : 'bg-[#0E2036] py-3 border-b border-white/10'
+            }`}
         >
           <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
@@ -252,9 +250,8 @@ export default function Header({
                     <Link
                       key={idx}
                       href={link.url}
-                      className={`relative text-[14.5px] font-medium transition-colors duration-150 whitespace-nowrap ${
-                        isActive ? 'text-white font-semibold' : 'text-white/80 hover:text-white'
-                      }`}
+                      className={`relative text-[14.5px] font-medium transition-colors duration-150 whitespace-nowrap ${isActive ? 'text-white font-semibold' : 'text-white/80 hover:text-white'
+                        }`}
                     >
                       {link.label}
                       {isActive && (

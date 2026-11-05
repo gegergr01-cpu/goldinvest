@@ -5,15 +5,16 @@ import ProductPageClient from '@/components/product/ProductPageClient';
 import ProductReviews from '@/components/product/ProductReviews';
 import BestDealsCard from '@/components/home/BestDealsCard';
 import { createClient } from '@/utils/supabase/server';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { safeJsonLd } from '@/lib/security';
 import { Metadata } from 'next';
 import { getCachedProductBySlug, getCachedSettings, getCachedRelatedProducts } from '@/lib/cache';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
   
-  const product = await getCachedProductBySlug(slug);
+  const product = await getCachedProductBySlug(slug, locale);
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
 
   if (!product) {
@@ -33,8 +34,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const locale = await getLocale();
   
-  const product = await getCachedProductBySlug(slug);
+  const product = await getCachedProductBySlug(slug, locale);
   const t = await getTranslations('Product');
 
   const settingsMap = await getCachedSettings();

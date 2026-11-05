@@ -87,3 +87,4 @@ export const LOCALE_DETAILS: Record<Locale, LocaleDetail> = {
     defaultCurrency: 'HUF',
   },
 };
+
