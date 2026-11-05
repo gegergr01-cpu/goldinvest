@@ -86,7 +86,7 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
   const title = rawTitle || t('title');
   const highlight = (isFrench && c.highlight) || t('highlight');
 
-  const rawTagline = isFrench && c.tagline ? c.tagline : t('tagline');
+  const rawTagline = isFrench && c.tagline && !c.tagline.includes('GROUPAGE') && !c.tagline.includes('IMPORT') ? c.tagline : t('tagline');
   const tagline = rawTagline || t('tagline');
 
   const rawSubtitle = isFrench && c.subtitle ? c.subtitle : t('subtitle');
