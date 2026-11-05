@@ -47,6 +47,8 @@ export default function ProductCard({ product, view = 'grid', cardStyle = 'desig
   const isWishlisted = wishlistStore.hasItem(product.id);
   const t = useTranslations('ProductCard');
 
+  const hasDiscount = Boolean(product.compareAtPrice && product.compareAtPrice > product.price);
+
   const reviews = product.reviews || [];
   const ratingCount = reviews.length;
   const avgRating = ratingCount > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / ratingCount : 0;
@@ -142,7 +144,7 @@ export default function ProductCard({ product, view = 'grid', cardStyle = 'desig
         style={borderColor ? { borderColor } : {}}
       >
         <div className="relative h-48 sm:h-auto sm:w-48 flex-shrink-0 bg-gray-50 flex items-center justify-center p-4 border-b sm:border-b-0 sm:border-r border-gray-100 overflow-hidden">
-          {product.discountLabel && product.compareAtPrice && product.compareAtPrice > product.price && (
+          {product.discountLabel && hasDiscount && (
             <span className="absolute top-3 left-3 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-sm z-30">
               {product.discountLabel}
             </span>
@@ -198,14 +200,14 @@ export default function ProductCard({ product, view = 'grid', cardStyle = 'desig
             </div>
           )}
 
-          <div className="mt-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {product.compareAtPrice && (
-                <span className="text-sm text-gray-500 line-through">
-                  <Price amount={product.compareAtPrice} />
+          <div className="mt-auto flex items-center justify-between gap-3">
+            <div className="flex flex-col justify-center min-h-[40px]">
+              {hasDiscount && (
+                <span className="text-xs sm:text-sm text-gray-400 line-through leading-tight whitespace-nowrap">
+                  <Price amount={product.compareAtPrice!} />
                 </span>
               )}
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-lg sm:text-xl font-bold text-gray-900 leading-tight whitespace-nowrap">
                 <Price amount={product.price} />
               </span>
             </div>
@@ -233,7 +235,7 @@ export default function ProductCard({ product, view = 'grid', cardStyle = 'desig
     >
       {/* Image Container with fixed height and object-contain to prevent overflow/stretching */}
       <div className="relative h-56 w-full bg-gray-50 flex items-center justify-center p-4 overflow-hidden">
-        {product.discountLabel && product.compareAtPrice && product.compareAtPrice > product.price && (
+        {product.discountLabel && hasDiscount && (
           <span className="absolute top-3 left-3 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-sm z-30">
             {product.discountLabel}
           </span>
@@ -297,20 +299,20 @@ export default function ProductCard({ product, view = 'grid', cardStyle = 'desig
         )}
 
         {/* Price (pushed to bottom if title is short) */}
-        <div className="mt-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {product.compareAtPrice && (
-              <span className="text-xs text-gray-500 line-through">
-                <Price amount={product.compareAtPrice} />
+        <div className="mt-auto pt-2 flex items-center justify-between gap-2">
+          <div className="flex flex-col justify-center min-h-[36px]">
+            {hasDiscount && (
+              <span className="text-xs text-gray-400 line-through leading-tight whitespace-nowrap">
+                <Price amount={product.compareAtPrice!} />
               </span>
             )}
-            <span className="text-sm font-bold text-gray-900">
+            <span className="text-sm font-bold text-gray-900 leading-tight whitespace-nowrap">
               <Price amount={product.price} />
             </span>
           </div>
           {cardStyle !== 'design1' && (
             <button 
-              className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors duration-300 shadow-sm"
+              className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors duration-300 shadow-sm flex-shrink-0"
               title={product.type === 'variable' ? t('select_options') : t('add_to_cart')}
               onClick={handleAddToCart}
             >
