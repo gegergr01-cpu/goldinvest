@@ -299,23 +299,13 @@ export default function Header({
               </div>
             </div>
 
-            {/* Mobile Right Controls: Devis + Language + 4-Squares + Hamburger */}
-            <div className="flex lg:hidden items-center gap-2">
-              <Link
-                href={`${localePrefix}/devis`}
-                className="w-9 h-9 rounded-full bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white flex items-center justify-center border border-[#E8A63D]/40 shadow-sm shrink-0"
-                aria-label={t('request_quote')}
-                title={t('request_quote')}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </Link>
+            {/* Mobile Right Controls: Language + 4-Squares Contact + Hamburger */}
+            <div className="flex lg:hidden items-center gap-2 sm:gap-2.5">
               <LanguageSelector variant="header" />
               <button
                 type="button"
                 onClick={() => setIsContactDrawerOpen(true)}
-                className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center"
+                className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center cursor-pointer hover:bg-[#152438] transition-colors shadow-2xs"
                 aria-label={t('quick_contact')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4">
@@ -328,7 +318,7 @@ export default function Header({
 
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="text-white text-2xl p-1 focus:outline-none"
+                className="text-white text-2xl p-1 focus:outline-none cursor-pointer hover:text-[#E8A63D] transition-colors"
                 aria-label={t('open_menu')}
               >
                 ☰
