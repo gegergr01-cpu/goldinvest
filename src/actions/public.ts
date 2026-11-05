@@ -69,17 +69,27 @@ export const getFilteredProducts = async (filterType: string, categoryId?: strin
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export async function searchProducts(query: string, categoryId?: string, limit: number = 5) {
+export async function searchProducts(query: string, categoryId?: string, limit: number = 6) {
   const safeQuery = String(query || '').trim().slice(0, 100);
   if (!safeQuery) return [];
 
-  const safeLimit = Math.min(Math.max(1, Number(limit) || 5), 20);
+  const safeLimit = Math.min(Math.max(1, Number(limit) || 6), 20);
 
   let where: any = {
     isDeleted: false,
     OR: [
       { title: { contains: safeQuery, mode: 'insensitive' } },
       { description: { contains: safeQuery, mode: 'insensitive' } },
+      {
+        translations: {
+          some: {
+            OR: [
+              { title: { contains: safeQuery, mode: 'insensitive' } },
+              { description: { contains: safeQuery, mode: 'insensitive' } },
+            ]
+          }
+        }
+      }
     ]
   };
 
@@ -96,6 +106,26 @@ export async function searchProducts(query: string, categoryId?: string, limit: 
       compareAtPrice: true,
       images: true,
       slug: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          translations: {
+            select: {
+              locale: true,
+              name: true,
+            }
+          }
+        }
+      },
+      translations: {
+        select: {
+          locale: true,
+          title: true,
+          slug: true,
+        }
+      }
     },
     take: safeLimit,
   });

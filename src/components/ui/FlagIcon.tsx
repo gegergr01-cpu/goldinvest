@@ -92,3 +92,4 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
       return null;
   }
 }
+
