@@ -1,6 +1,7 @@
 import React from 'react';
 import prisma from '@/lib/prisma';
 import BestDealsClient, { TabConfig } from './BestDealsClient';
+import { getLocale } from 'next-intl/server';
 
 interface BestDealsProps {
   config?: Record<string, any>;
@@ -246,13 +247,18 @@ const fallbackSilverBars = [
   },
 ];
 
-function formatProduct(p: any, defaultImage: string, defaultBadge: string) {
+function formatProduct(p: any, defaultImage: string, defaultBadge: string, locale?: string) {
   const images = Array.isArray(p.images)
     ? p.images
     : typeof p.images === 'string'
     ? JSON.parse(p.images || '[]')
     : [];
-  const primaryCategory = p.categories && p.categories.length > 0 ? p.categories[0].name : '';
+  const activeTrans = p.translations?.find((t: any) => t.locale === locale) || p.translations?.[0];
+  const title = activeTrans?.title || p.title;
+  const slug = activeTrans?.slug || p.slug;
+  const primaryCat = p.categories && p.categories.length > 0 ? p.categories[0] : null;
+  const catTrans = primaryCat?.translations?.find((t: any) => t.locale === locale) || primaryCat?.translations?.[0];
+  const primaryCategory = catTrans?.name || primaryCat?.name || '';
   const approvedReviews = (p as any).reviews || [];
   const ratingCount = approvedReviews.length;
   const avgRating =
@@ -260,8 +266,8 @@ function formatProduct(p: any, defaultImage: string, defaultBadge: string) {
 
   return {
     id: p.id,
-    slug: p.slug,
-    title: p.title,
+    slug: slug,
+    title: title,
     category: primaryCategory || defaultBadge,
     rawPrice: typeof p.price === 'number' ? p.price : Number(p.price) || 0,
     imageUrl: images[0] || defaultImage,
@@ -270,7 +276,7 @@ function formatProduct(p: any, defaultImage: string, defaultBadge: string) {
     rating: ratingCount > 0 ? Math.round(avgRating) : 5,
     ratingText: ratingCount > 0 ? `(${avgRating.toFixed(1)})` : '',
     stock: p.stock,
-    attributes: p.attributes,
+    attributes: activeTrans?.attributes || p.attributes,
   };
 }
 
@@ -359,6 +365,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
   // Fetch DB products in parallel
   let tab1Products: any[] = [];
   let tab2Products: any[] = [];
+  const locale = await getLocale();
 
   try {
     if (isSilver) {
@@ -367,7 +374,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['pieces-dargent', 'silver-coins', 'silbermuenzen'] } } } },
+              { categories: { some: { slug: { in: ['pieces-dargent', 'silver-coins', 'silbermuenzen', 'monedas-de-plata'] } } } },
               {
                 AND: [
                   { title: { contains: 'argent', mode: 'insensitive' } },
@@ -383,7 +390,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
               { title: { contains: 'silver eagle', mode: 'insensitive' } },
             ],
           },
-          include: { categories: true, reviews: { where: { isApproved: true } } },
+          include: {
+            categories: { include: { translations: { where: { locale } } } },
+            translations: { where: { locale } },
+            reviews: { where: { isApproved: true } },
+          },
           take: maxNum,
           orderBy: { createdAt: 'desc' },
         }),
@@ -391,7 +402,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['lingots-dargent', 'silver-bars', 'silberbarren'] } } } },
+              { categories: { some: { slug: { in: ['lingots-dargent', 'silver-bars', 'silberbarren', 'lingotes-de-plata'] } } } },
               {
                 AND: [
                   { title: { contains: 'argent', mode: 'insensitive' } },
@@ -406,7 +417,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
               },
             ],
           },
-          include: { categories: true, reviews: { where: { isApproved: true } } },
+          include: {
+            categories: { include: { translations: { where: { locale } } } },
+            translations: { where: { locale } },
+            reviews: { where: { isApproved: true } },
+          },
           take: maxNum,
           orderBy: { createdAt: 'desc' },
         }),
@@ -416,11 +431,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
       const filteredSilverBars = (silverBarsDb || []).filter((p) => !isGoldProduct(p));
 
       tab1Products = filteredSilverCoins.length > 0
-        ? filteredSilverCoins.map((p) => formatProduct(p, '/images/silver-coins.jpg', cardBadge))
+        ? filteredSilverCoins.map((p) => formatProduct(p, '/images/silver-coins.jpg', cardBadge, locale))
         : fallbackSilverCoins.slice(0, maxNum);
 
       tab2Products = filteredSilverBars.length > 0
-        ? filteredSilverBars.map((p) => formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié'))
+        ? filteredSilverBars.map((p) => formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié', locale))
         : fallbackSilverBars.slice(0, maxNum);
     } else {
       // Gold Showcase
@@ -429,7 +444,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['pieces-dor', 'goldm-nze', 'gold-coins', 'goldmuenzen'] } } } },
+              { categories: { some: { slug: { in: ['pieces-dor', 'goldm-nze', 'gold-coins', 'goldmuenzen', 'monedas-de-oro'] } } } },
               {
                 AND: [
                   { title: { contains: 'or', mode: 'insensitive' } },
@@ -442,7 +457,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
               { title: { contains: 'maple leaf', mode: 'insensitive' } },
             ],
           },
-          include: { categories: true, reviews: { where: { isApproved: true } } },
+          include: {
+            categories: { include: { translations: { where: { locale } } } },
+            translations: { where: { locale } },
+            reviews: { where: { isApproved: true } },
+          },
           take: maxNum,
           orderBy: { createdAt: 'desc' },
         }),
@@ -450,7 +469,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['lingots-dor', 'anlagegold', 'goldbarren', 'gold-bars'] } } } },
+              { categories: { some: { slug: { in: ['lingots-dor', 'anlagegold', 'goldbarren', 'gold-bars', 'lingotes-de-oro'] } } } },
               {
                 AND: [
                   { title: { contains: 'bar', mode: 'insensitive' } },
@@ -468,7 +487,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
               { title: { contains: 'heraeus', mode: 'insensitive' } },
             ],
           },
-          include: { categories: true, reviews: { where: { isApproved: true } } },
+          include: {
+            categories: { include: { translations: { where: { locale } } } },
+            translations: { where: { locale } },
+            reviews: { where: { isApproved: true } },
+          },
           take: maxNum,
           orderBy: { createdAt: 'desc' },
         }),
@@ -478,11 +501,11 @@ export default async function BestDeals({ config }: BestDealsProps) {
       const filteredGoldBars = (goldBarsDb || []).filter((p) => !isSilverProduct(p));
 
       tab1Products = filteredGoldCoins.length > 0
-        ? filteredGoldCoins.map((p) => formatProduct(p, '/images/gold-coins.jpg', cardBadge))
+        ? filteredGoldCoins.map((p) => formatProduct(p, '/images/gold-coins.jpg', cardBadge, locale))
         : fallbackGoldCoins.slice(0, maxNum);
 
       tab2Products = filteredGoldBars.length > 0
-        ? filteredGoldBars.map((p) => formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié'))
+        ? filteredGoldBars.map((p) => formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié', locale))
         : fallbackGoldBars.slice(0, maxNum);
     }
   } catch (err) {

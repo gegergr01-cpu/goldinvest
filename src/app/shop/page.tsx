@@ -4,7 +4,7 @@ import ShopFilters from '@/components/shop/ShopFilters';
 import ShopSort from '@/components/shop/ShopSort';
 import ShopPagination from '@/components/shop/ShopPagination';
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 
 const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
 
@@ -18,6 +18,7 @@ export async function generateMetadata({
 }) {
   const params = await searchParams;
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  const locale = await getLocale();
   
   // Extract category
   const categoryParams = params.category;
@@ -26,20 +27,29 @@ export async function generateMetadata({
   
   if (categories.length === 1) {
     const rawCat = categories[0];
-    const orCond: any[] = [{ slug: rawCat }];
+    const orCond: any[] = [
+      { slug: rawCat },
+      { translations: { some: { slug: rawCat } } }
+    ];
     if (isUuid(rawCat)) {
       orCond.push({ id: rawCat });
     }
     const category = await prisma.category.findFirst({
-      where: { OR: orCond }
+      where: { OR: orCond },
+      include: { translations: { where: { locale } } }
     });
     
     if (category) {
+      const ctr = category.translations?.[0];
+      const catName = ctr?.name || category.name;
+      const catSlug = ctr?.slug || category.slug;
+      const metaTitle = ctr?.metaTitle || category.metaTitle || `${catName} | ${storeName}`;
+      const metaDescription = ctr?.metaDescription || category.metaDescription || `Kaufen Sie ${catName} online bei ${storeName}.`;
       return {
-        title: category.metaTitle ? category.metaTitle : `${category.name} | ${storeName}`,
-        description: category.metaDescription || `Kaufen Sie ${category.name} günstig online bei ${storeName}.`,
+        title: metaTitle,
+        description: metaDescription,
         alternates: {
-          canonical: `/shop?category=${category.slug}`,
+          canonical: `/shop?category=${catSlug}`,
         },
       };
     }
@@ -61,6 +71,7 @@ export default async function ShopPage({
 }) {
   const params = await searchParams;
   const t = await getTranslations('Shop');
+  const locale = await getLocale();
   
   // Extract query params
   const categoryParams = params.category;
@@ -90,7 +101,10 @@ export default async function ShopPage({
     const catUuids = categories.filter(isUuid);
     const catSlugs = categories.filter(s => !isUuid(s));
     const catConditions: any[] = [];
-    if (catSlugs.length > 0) catConditions.push({ slug: { in: catSlugs } });
+    if (catSlugs.length > 0) {
+      catConditions.push({ slug: { in: catSlugs } });
+      catConditions.push({ translations: { some: { slug: { in: catSlugs } } } });
+    }
     if (catUuids.length > 0) catConditions.push({ id: { in: catUuids } });
 
     if (catConditions.length > 0) {
@@ -130,6 +144,7 @@ export default async function ShopPage({
   // Fetch all categories for the filter sidebar with product counts
   const allCategories = await prisma.category.findMany({
     include: {
+      translations: { where: { locale } },
       _count: {
         select: { products: { where: { isDeleted: false } } }
       }
@@ -171,11 +186,16 @@ export default async function ShopPage({
   if (sort === 'price_asc') orderBy = { price: 'asc' };
   if (sort === 'price_desc') orderBy = { price: 'desc' };
 
-  // Fetch products
+  // Fetch products with translations
   const products = await prisma.product.findMany({
     where,
     include: {
-      categories: { select: { name: true, slug: true } },
+      translations: { where: { locale } },
+      categories: {
+        include: {
+          translations: { where: { locale } }
+        }
+      },
       reviews: { select: { rating: true } }
     },
     orderBy
@@ -200,18 +220,39 @@ export default async function ShopPage({
   const endIndex = Math.min(startIndex + limit, totalResults);
   
   // Paginate in memory (since we might have filtered in memory)
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + limit);
+  const paginatedRaw = filteredProducts.slice(startIndex, startIndex + limit);
+
+  // Overlay localized product and category values
+  const paginatedProducts = paginatedRaw.map(p => {
+    const tr = p.translations?.[0];
+    return {
+      ...p,
+      title: tr?.title || p.title,
+      slug: tr?.slug || p.slug,
+      categories: p.categories?.map(c => {
+        const ctr = (c as any).translations?.[0];
+        return {
+          ...c,
+          name: ctr?.name || c.name,
+          slug: ctr?.slug || c.slug
+        };
+      })
+    };
+  });
 
   const currentRange = `${totalResults > 0 ? startIndex + 1 : 0}-${endIndex}`;
 
   const validCategories = allCategories
     .filter(c => c.slug !== null)
-    .map(c => ({
-      id: c.id,
-      name: c.name,
-      slug: c.slug as string,
-      _count: c._count
-    }));
+    .map(c => {
+      const ctr = (c as any).translations?.[0];
+      return {
+        id: c.id,
+        name: ctr?.name || c.name,
+        slug: (ctr?.slug || c.slug) as string,
+        _count: c._count
+      };
+    });
 
   const validBrands = allBrands
     .map(b => ({
@@ -226,9 +267,13 @@ export default async function ShopPage({
   let pageTitle = t('title');
   if (categories.length === 1) {
     const rawCat = categories[0];
-    const selectedCategory = allCategories.find(c => c.slug === rawCat || (isUuid(rawCat) && c.id === rawCat));
+    const selectedCategory = allCategories.find(c => {
+      const ctr = (c as any).translations?.[0];
+      return c.slug === rawCat || ctr?.slug === rawCat || (isUuid(rawCat) && c.id === rawCat);
+    });
     if (selectedCategory) {
-      pageTitle = selectedCategory.name;
+      const ctr = (selectedCategory as any).translations?.[0];
+      pageTitle = ctr?.name || selectedCategory.name;
     }
   }
 
