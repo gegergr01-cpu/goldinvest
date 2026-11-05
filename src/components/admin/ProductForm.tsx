@@ -942,7 +942,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                 <p className="text-sm font-semibold text-gray-800">
                   {isDraggingOverGallery 
                     ? "Déposez vos images ici pour les ajouter..." 
-                    : "Ajoutez plusieurs photos à la galerie"}
+                    : "Galerie"}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
                   Glissez-déposez plusieurs fichiers ou choisissez depuis vos dossiers / la médiathèque
