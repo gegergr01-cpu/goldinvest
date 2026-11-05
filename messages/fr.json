@@ -1536,10 +1536,11 @@
     "rss_after_placeholder": "L'article {post_link} est apparu en premier sur {blog_link}."
   },
   "CookieConsent": {
-    "title": "Nous respectons votre vie privée",
-    "message": "Nous utilisons des cookies pour améliorer votre expérience de navigation, diffuser des publicités ou des contenus personnalisés et analyser notre trafic. En cliquant sur \"Tout accepter\", vous consentez à notre utilisation des cookies.",
-    "accept": "Tout accepter",
-    "decline": "Refuser"
+    "title": "Confidentialité & Sécurité",
+    "message": "Nous utilisons des cookies pour sécuriser vos transactions en métaux précieux, maintenir votre panier d'investissement et mesurer anonymement notre audience, sans aucune revente publicitaire.",
+    "accept": "Accepter & Continuer",
+    "decline": "Refuser",
+    "privacy_policy": "Politique de confidentialité"
   },
   "Countries": {
     "Afghanistan": "Afghanistan",

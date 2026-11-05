@@ -1536,10 +1536,11 @@
     "rss_after_placeholder": "The article {post_link} first appeared on {blog_link}."
   },
   "CookieConsent": {
-    "title": "We value your privacy",
-    "message": "We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.",
-    "accept": "Accept All",
-    "decline": "Decline"
+    "title": "Privacy & Security",
+    "message": "We use cookies to secure your precious metals transactions, preserve your investment cart, and analyze audience traffic anonymously, without any ad tracking.",
+    "accept": "Accept & Continue",
+    "decline": "Decline",
+    "privacy_policy": "Privacy Policy"
   },
   "Countries": {
     "Afghanistan": "Afghanistan",
