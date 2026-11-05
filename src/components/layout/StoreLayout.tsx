@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
 import CookieConsent from './CookieConsent';
+import FloatingQuoteBadge from '@/components/ui/FloatingQuoteBadge';
 import MaintenanceView from '@/components/maintenance/MaintenanceView';
 
 type StoreLayoutProps = {
@@ -170,6 +171,7 @@ export default function StoreLayout({ children, settings, userRole }: StoreLayou
         contactSlug={settings.contactSlug}
       />
       <CookieConsent />
+      <FloatingQuoteBadge />
     </div>
   );
 }

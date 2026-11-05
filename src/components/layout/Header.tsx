@@ -96,6 +96,11 @@ export default function Header({
   // Search Modal state
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
+  // Active locale detection for localized URLs
+  const pathMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
+  const activeLocale = pathMatch ? pathMatch[1] : 'fr';
+  const localePrefix = activeLocale && activeLocale !== 'fr' ? `/${activeLocale}` : '';
+
   // Cart & Wishlist stores
   const cartStore = useCartStore();
   const wishlistStore = useWishlistStore();
@@ -215,13 +220,30 @@ export default function Header({
               {/* Actions inside pill: Demander un devis + 4-Squares Icon + Icons */}
               <div className="flex items-center gap-2.5 flex-none">
 
-                {/* Cuivre Doré Pill CTA: Demander un devis ↗ */}
+                {/* Devis Action Button (Luxury Icon with Tooltip) */}
                 <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white font-bold text-[14.5px] px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-[#9C4E0F]/35 border border-[#E8A63D]/35 whitespace-nowrap select-none group"
+                  href={`${localePrefix}/devis`}
+                  className="w-10 h-10 rounded-full bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-[#9C4E0F]/30 border border-[#E8A63D]/40 group relative"
+                  title="Demander un devis personnalisé"
+                  aria-label="Demander un devis"
                 >
-                  <span>Demander un devis</span>
-                  <LuxuryArrow className="w-3 h-3 text-white/90 group-hover:translate-x-0.5" />
+                  <svg
+                    className="w-4 h-4 text-white drop-shadow-sm transition-transform group-hover:scale-110"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  {/* Subtle hover tooltip badge */}
+                  <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-[#0E2036] border border-white/20 text-[11px] font-medium text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
+                    Demander un devis
+                  </span>
                 </Link>
 
                 {/* 4-Squares Button (Exact AZ Solutions geometry: 2 straight + 2 diamonds rotated 45°) */}
@@ -276,8 +298,18 @@ export default function Header({
               </div>
             </div>
 
-            {/* Mobile Right Controls: Search + Language + 4-Squares + Hamburger */}
+            {/* Mobile Right Controls: Devis + Search + Language + 4-Squares + Hamburger */}
             <div className="flex lg:hidden items-center gap-2">
+              <Link
+                href={`${localePrefix}/devis`}
+                className="w-9 h-9 rounded-full bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white flex items-center justify-center border border-[#E8A63D]/40 shadow-sm shrink-0"
+                aria-label="Demander un devis"
+                title="Demander un devis"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </Link>
               <button
                 type="button"
                 onClick={() => setIsSearchModalOpen(true)}

@@ -108,8 +108,8 @@ export default function LanguageSelector({
                     key={loc}
                     onClick={() => handleSelectLanguage(loc)}
                     className={`w-full flex items-center justify-between px-3.5 py-2.5 text-left text-xs transition-colors cursor-pointer ${isCurrent
-                        ? 'bg-[#C8732A]/25 text-[#E8A63D] font-bold'
-                        : 'hover:bg-white/10 text-white/85 hover:text-white'
+                      ? 'bg-[#C8732A]/25 text-[#E8A63D] font-bold'
+                      : 'hover:bg-white/10 text-white/85 hover:text-white'
                       }`}
                   >
                     <span className="flex items-center gap-2.5">
@@ -143,8 +143,8 @@ export default function LanguageSelector({
               key={loc}
               onClick={() => handleSelectLanguage(loc)}
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-all cursor-pointer ${isCurrent
-                  ? 'bg-[#C8732A] text-white font-bold shadow-sm'
-                  : 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/5'
+                ? 'bg-[#C8732A] text-white font-bold shadow-sm'
+                : 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/5'
                 }`}
               title={detail.nativeName}
             >
@@ -174,8 +174,8 @@ export default function LanguageSelector({
               key={loc}
               onClick={() => handleSelectLanguage(loc)}
               className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-xs transition-all cursor-pointer ${isCurrent
-                  ? 'bg-[#C8732A] text-white font-bold shadow-md'
-                  : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
+                ? 'bg-[#C8732A] text-white font-bold shadow-md'
+                : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
                 }`}
             >
               <span className="w-4 h-3 rounded-[2px] overflow-hidden shrink-0 flex items-center justify-center border border-white/15">
