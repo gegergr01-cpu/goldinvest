@@ -96,9 +96,8 @@ export default function LanguageSelector({
 
         {isOpen && (
           <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-[#0E2036] border border-white/20 shadow-[0_16px_50px_rgba(0,0,0,0.7)] py-2 z-[9999] text-white divide-y divide-white/10 animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-3.5 py-1.5 text-[10.5px] font-mono tracking-wider text-white/50 uppercase flex items-center justify-between">
-              <span>Sélectionnez une langue</span>
-              <span className="text-[9px] text-[#E8A63D] font-bold">9 LANGUES</span>
+            <div className="px-3.5 py-1.5 text-[10.5px] font-mono tracking-wider text-white/50 uppercase">
+              Sélectionnez une langue
             </div>
             <div className="py-1 max-h-80 overflow-y-auto">
               {SUPPORTED_LOCALES.map((loc) => {
