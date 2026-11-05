@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useCurrency } from '@/components/CurrencyProvider';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Image from "next/image";
 import LuxuryArrow from '@/components/ui/LuxuryArrow';
 
@@ -48,6 +48,8 @@ export default function ProductActions({
   const [selectedSaleTogether, setSelectedSaleTogether] = useState<string[]>([]);
   const [selectedDeliveryMode, setSelectedDeliveryMode] = useState<'delivery' | 'vault' | 'pickup'>('delivery');
   const t = useTranslations('Product');
+  const locale = useLocale();
+  const localePrefix = locale === 'fr' ? '' : `/${locale}`;
 
   useEffect(() => {
     setIsClient(true);
@@ -172,7 +174,7 @@ export default function ProductActions({
             </span>
             <span>{t('added_to_cart', { name: addedItemName })}</span>
           </div>
-          <Link href="/cart" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white px-5 py-2.5 rounded-lg shadow-sm">
+          <Link href={`${localePrefix}/cart`} className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white px-5 py-2.5 rounded-lg shadow-sm">
             {t('view_cart_caps')}
           </Link>
         </div>,
@@ -186,7 +188,7 @@ export default function ProductActions({
             <svg className="w-5 h-5 text-[#C8732A] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
             <span>{t('added_to_wishlist', { name: wishlistedItemName })}</span>
           </div>
-          <Link href="/wishlist" className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-[#0E2036] text-white px-5 py-2.5 rounded-lg shadow-sm">
+          <Link href={`${localePrefix}/wishlist`} className="mt-4 sm:mt-0 text-xs font-bold tracking-wider hover:underline whitespace-nowrap bg-[#0E2036] text-white px-5 py-2.5 rounded-lg shadow-sm">
             {t('view_wishlist_caps')}
           </Link>
         </div>,
@@ -197,10 +199,10 @@ export default function ProductActions({
       <div className="flex items-center gap-2 mb-4">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Cours spot direct de la bourse
+          {t('live_spot_price')}
         </span>
         <span className="text-xs text-[#8A847A] font-medium hidden sm:inline">
-          Actualisé en temps réel
+          {t('live_updated')}
         </span>
       </div>
 
@@ -219,9 +221,9 @@ export default function ProductActions({
               )}
             </div>
             <div className="flex items-center gap-2 mt-1.5 text-xs text-[#8C6D23] font-medium">
-              <span className="font-semibold text-emerald-700">TVA 0%</span>
+              <span className="font-semibold text-emerald-700">{t('spec_tax_free')}</span>
               <span>•</span>
-              <span>Or d&apos;investissement (Art. 262 ter I du CGI)</span>
+              <span>{t('tax_free_law')}</span>
             </div>
           </div>
 
@@ -229,11 +231,11 @@ export default function ProductActions({
             {currentStock === null || currentStock > 0 ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full border border-emerald-200">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                {currentStock === null ? 'En stock immédiat' : `${currentStock} exemplaires disponibles`}
+                {currentStock === null ? t('immediate_stock') : t('stock_available', { count: currentStock })}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                Sur commande (délai 4-7 jours)
+                {t('on_order_delay')}
               </span>
             )}
           </div>
@@ -242,19 +244,19 @@ export default function ProductActions({
         {/* Volume pricing tier table */}
         <div className="mt-4 pt-4 border-t border-[#E8E4DA]/80">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E685F] block mb-2">
-            Tarifs dégressifs par volume d&apos;investissement :
+            {t('volume_pricing_title')}
           </span>
           <div className="grid grid-cols-3 gap-2 text-center text-xs">
             <div className={`p-2 rounded-lg border transition-colors ${quantity < 5 ? 'bg-white border-[#C8732A] shadow-xs' : 'bg-white/60 border-[#E8E4DA]'}`}>
-              <div className="text-[11px] text-gray-500">1 à 4 pièces</div>
+              <div className="text-[11px] text-gray-500">{t('tier_1_4')}</div>
               <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice)} /u</div>
             </div>
             <div className={`p-2 rounded-lg border transition-colors ${quantity >= 5 && quantity < 10 ? 'bg-white border-[#C8732A] shadow-xs ring-1 ring-[#C8732A]' : 'bg-white/60 border-[#E8E4DA]'}`}>
-              <div className="text-[11px] text-[#C8732A] font-medium">5 à 9 pièces (-0.5%)</div>
+              <div className="text-[11px] text-[#C8732A] font-medium">{t('tier_5_9')}</div>
               <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice * 0.995)} /u</div>
             </div>
             <div className={`p-2 rounded-lg border transition-colors ${quantity >= 10 ? 'bg-white border-[#C8732A] shadow-xs ring-1 ring-[#C8732A]' : 'bg-white/60 border-[#E8E4DA]'}`}>
-              <div className="text-[11px] text-emerald-700 font-medium">10+ pièces (-1.0%)</div>
+              <div className="text-[11px] text-emerald-700 font-medium">{t('tier_10_plus')}</div>
               <div className="font-bold text-[#0E2036] mt-0.5">{formatPrice(basePrice * 0.99)} /u</div>
             </div>
           </div>
@@ -264,7 +266,7 @@ export default function ProductActions({
       {/* Mode de détention / Delivery Selector */}
       <div className="mb-6">
         <label className="text-xs font-bold uppercase tracking-wider text-[#0E2036] block mb-2.5">
-          Mode de détention :
+          {t('holding_mode')}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <button
@@ -278,10 +280,10 @@ export default function ProductActions({
           >
             <div className="flex items-center gap-2 mb-1">
               <span className="text-base">🚚</span>
-              <span className="text-xs font-bold text-[#0E2036]">Livraison assurée</span>
+              <span className="text-xs font-bold text-[#0E2036]">{t('delivery_mode_insured')}</span>
             </div>
             <p className="text-[11px] text-[#6E685F] leading-tight">
-              Colis scellé neutre à domicile, assurée 100%
+              {t('delivery_mode_insured_desc')}
             </p>
           </button>
 
@@ -296,10 +298,10 @@ export default function ProductActions({
           >
             <div className="flex items-center gap-2 mb-1">
               <span className="text-base">🏦</span>
-              <span className="text-xs font-bold text-[#0E2036]">Coffres sécurisés</span>
+              <span className="text-xs font-bold text-[#0E2036]">{t('delivery_mode_vault')}</span>
             </div>
             <p className="text-[11px] text-[#6E685F] leading-tight">
-              Zurich, Genève, Paris hors banques, 0% TVA
+              {t('delivery_mode_vault_desc')}
             </p>
           </button>
 
@@ -314,10 +316,10 @@ export default function ProductActions({
           >
             <div className="flex items-center gap-2 mb-1">
               <span className="text-base">🤝</span>
-              <span className="text-xs font-bold text-[#0E2036]">Retrait en agence</span>
+              <span className="text-xs font-bold text-[#0E2036]">{t('delivery_mode_pickup')}</span>
             </div>
             <p className="text-[11px] text-[#6E685F] leading-tight">
-              Salons privatifs sur rendez-vous sécurisé
+              {t('delivery_mode_pickup_desc')}
             </p>
           </button>
         </div>
@@ -398,7 +400,7 @@ export default function ProductActions({
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
             </span>
             <span className="text-sm font-bold tracking-wide">
-              {(isVariable && !currentVariation) ? t('select_options_btn') : `Ajouter au Panier (${formatPrice(totalPrice)})`}
+              {(isVariable && !currentVariation) ? t('select_options_btn') : t('add_to_cart_amount', { price: formatPrice(totalPrice) })}
             </span>
             <LuxuryArrow className="w-3.5 h-3.5 text-[#E8A63D]" />
           </button>
@@ -407,11 +409,11 @@ export default function ProductActions({
         {/* Secondary CTA: Demande de Devis d'Investissement */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link
-            href={`/devis?product=${encodeURIComponent(product.title)}&amount=${Math.round(totalPrice)}`}
+            href={`${localePrefix}/devis?product=${encodeURIComponent(product.title)}&amount=${Math.round(totalPrice)}`}
             className="h-11 px-4 rounded-xl border border-[#C8732A] bg-[#FAF5EB] hover:bg-[#F5ECD7] text-[#8C6D23] font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs"
           >
             <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-            <span>Demander un Devis d&apos;Investissement</span>
+            <span>{t('request_quote_btn')}</span>
           </Link>
 
           {enableBuyNow ? (
@@ -420,15 +422,15 @@ export default function ProductActions({
               onClick={handleBuyNow}
               className="h-11 px-4 rounded-xl bg-gradient-to-r from-[#C8732A] to-[#B8641C] hover:from-[#D88334] hover:to-[#A85514] text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
             >
-              <span>Acheter immédiatement</span>
+              <span>{t('buy_now_btn')}</span>
               <LuxuryArrow className="w-3 h-3 text-white" />
             </button>
           ) : (
             <Link
-              href="/services"
+              href={`${localePrefix}/services`}
               className="h-11 px-4 rounded-xl border border-[#E8E4DA] bg-white hover:bg-gray-50 text-[#0E2036] font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
             >
-              <span>Découvrir nos services de stockage</span>
+              <span>{t('discover_storage_btn')}</span>
               <LuxuryArrow className="w-3 h-3 text-[#C8732A]" />
             </Link>
           )}
@@ -442,8 +444,8 @@ export default function ProductActions({
             🛡️
           </div>
           <div>
-            <div className="text-xs font-bold text-[#0E2036]">Or Certifié LBMA</div>
-            <p className="text-[11px] text-[#6E685F] leading-tight">Poinçon officiel & numéro de série unique</p>
+            <div className="text-xs font-bold text-[#0E2036]">{t('four_pillars_lbma_title')}</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">{t('four_pillars_lbma_desc')}</p>
           </div>
         </div>
 
@@ -452,8 +454,8 @@ export default function ProductActions({
             💶
           </div>
           <div>
-            <div className="text-xs font-bold text-[#0E2036]">Fiscalité 0% TVA</div>
-            <p className="text-[11px] text-[#6E685F] leading-tight">Exonéré selon l&apos;art. 262 ter I du CGI</p>
+            <div className="text-xs font-bold text-[#0E2036]">{t('four_pillars_tax_title')}</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">{t('four_pillars_tax_desc')}</p>
           </div>
         </div>
 
@@ -462,8 +464,8 @@ export default function ProductActions({
             🔁
           </div>
           <div>
-            <div className="text-xs font-bold text-[#0E2036]">Rachat Garanti</div>
-            <p className="text-[11px] text-[#6E685F] leading-tight">Liquidité continue aux cours de la bourse</p>
+            <div className="text-xs font-bold text-[#0E2036]">{t('four_pillars_buyback_title')}</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">{t('four_pillars_buyback_desc')}</p>
           </div>
         </div>
 
@@ -472,8 +474,8 @@ export default function ProductActions({
             🔒
           </div>
           <div>
-            <div className="text-xs font-bold text-[#0E2036]">Paiement Sécurisé</div>
-            <p className="text-[11px] text-[#6E685F] leading-tight">Virement instantané ou CB 3D Secure</p>
+            <div className="text-xs font-bold text-[#0E2036]">{t('four_pillars_payment_title')}</div>
+            <p className="text-[11px] text-[#6E685F] leading-tight">{t('four_pillars_payment_desc')}</p>
           </div>
         </div>
       </div>
@@ -482,7 +484,7 @@ export default function ProductActions({
       {product.saleTogether && product.saleTogether.length > 0 && (
         <div className="mb-6 border border-[#E8E4DA] rounded-2xl p-4 bg-white shadow-2xs">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[#0E2036] mb-3">
-            Complétez votre commande d&apos;investissement :
+            {t('complete_investment_order')}
           </h4>
           <div className="space-y-2.5">
             {product.saleTogether.map(st => (
@@ -519,16 +521,16 @@ export default function ProductActions({
           }`}
         >
           <svg className="w-4 h-4" fill={isWishlisted ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-          <span>{isWishlisted ? 'Dans vos favoris' : 'Ajouter aux favoris'}</span>
+          <span>{isWishlisted ? t('in_wishlist') : t('add_to_wishlist_btn')}</span>
         </button>
 
         <button 
           type="button"
-          onClick={() => router.push(`/${contactSlug}`)}
+          onClick={() => router.push(`${localePrefix}/${contactSlug}`)}
           className="flex-1 flex items-center justify-center gap-2 text-xs font-semibold text-[#6E685F] hover:text-[#0E2036] bg-white py-2.5 px-4 rounded-xl border border-[#E8E4DA] hover:border-[#0E2036]/50 transition-all cursor-pointer"
         >
           <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-          <span>Consulter un expert</span>
+          <span>{t('consult_expert')}</span>
         </button>
       </div>
     </div>

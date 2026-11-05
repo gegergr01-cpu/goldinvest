@@ -40,6 +40,7 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
   const [msg, setMsg] = useState({ type: '', text: '' });
   const t = useTranslations('Product');
   const locale = useLocale();
+  const localePrefix = locale === 'fr' ? '' : `/${locale}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +73,7 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
           }`}
         >
           <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-          <span>Description & Analyse d&apos;Investissement</span>
+          <span>{t('tab_desc_analysis')}</span>
         </button>
         <button 
           type="button"
@@ -84,7 +85,7 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
           }`}
         >
           <svg className="w-4 h-4 text-[#C8732A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
-          <span>Avis Investisseurs ({reviews.length})</span>
+          <span>{t('tab_investor_reviews', { count: reviews.length })}</span>
         </button>
       </div>
 
@@ -101,30 +102,30 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
               </div>
             ) : (
               <div className="text-sm text-gray-500 py-6 text-center">
-                Description détaillée en cours de mise à jour par nos spécialistes numismatiques et investissement.
+                {t('desc_updating')}
               </div>
             )}
 
             {/* LBMA Certification & Investment Advisory Box */}
             <div className="mt-8 p-6 bg-[#FAF9F5] border border-[#E8E4DA] rounded-2xl">
               <h4 className="text-sm font-serif font-bold text-[#0E2036] mb-2 flex items-center gap-2">
-                <span className="text-[#C8732A]">⚜️</span> Pourquoi investir dans ce produit avec notre maison ?
+                <span>{t('advisory_title')}</span>
               </h4>
               <p className="text-xs text-[#6E685F] leading-relaxed mb-4">
-                Chaque pièce ou lingot est scellé sous blister sécurisé haute technologie avec numéro de série unique et certificat d&apos;essai. Nos produits répondent strictement aux normes LBMA Good Delivery ou aux critères d&apos;or d&apos;investissement de l&apos;Union Européenne (pureté minimale de 900‰ pour les monnaies ayant eu cours légal et 995‰ pour les lingots).
+                {t('advisory_p1')}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div className="p-3 bg-white rounded-xl border border-[#E8E4DA]">
-                  <span className="font-bold text-[#0E2036] block">Exonération de TVA</span>
-                  <span className="text-[11px] text-gray-500">Achat net de taxe selon l&apos;art. 262 ter I du Code Général des Impôts.</span>
+                  <span className="font-bold text-[#0E2036] block">{t('advisory_card1_title')}</span>
+                  <span className="text-[11px] text-gray-500">{t('advisory_card1_desc')}</span>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-[#E8E4DA]">
-                  <span className="font-bold text-[#0E2036] block">Option de stockage franc</span>
-                  <span className="text-[11px] text-gray-500">Garde en coffre sécurisé hors système bancaire en Suisse ou à Paris.</span>
+                  <span className="font-bold text-[#0E2036] block">{t('advisory_card2_title')}</span>
+                  <span className="text-[11px] text-gray-500">{t('advisory_card2_desc')}</span>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-[#E8E4DA]">
-                  <span className="font-bold text-[#0E2036] block">Garantie de rachat</span>
-                  <span className="text-[11px] text-gray-500">Liquidité immédiate au cours spot sans décote ni pénalité.</span>
+                  <span className="font-bold text-[#0E2036] block">{t('advisory_card3_title')}</span>
+                  <span className="text-[11px] text-gray-500">{t('advisory_card3_desc')}</span>
                 </div>
               </div>
             </div>
@@ -134,13 +135,13 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
             {/* Reviews List */}
             <div>
               <h3 className="text-base font-serif font-bold mb-4 text-[#0E2036]">
-                Retours d&apos;expérience de nos clients investisseurs
+                {t('reviews_feedback_title')}
               </h3>
               
               {reviews.length === 0 ? (
                 <div className="p-8 text-center bg-[#FAF9F5] rounded-xl border border-[#E8E4DA]">
-                  <p className="text-sm text-gray-500 font-medium">Aucun avis publié pour le moment sur ce produit.</p>
-                  <p className="text-xs text-gray-400 mt-1">Soyez le premier investisseur à partager votre retour de livraison ou de mise en coffre.</p>
+                  <p className="text-sm text-gray-500 font-medium">{t('no_reviews')}</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('be_first_investor_review')}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -152,10 +153,10 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
                             {[1, 2, 3, 4, 5].map(i => <Star key={i} filled={i <= review.rating} />)}
                           </div>
                           <span className="text-xs font-bold text-[#0E2036]">
-                            {review.reviewerName || 'Investisseur vérifié'}
+                            {review.reviewerName || t('verified_investor')}
                           </span>
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                            ✓ Achat vérifié
+                            ✓ {t('verified_purchase')}
                           </span>
                         </div>
                         <span className="text-xs text-gray-400">
@@ -172,17 +173,17 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
             {/* Review Submission Form */}
             <div className="pt-6 border-t border-[#E8E4DA]">
               <h4 className="text-sm font-serif font-bold text-[#0E2036] mb-1">
-                Laisser un avis d&apos;investisseur sur {productTitle || 'ce produit'}
+                {t('leave_review_title', { product: productTitle || '' })}
               </h4>
               <p className="text-xs text-gray-500 mb-6">
-                Votre avis permet d&apos;accompagner la communauté d&apos;investisseurs dans leur choix d&apos;allocation.
+                {t('leave_review_subtitle')}
               </p>
               
               {!isLoggedIn ? (
                 <div className="p-4 bg-[#FAF9F5] rounded-xl border border-[#E8E4DA] text-xs text-gray-600 flex items-center justify-between">
-                  <span>Vous devez être connecté à votre compte pour déposer un avis certifié.</span>
-                  <a href="/login" className="font-bold text-[#C8732A] hover:underline">
-                    Se connecter →
+                  <span>{t('must_be_logged_in')}</span>
+                  <a href={`${localePrefix}/login`} className="font-bold text-[#C8732A] hover:underline">
+                    {t('login')} →
                   </a>
                 </div>
               ) : (
@@ -195,7 +196,7 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
                   
                   {/* Rating Selector */}
                   <div className="flex items-center gap-3">
-                    <label className="text-xs font-bold text-[#0E2036]">Votre note :</label>
+                    <label className="text-xs font-bold text-[#0E2036]">{t('your_rating_text')} :</label>
                     <div className="flex gap-1 cursor-pointer">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -219,13 +220,13 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
 
                   {/* Comment */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0E2036] mb-1.5">Votre commentaire :</label>
+                    <label className="block text-xs font-bold text-[#0E2036] mb-1.5">{t('your_review')} :</label>
                     <textarea 
                       rows={4}
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       required
-                      placeholder="Qualité du scellé, rapidité d'exécution, conformité du produit..."
+                      placeholder={t('review_comment_placeholder')}
                       className="w-full text-xs p-3 border border-[#E8E4DA] rounded-xl focus:ring-1 focus:ring-[#C8732A] focus:border-[#C8732A] outline-hidden bg-white"
                     />
                   </div>
@@ -235,7 +236,7 @@ export default function ProductReviews({ productId, productTitle, reviews, descr
                     disabled={loading}
                     className="px-6 py-2.5 rounded-xl bg-[#0E2036] hover:bg-[#1B365D] text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer disabled:opacity-50"
                   >
-                    <span>{loading ? 'Enregistrement...' : 'Publier mon avis'}</span>
+                    <span>{loading ? t('sending') : t('publish_review_btn')}</span>
                     <LuxuryArrow className="w-3 h-3 text-[#E8A63D]" />
                   </button>
                 </form>

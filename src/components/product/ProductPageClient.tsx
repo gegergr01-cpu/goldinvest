@@ -5,6 +5,7 @@ import ProductGallery from './ProductGallery';
 import ProductActions from './ProductActions';
 import Link from 'next/link';
 import Image from "next/image";
+import { useTranslations, useLocale } from 'next-intl';
 
 const Star = ({ filled = true }: { filled?: boolean }) => (
   <svg
@@ -140,9 +141,11 @@ export default function ProductPageClient({
     ? reviews.reduce((acc: number, curr: any) => acc + curr.rating, 0) / reviews.length
     : 5;
 
-  const t = translations;
+  const t = useTranslations('Product');
+  const locale = useLocale();
+  const localePrefix = locale === 'fr' ? '' : `/${locale}`;
   const specs = getProductKeySpecs(product);
-  const primaryCategory = product.categories?.[0]?.name || 'Métaux Précieux';
+  const primaryCategory = product.categories?.[0]?.name || t('uncategorized');
 
   return (
     <>
@@ -165,7 +168,7 @@ export default function ProductPageClient({
           </span>
           <span className="text-gray-300">•</span>
           <span className="text-xs text-[#6E685F] font-medium">
-            Qualité Investissement Certifiée
+            {t('certified_investment_quality')}
           </span>
         </div>
 
@@ -179,7 +182,7 @@ export default function ProductPageClient({
           {/* Brand */}
           {product.brand && (
             <div className="flex items-center gap-2">
-              <span className="text-gray-400 font-medium">Fondeur :</span>
+              <span className="text-gray-400 font-medium">{t('refiner')}</span>
               {product.brand.logo ? (
                 <Image 
                   width={120} 
@@ -200,33 +203,33 @@ export default function ProductPageClient({
               {[1, 2, 3, 4, 5].map(i => <Star key={i} filled={i <= Math.round(avgRating)} />)}
             </div>
             <span className="font-semibold text-[#0E2036]">
-              {reviews.length > 0 ? `${reviews.length} avis investisseurs` : 'Certifié conforme'}
+              {reviews.length > 0 ? t('investor_reviews', { count: reviews.length }) : t('certified_compliant')}
             </span>
           </div>
 
           {/* LBMA Good Delivery Tag */}
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#0E2036] text-white text-[11px] font-medium tracking-wide">
-            <span className="text-[#E8A63D]">★</span> LBMA Good Delivery
+            <span className="text-[#E8A63D]">★</span> {t('lbma_good_delivery')}
           </span>
         </div>
 
         {/* Technical Snapshot Banner (Pureté · Poids · Fiscalité) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 p-3 bg-white rounded-xl border border-[#E8E4DA] shadow-2xs">
           <div className="text-center p-2 rounded-lg bg-[#FAF9F5]">
-            <span className="text-[10px] text-gray-500 uppercase font-semibold block">Titrage / Pureté</span>
+            <span className="text-[10px] text-gray-500 uppercase font-semibold block">{t('spec_purity')}</span>
             <span className="text-xs font-serif font-bold text-[#0E2036] mt-0.5 block">{specs.purity}</span>
           </div>
           <div className="text-center p-2 rounded-lg bg-[#FAF9F5]">
-            <span className="text-[10px] text-gray-500 uppercase font-semibold block">Poids d&apos;or fin</span>
+            <span className="text-[10px] text-gray-500 uppercase font-semibold block">{t('spec_fine_weight')}</span>
             <span className="text-xs font-serif font-bold text-[#0E2036] mt-0.5 block">{specs.weight}</span>
           </div>
           <div className="text-center p-2 rounded-lg bg-[#FAF9F5]">
-            <span className="text-[10px] text-gray-500 uppercase font-semibold block">Conditionnement</span>
-            <span className="text-xs font-serif font-bold text-[#0E2036] mt-0.5 block">Blister scellé</span>
+            <span className="text-[10px] text-gray-500 uppercase font-semibold block">{t('spec_packaging')}</span>
+            <span className="text-xs font-serif font-bold text-[#0E2036] mt-0.5 block">{t('spec_sealed_blister')}</span>
           </div>
           <div className="text-center p-2 rounded-lg bg-[#FAF9F5]">
-            <span className="text-[10px] text-gray-500 uppercase font-semibold block">Fiscalité</span>
-            <span className="text-xs font-serif font-bold text-emerald-700 mt-0.5 block">TVA 0%</span>
+            <span className="text-[10px] text-gray-500 uppercase font-semibold block">{t('spec_tax')}</span>
+            <span className="text-xs font-serif font-bold text-emerald-700 mt-0.5 block">{t('spec_tax_free')}</span>
           </div>
         </div>
 
@@ -242,29 +245,29 @@ export default function ProductPageClient({
         {/* Detailed Characteristics & Meta */}
         <div className="mt-8 pt-6 border-t border-[#E8E4DA] space-y-3 text-xs text-[#6E685F]">
           <div className="flex items-center justify-between py-1 border-b border-gray-100">
-            <span className="font-semibold text-[#0E2036]">{t?.sku ?? 'Référence d\'inventaire :'}</span>
+            <span className="font-semibold text-[#0E2036]">{t('inventory_ref')}</span>
             <span className="font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{product.id.split('-')[0].toUpperCase()}</span>
           </div>
 
           <div className="flex items-center justify-between py-1 border-b border-gray-100">
-            <span className="font-semibold text-[#0E2036]">{t?.categories ?? 'Catégorie d\'investissement :'}</span>
+            <span className="font-semibold text-[#0E2036]">{t('investment_category')}</span>
             <div className="text-right">
               {product.categories && product.categories.length > 0
                 ? product.categories.map((c: any, index: number) => (
                     <span key={c.id}>
-                      <Link href={`/product-category/${c.slug || c.id}`} className="hover:text-[#C8732A] transition-colors font-medium">
+                      <Link href={`${localePrefix}/product-category/${c.slug || c.id}`} className="hover:text-[#C8732A] transition-colors font-medium">
                         {c.name}
                       </Link>
                       {index < product.categories!.length - 1 ? ', ' : ''}
                     </span>
                   ))
-                : (t?.uncategorized ?? 'Métaux précieux')}
+                : t('uncategorized')}
             </div>
           </div>
 
           {product.brand && !product.brand.logo && (
             <div className="flex items-center justify-between py-1 border-b border-gray-100">
-              <span className="font-semibold text-[#0E2036]">{t?.brand ?? 'Fondeur agréé :'}</span>
+              <span className="font-semibold text-[#0E2036]">{t('certified_refiner')}</span>
               <span className="font-medium text-gray-900">{product.brand.name}</span>
             </div>
           )}
@@ -273,7 +276,7 @@ export default function ProductPageClient({
           {Array.isArray(product.attributes) && product.attributes.length > 0 && (
             <div className="pt-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#0E2036] block mb-2.5">
-                Spécifications techniques complémentaires :
+                {t('additional_technical_specs')}
               </span>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {product.attributes.map((attr: any, idx: number) => (
@@ -290,7 +293,7 @@ export default function ProductPageClient({
 
           {product.gtin && (
             <div className="flex items-center justify-between py-1 border-b border-gray-100">
-              <span className="font-semibold text-[#0E2036]">Code EAN / Scellé :</span>
+              <span className="font-semibold text-[#0E2036]">{t('ean_code')}</span>
               <span className="font-mono text-gray-600">{product.gtin}</span>
             </div>
           )}

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
 import { HeroDailyCard } from '@/types/heroCards';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
+import Price from '@/components/Price';
 
 interface GoldHeroProps {
   config?: Record<string, any>;
@@ -264,11 +265,14 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
                 const delay = delays[idx % delays.length];
                 const title = titleMap[card.id] || card.title;
                 const product = card.product;
+                const localizedTrans = product.translations?.find((tr) => tr.locale === locale);
+                const productTitle = localizedTrans?.title || product.title;
+                const productSlug = localizedTrans?.slug || product.slug;
 
                 return (
                   <Link
                     key={card.id}
-                    href={`${localePrefix}/product/${product.slug}`}
+                    href={`${localePrefix}/product/${productSlug}`}
                     className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
                   >
                   {/* Outer base border */}
@@ -314,18 +318,18 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-black/40">
                         <Image
                           src={product.imageUrl}
-                          alt={product.title}
+                          alt={productTitle}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-300"
                           sizes="40px"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[11.5px] font-medium text-white/85 truncate group-hover:text-white transition-colors" title={product.title}>
-                          {product.title}
+                        <div className="text-[11.5px] font-medium text-white/85 truncate group-hover:text-white transition-colors" title={productTitle}>
+                          {productTitle}
                         </div>
                         <div className="text-[12.5px] font-bold text-[#F3BA2F] tracking-tight mt-0.5 font-mono">
-                          {product.formattedPrice}
+                          <Price amount={product.price} />
                         </div>
                       </div>
                     </div>

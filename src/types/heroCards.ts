@@ -6,6 +6,11 @@ export interface HeroDailyProduct {
   formattedPrice: string;
   imageUrl: string;
   metal: 'gold' | 'silver';
+  translations?: Array<{
+    locale: string;
+    title: string;
+    slug: string;
+  }>;
 }
 
 export interface HeroDailyCard {

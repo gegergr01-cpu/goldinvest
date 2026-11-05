@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const locale = await getLocale();
+  const localePrefix = locale === 'fr' ? '' : `/${locale}`;
   
   const product = await getCachedProductBySlug(slug, locale);
   const t = await getTranslations('Product');
@@ -206,13 +207,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="bg-white border-b border-[#E8E4DA]">
           <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 text-xs text-[#6E685F] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <Link href="/" className="hover:text-[#C8732A] transition-colors font-medium">
+              <Link href={localePrefix || '/'} className="hover:text-[#C8732A] transition-colors font-medium">
                 {t('home')}
               </Link>
               <span className="text-[#C8732A]/50">/</span>
               {(product as any).categories && (product as any).categories.length > 0 ? (
                 <Link 
-                  href={`/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`}
+                  href={`${localePrefix}/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`}
                   className="hover:text-[#C8732A] transition-colors font-medium"
                 >
                   {(product as any).categories[0].name}
@@ -228,7 +229,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             <div className="hidden md:flex items-center gap-2 text-[11px] text-[#8C6D23] font-medium bg-[#FAF5EB] px-3 py-1 rounded-full border border-[#E8A63D]/30 shadow-2xs">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A]" />
-              <span>Or d&apos;investissement certifié LBMA</span>
+              <span>{t('lbma_badge')}</span>
             </div>
           </div>
         </div>
@@ -270,21 +271,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
               <div>
                 <span className="text-xs font-serif font-bold uppercase tracking-wider text-[#C8732A] block mb-1">
-                  Diversification de portefeuille
+                  {t('related_portfolio_title')}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#0E2036]">
-                  Produits d&apos;investissement similaires
+                  {t('related_products_heading')}
                 </h2>
                 <p className="text-xs sm:text-sm text-[#6E685F] mt-1">
-                  Complétez votre allocation d&apos;actifs physiques avec nos pièces et lingots de même catégorie.
+                  {t('related_products_desc')}
                 </p>
               </div>
 
               <Link
-                href="/shop"
+                href={`${localePrefix}/shop`}
                 className="text-xs font-bold text-[#C8732A] hover:text-[#B8641C] hover:underline flex items-center gap-1.5 shrink-0"
               >
-                <span>Explorer tout le catalogue</span>
+                <span>{t('explore_catalog')}</span>
                 <span>→</span>
               </Link>
             </div>
@@ -295,15 +296,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   const images = Array.isArray(rp.images) 
                     ? rp.images 
                     : (typeof rp.images === 'string' ? JSON.parse(rp.images || '[]') : []);
-                  const primaryCat = rp.categories?.[0]?.name || 'Investissement';
+                  const localizedTrans = (rp as any).translations?.find((tr: any) => tr.locale === locale);
+                  const localizedTitle = localizedTrans?.title || rp.title;
+                  const localizedSlug = localizedTrans?.slug || rp.slug;
+                  const catTrans = (rp as any).categories?.[0]?.translations?.find((tr: any) => tr.locale === locale);
+                  const primaryCat = catTrans?.name || (rp as any).categories?.[0]?.name || 'Investissement';
 
                   return (
                     <BestDealsCard
                       key={rp.id}
                       product={{
                         id: rp.id,
-                        slug: rp.slug,
-                        title: rp.title,
+                        slug: localizedSlug,
+                        title: localizedTitle,
                         category: primaryCat,
                         rawPrice: typeof rp.price === 'number' ? rp.price : Number(rp.price) || 0,
                         imageUrl: images[0] || '/images/gold-coins.jpg',

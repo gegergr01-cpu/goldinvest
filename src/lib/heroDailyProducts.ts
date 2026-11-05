@@ -29,6 +29,11 @@ function mapDbProduct(p: any, metal: 'gold' | 'silver'): HeroDailyProduct {
     formattedPrice: formatPrice(price),
     imageUrl: images[0] || (metal === 'gold' ? '/images/gold-bars.jpg' : '/images/silver-bars.jpg'),
     metal,
+    translations: (p.translations || []).map((t: any) => ({
+      locale: t.locale,
+      title: t.title,
+      slug: t.slug,
+    })),
   };
 }
 
@@ -59,6 +64,11 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
             { title: { contains: 'goldbarren', mode: 'insensitive' } }
           ]
         },
+        include: {
+          translations: {
+            select: { locale: true, title: true, slug: true }
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: 30
       }),
@@ -84,6 +94,11 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
             { title: { contains: 'silberbarren', mode: 'insensitive' } }
           ]
         },
+        include: {
+          translations: {
+            select: { locale: true, title: true, slug: true }
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: 30
       }),
@@ -104,6 +119,11 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
             { title: { contains: 'chervonetz', mode: 'insensitive' } },
             { title: { contains: 'elefant', mode: 'insensitive' } }
           ]
+        },
+        include: {
+          translations: {
+            select: { locale: true, title: true, slug: true }
+          }
         },
         orderBy: { createdAt: 'desc' },
         take: 30
@@ -129,6 +149,11 @@ export async function getHeroDailyCards(config?: Record<string, any>): Promise<H
             },
             { title: { contains: 'silbermünze', mode: 'insensitive' } }
           ]
+        },
+        include: {
+          translations: {
+            select: { locale: true, title: true, slug: true }
+          }
         },
         orderBy: { createdAt: 'desc' },
         take: 30

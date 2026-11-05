@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from "next/image";
+import { useTranslations } from 'next-intl';
 
 type ProductGalleryProps = {
   images: string[];
@@ -13,6 +14,7 @@ type ProductGalleryProps = {
 };
 
 export default function ProductGallery({ images, title, discountLabel, compareAtPrice, price, activeVariationImage }: ProductGalleryProps) {
+  const t = useTranslations('Product');
   const hasImages = images && images.length > 0;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -35,7 +37,7 @@ export default function ProductGallery({ images, title, discountLabel, compareAt
           onClick={() => setSelectedIndex(Math.max(0, selectedIndex - 1))}
           disabled={!hasImages || selectedIndex === 0}
           className="hidden sm:flex w-full py-1.5 border border-[#E8E4DA] rounded-lg text-[#0E2036] hover:bg-[#FAF5EB] hover:text-[#C8732A] justify-center disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-          aria-label="Image précédente"
+          aria-label={t('prev_image')}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
         </button>
@@ -57,7 +59,7 @@ export default function ProductGallery({ images, title, discountLabel, compareAt
                   width={200} 
                   height={200} 
                   src={img} 
-                  alt={`${title} - vue ${idx + 1}`} 
+                  alt={`${title} - ${idx + 1}`} 
                   className="w-full h-full object-contain" 
                 />
               </div>
@@ -74,7 +76,7 @@ export default function ProductGallery({ images, title, discountLabel, compareAt
           onClick={() => setSelectedIndex(Math.min((images?.length || 1) - 1, selectedIndex + 1))}
           disabled={!hasImages || selectedIndex >= Math.min(5, images.length - 1)}
           className="hidden sm:flex w-full py-1.5 border border-[#E8E4DA] rounded-lg text-[#0E2036] hover:bg-[#FAF5EB] hover:text-[#C8732A] justify-center mt-auto disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-          aria-label="Image suivante"
+          aria-label={t('next_image')}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
         </button>
@@ -94,7 +96,7 @@ export default function ProductGallery({ images, title, discountLabel, compareAt
           <svg className="w-3.5 h-3.5 text-[#C8732A]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/>
           </svg>
-          Certifié LBMA
+          {t('gallery_lbma_certified')}
         </div>
 
         {/* Image */}
@@ -118,7 +120,7 @@ export default function ProductGallery({ images, title, discountLabel, compareAt
           <svg className="w-3.5 h-3.5 text-[#C8732A] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <span>Scellé sous blister sécurisé avec numéro de série individuel</span>
+          <span>{t('packaging_sealed_serial')}</span>
         </div>
       </div>
     </div>
