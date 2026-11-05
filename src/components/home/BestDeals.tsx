@@ -251,8 +251,8 @@ function formatProduct(p: any, defaultImage: string, defaultBadge: string, local
   const images = Array.isArray(p.images)
     ? p.images
     : typeof p.images === 'string'
-    ? JSON.parse(p.images || '[]')
-    : [];
+      ? JSON.parse(p.images || '[]')
+      : [];
   const activeTrans = p.translations?.find((t: any) => t.locale === locale) || p.translations?.[0];
   const title = activeTrans?.title || p.title;
   const slug = activeTrans?.slug || p.slug;
