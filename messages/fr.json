@@ -17,7 +17,22 @@
     "cart": "Panier",
     "new": "Nouveau",
     "hot": "Tendance",
-    "sale": "Promos"
+    "sale": "Promos",
+    "tagline": "OR · ARGENT · STOCKAGE",
+    "nav_home": "Accueil",
+    "nav_coins": "Pièces d'or",
+    "nav_bars": "Lingots d'or",
+    "nav_silver": "Argent fin",
+    "nav_services": "Services",
+    "nav_contact": "Contact",
+    "request_quote": "Demander un devis",
+    "request_quote_title": "Demander un devis personnalisé",
+    "info_contact": "Informations & Contact",
+    "open_contact_panel": "Ouvrir le panneau de contact",
+    "search_products": "Rechercher des produits",
+    "search_title": "Rechercher (Échap)",
+    "quick_contact": "Contact rapide",
+    "open_menu": "Ouvrir le menu"
   },
   "MobileSidebar": {
     "categories": "Catégories",
@@ -154,7 +169,36 @@
     "no_products_match": "Nous n'avons trouvé aucun produit correspondant à votre recherche.",
     "back_to_home": "Retour à l'accueil",
     "no_image": "Sans image",
-    "sale": "PROMO"
+    "sale": "PROMO",
+    "input_placeholder": "Rechercher des lingots d'or, pièces, argent d'investissement...",
+    "searching_catalog": "Recherche en direct dans le catalogue certifié...",
+    "certified_products": "Produits certifiés ({count})",
+    "lbma_live": "Cours LBMA Direct",
+    "lbma_certified": "LBMA Certifié",
+    "no_results_for": "Aucun produit trouvé pour « {query} »",
+    "no_results_tip": "Vérifiez l'orthographe ou essayez un terme plus général comme or, argent, lingot, once ou souverain.",
+    "suggested_searches": "Recherches rapides suggérées",
+    "precious_metals": "Métaux Précieux",
+    "browse_by_category": "Parcourir par catégorie",
+    "cat_gold_coins": "Pièces d'or",
+    "cat_gold_bars": "Lingots d'or",
+    "cat_silver": "Argent d'investissement",
+    "view_all_in_shop": "Voir tous les résultats dans la boutique pour « {query} »",
+    "press_enter": "Appuyez sur Entrée ↵",
+    "clear_input": "Effacer la saisie",
+    "close_modal": "Fermer la fenêtre (Échap)",
+    "esc_key": "Échap",
+    "quick_tags": [
+      "Lingots d'or",
+      "Pièces d'or",
+      "Lingots d'argent",
+      "1 Once",
+      "1 Kilogramme",
+      "Valcambi Suisse",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Éléphant de Somalie"
+    ]
   },
   "Cart": {
     "empty_cart": "Votre panier est actuellement vide.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Once (oz)",
       "unit_g": "Gramme (g)"
     }
+  },
+  "TopBar": {
+    "gold": "OR (1 oz) :",
+    "silver": "ARGENT (1 oz) :"
+  },
+  "ContactDrawer": {
+    "tagline": "OR · ARGENT · STOCKAGE",
+    "description": "Spécialistes du négoce, rachat et stockage sécurisé de métaux précieux : pièces d'or, lingots et argent fin, avec un accompagnement privé à chaque étape.",
+    "contact_title": "Contact",
+    "phone_whatsapp": "Téléphone / WhatsApp",
+    "second_phone": "Second numéro",
+    "email": "Email",
+    "head_office": "Siège social",
+    "follow_us": "Suivez-nous :",
+    "request_free_quote": "Demander un devis gratuit",
+    "close": "Fermer"
+  },
+  "Devis": {
+    "badge": "✨ Service Privé d'Investissement",
+    "title": "Demande de Devis Personnalisé",
+    "subtitle": "Obtenez une proposition chiffrée sous 24 à 48h aux cours officiels du marché en direct. Nos devis bénéficient de la garantie de cours LBMA et sont certifiés conformes au régime fiscal d'exonération de TVA.",
+    "success_badge": "Demande transmise avec succès",
+    "success_title": "Votre devis a été pris en charge",
+    "reference": "RÉFÉRENCE :",
+    "success_desc": "Un conseiller patrimonial étudie actuellement votre requête. Dès son émission, votre devis officiel au format PDF sera disponible directement dans votre espace client et une copie scellée vous sera transmise par e-mail.",
+    "btn_my_quotes": "Accéder à mes devis",
+    "btn_home": "Retour à l'accueil",
+    "form_title": "Formulaire d'estimation d'investissement",
+    "form_desc": "Remplissez les détails ci-dessous pour recevoir une tarification transparente et adaptée à vos objectifs.",
+    "section_contact": "1. Vos Coordonnées",
+    "label_name": "Nom complet",
+    "placeholder_name": "ex: Jean Dupont",
+    "label_email": "Adresse e-mail",
+    "placeholder_email": "jean.dupont@exemple.com",
+    "label_phone": "Numéro de téléphone",
+    "label_address": "Ville / Code Postal",
+    "placeholder_address": "ex: 75008 Paris, France",
+    "section_project": "2. Votre Projet d'Investissement",
+    "label_metal": "Type de métal souhaité",
+    "metal_options": {
+      "opt1": "Or d'investissement (Lingots & Pièces)",
+      "opt2": "Argent Métal (Lingots 1kg & Onces)",
+      "opt3": "Lingots Or LBMA (50g, 100g, 250g, 1kg)",
+      "opt4": "Pièces d'Or boursables (Napoléon, Souverain, Krugerrand...)",
+      "opt5": "Portefeuille diversifié (Or + Argent + Platine)"
+    },
+    "label_budget": "Budget estimé",
+    "budget_options": {
+      "opt1": "Moins de 5 000 €",
+      "opt2": "5 000 € à 15 000 €",
+      "opt3": "15 000 € à 50 000 €",
+      "opt4": "50 000 € à 150 000 €",
+      "opt5": "Plus de 150 000 € (Gestion privée)"
+    },
+    "label_delivery": "Mode de conservation privilégié",
+    "delivery_options": {
+      "opt1": "Livraison sécurisée avec assurance ad valorem (scellé discret à domicile)",
+      "opt2": "Retrait sécurisé sur rendez-vous en agence privée",
+      "opt3": "Stockage sécurisé en coffres-forts haute sécurité (Zurich / Genève / Paris)"
+    },
+    "label_message": "Produits recherchés ou instructions particulières",
+    "placeholder_message": "Précisez ici vos souhaits (ex: 2 x lingots de 100g C.Hafner, 10 x Napoléons 20 Francs, livraison rapide...)",
+    "legal_title": "🛡️ Garanties et Certification LBMA",
+    "legal_text": "L'or d'investissement est légalement exonéré de TVA (CGI art. 262 ter I). Vos informations sont strictement confidentielles et ne feront l'objet d'aucun démarchage commercial abusif.",
+    "btn_loading": "Transmission en cours...",
+    "btn_submit": "Recevoir mon devis d'investissement officiel"
   }
 }

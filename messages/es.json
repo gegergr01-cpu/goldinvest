@@ -17,7 +17,22 @@
     "cart": "Carrito",
     "new": "Nuevo",
     "hot": "Populares",
-    "sale": "Oferta"
+    "sale": "Oferta",
+    "tagline": "ORO · PLATA · ALMACENAJE",
+    "nav_home": "Inicio",
+    "nav_coins": "Monedas de oro",
+    "nav_bars": "Lingotes de oro",
+    "nav_silver": "Plata fina",
+    "nav_services": "Servicios",
+    "nav_contact": "Contacto",
+    "request_quote": "Solicitar presupuesto",
+    "request_quote_title": "Solicitar presupuesto personalizado",
+    "info_contact": "Información y Contacto",
+    "open_contact_panel": "Abrir panel de contacto",
+    "search_products": "Buscar productos",
+    "search_title": "Buscar (Esc)",
+    "quick_contact": "Contacto rápido",
+    "open_menu": "Abrir menú"
   },
   "MobileSidebar": {
     "categories": "Categorías",
@@ -154,7 +169,36 @@
     "no_products_match": "No pudimos encontrar productos que coincidan con tu búsqueda.",
     "back_to_home": "Volver a Inicio",
     "no_image": "Sin imagen",
-    "sale": "OFERTA"
+    "sale": "OFERTA",
+    "input_placeholder": "Buscar lingotes de oro, monedas, plata de inversión...",
+    "searching_catalog": "Búsqueda en directo en el catálogo certificado...",
+    "certified_products": "Productos certificados ({count})",
+    "lbma_live": "Precios LBMA en directo",
+    "lbma_certified": "Certificado LBMA",
+    "no_results_for": "No se encontraron productos para «{query}»",
+    "no_results_tip": "Compruebe la ortografía o intente con un término más general como oro, plata, lingote, onza o soberano.",
+    "suggested_searches": "Búsquedas rápidas sugeridas",
+    "precious_metals": "Metales Preciosos",
+    "browse_by_category": "Explorar por categoría",
+    "cat_gold_coins": "Monedas de oro",
+    "cat_gold_bars": "Lingotes de oro",
+    "cat_silver": "Plata de inversión",
+    "view_all_in_shop": "Ver todos los resultados en la tienda para «{query}»",
+    "press_enter": "Pulse Intro ↵",
+    "clear_input": "Borrar texto",
+    "close_modal": "Cerrar ventana (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Lingotes de oro",
+      "Monedas de oro",
+      "Lingotes de plata",
+      "1 Onza",
+      "1 Kilogramo",
+      "Valcambi Suiza",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Elefante de Somalia"
+    ]
   },
   "Cart": {
     "empty_cart": "Tu carrito está actualmente vacío.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Onza (oz)",
       "unit_g": "Gramo (g)"
     }
+  },
+  "TopBar": {
+    "gold": "ORO (1 oz):",
+    "silver": "PLATA (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "ORO · PLATA · ALMACENAJE",
+    "description": "Especialistas en comercio, recompra y almacenamiento seguro de metales preciosos: monedas de oro, lingotes y plata fina, con asesoramiento privado continuo.",
+    "contact_title": "Contacto",
+    "phone_whatsapp": "Teléfono / WhatsApp",
+    "second_phone": "Segundo número",
+    "email": "Correo electrónico",
+    "head_office": "Sede central",
+    "follow_us": "Síganos:",
+    "request_free_quote": "Solicitar presupuesto gratuito",
+    "close": "Cerrar"
+  },
+  "Devis": {
+    "badge": "✨ Servicio Privado de Inversión",
+    "title": "Solicitud de Presupuesto Personalizado",
+    "subtitle": "Obtenga una propuesta cuantificada en 24 a 48 horas a cotizaciones oficiales de mercado en directo. Nuestros presupuestos cuentan con garantía LBMA y exención de IVA.",
+    "success_badge": "Solicitud enviada con éxito",
+    "success_title": "Su presupuesto ha sido recibido",
+    "reference": "REFERENCIA:",
+    "success_desc": "Un asesor patrimonial está revisando su solicitud. Una vez emitido, su presupuesto oficial en PDF estará disponible en su área de cliente y recibirá una copia sellada por correo electrónico.",
+    "btn_my_quotes": "Acceder a mis presupuestos",
+    "btn_home": "Volver al inicio",
+    "form_title": "Formulario de estimación de inversión",
+    "form_desc": "Complete los detalles a continuación para recibir una cotización transparente adaptada a sus objetivos patrimoniales.",
+    "section_contact": "1. Sus Datos de Contacto",
+    "label_name": "Nombre completo",
+    "placeholder_name": "ej: Juan Pérez",
+    "label_email": "Correo electrónico",
+    "placeholder_email": "juan.perez@ejemplo.com",
+    "label_phone": "Número de teléfono",
+    "label_address": "Ciudad / Código Postal",
+    "placeholder_address": "ej: 28001 Madrid, España",
+    "section_project": "2. Su Proyecto de Inversión",
+    "label_metal": "Tipo de metal deseado",
+    "metal_options": {
+      "opt1": "Oro de inversión (Lingotes y Monedas)",
+      "opt2": "Plata metal (Lingotes 1kg y Onzas)",
+      "opt3": "Lingotes de Oro LBMA (50g, 100g, 250g, 1kg)",
+      "opt4": "Monedas de Oro cotizables (Soberano, Krugerrand, Napoleón...)",
+      "opt5": "Cartera diversificada (Oro + Plata + Platino)"
+    },
+    "label_budget": "Presupuesto estimado",
+    "budget_options": {
+      "opt1": "Menos de 5.000 €",
+      "opt2": "5.000 € a 15.000 €",
+      "opt3": "15.000 € a 50.000 €",
+      "opt4": "50.000 € a 150.000 €",
+      "opt5": "Más de 150.000 € (Gestión privada)"
+    },
+    "label_delivery": "Método preferido de entrega o custodia",
+    "delivery_options": {
+      "opt1": "Entrega asegurada 100% a domicilio (paquete sellado discreto)",
+      "opt2": "Recogida segura con cita previa en oficina privada",
+      "opt3": "Custodia en bóvedas de alta seguridad (Zúrich / Ginebra / París)"
+    },
+    "label_message": "Productos deseados o instrucciones específicas",
+    "placeholder_message": "Especifique aquí sus preferencias (ej: 2 x lingotes de 100g C.Hafner, 10 x Napoleones, entrega urgente...)",
+    "legal_title": "🛡️ Garantías y Certificación LBMA",
+    "legal_text": "El oro de inversión está legalmente exento de IVA según la normativa europea. Sus datos son estrictamente confidenciales y no se realizará ninguna prospección abusiva.",
+    "btn_loading": "Enviando solicitud...",
+    "btn_submit": "Recibir mi presupuesto oficial de inversión"
   }
 }

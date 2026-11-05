@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { searchProducts } from '@/actions/public';
 import Price from '@/components/Price';
 
@@ -12,7 +13,7 @@ interface SearchModalProps {
   onClose: () => void;
 }
 
-const QUICK_SEARCH_TAGS = [
+const DEFAULT_QUICK_SEARCH_TAGS = [
   "Lingots d'or",
   "Pièces d'or",
   "Lingots d'argent",
@@ -25,6 +26,7 @@ const QUICK_SEARCH_TAGS = [
 ];
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+  const t = useTranslations('Search');
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState('');
@@ -37,6 +39,17 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const pathMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
   const activeLocale = pathMatch ? pathMatch[1] : 'fr';
   const localePrefix = activeLocale && activeLocale !== 'fr' ? `/${activeLocale}` : '';
+
+  // Localized quick search tags
+  let quickSearchTags: string[] = DEFAULT_QUICK_SEARCH_TAGS;
+  try {
+    const rawTags = t.raw('quick_tags');
+    if (Array.isArray(rawTags) && rawTags.length > 0) {
+      quickSearchTags = rawTags;
+    }
+  } catch (e) {
+    quickSearchTags = DEFAULT_QUICK_SEARCH_TAGS;
+  }
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -118,7 +131,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }}
       role="dialog"
       aria-modal="true"
-      aria-label="Recherche de produits"
+      aria-label={t('search_title')}
     >
       <div
         ref={modalRef}
@@ -150,7 +163,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Rechercher des lingots d'or, pièces, argent d'investissement..."
+            placeholder={t('input_placeholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/40 text-[15px] sm:text-base font-medium min-w-0"
@@ -165,7 +178,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 inputRef.current?.focus();
               }}
               className="text-white/40 hover:text-white transition p-1.5 rounded-full hover:bg-white/10 cursor-pointer"
-              title="Effacer la saisie"
+              title={t('clear_input')}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
@@ -178,9 +191,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             type="button"
             onClick={onClose}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-xs font-mono transition cursor-pointer shrink-0"
-            title="Fermer la fenêtre (Échap)"
+            title={t('close_modal')}
           >
-            <span className="hidden sm:inline text-[11px]">Échap</span>
+            <span className="hidden sm:inline text-[11px]">{t('esc_key')}</span>
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
             </svg>
@@ -192,14 +205,14 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           {isSearching ? (
             <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/70">
               <div className="w-6 h-6 border-2 border-[#E8A63D] border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs font-medium tracking-wide">Recherche en direct dans le catalogue certifié...</span>
+              <span className="text-xs font-medium tracking-wide">{t('searching_catalog')}</span>
             </div>
           ) : query.trim().length >= 2 ? (
             results.length > 0 ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-2 text-[11px] font-mono tracking-wider text-white/40 uppercase">
-                  <span>Produits certifiés ({results.length})</span>
-                  <span className="text-[#E8A63D]">Cours LBMA Direct</span>
+                  <span>{t('certified_products', { count: results.length })}</span>
+                  <span className="text-[#E8A63D]">{t('lbma_live')}</span>
                 </div>
 
                 <ul className="divide-y divide-white/10">
@@ -248,7 +261,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           {/* Live Price */}
                           <div className="text-right flex-none pl-2">
                             <Price amount={prod.price} className="text-[#E8A63D] font-bold text-sm sm:text-base" />
-                            <div className="text-[10px] text-emerald-400 font-mono font-medium">LBMA Certifié</div>
+                            <div className="text-[10px] text-emerald-400 font-mono font-medium">{t('lbma_certified')}</div>
                           </div>
                         </Link>
                       </li>
@@ -264,10 +277,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   </svg>
                 </div>
                 <p className="font-semibold text-white/90 text-sm mb-1">
-                  Aucun produit trouvé pour « {query} »
+                  {t('no_results_for', { query })}
                 </p>
                 <p className="text-white/40 text-xs max-w-sm mx-auto leading-relaxed">
-                  Vérifiez l&apos;orthographe ou essayez un terme plus général comme <em>or</em>, <em>argent</em>, <em>lingot</em>, <em>once</em> ou <em>souverain</em>.
+                  {t('no_results_tip')}
                 </p>
               </div>
             )
@@ -275,11 +288,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             /* ── QUICK POPULAR SEARCH TAGS ── */
             <div className="space-y-4 py-2">
               <div className="text-[11px] font-mono tracking-wider text-white/40 uppercase px-1 flex items-center justify-between">
-                <span>Recherches rapides suggérées</span>
-                <span className="text-[10px] text-[#E8A63D] font-medium">Métaux Précieux</span>
+                <span>{t('suggested_searches')}</span>
+                <span className="text-[10px] text-[#E8A63D] font-medium">{t('precious_metals')}</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {QUICK_SEARCH_TAGS.map((tag) => (
+                {quickSearchTags.map((tag) => (
                   <button
                     key={tag}
                     type="button"
@@ -295,7 +308,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* Category Shortcuts */}
               <div className="pt-4 border-t border-white/10">
                 <div className="text-[11px] font-mono tracking-wider text-white/40 uppercase px-1 mb-2.5">
-                  Parcourir par catégorie
+                  {t('browse_by_category')}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <Link
@@ -303,7 +316,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     onClick={onClose}
                     className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition flex items-center justify-between text-xs font-semibold text-white group"
                   >
-                    <span>Pièces d&apos;or</span>
+                    <span>{t('cat_gold_coins')}</span>
                     <span className="text-[#E8A63D] group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
                   <Link
@@ -311,7 +324,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     onClick={onClose}
                     className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition flex items-center justify-between text-xs font-semibold text-white group"
                   >
-                    <span>Lingots d&apos;or</span>
+                    <span>{t('cat_gold_bars')}</span>
                     <span className="text-[#E8A63D] group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
                   <Link
@@ -319,7 +332,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     onClick={onClose}
                     className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition flex items-center justify-between text-xs font-semibold text-white group"
                   >
-                    <span>Argent d&apos;investissement</span>
+                    <span>{t('cat_silver')}</span>
                     <span className="text-[#E8A63D] group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
                 </div>
@@ -336,13 +349,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               onClick={() => handleSubmit()}
               className="text-xs font-semibold text-[#E8A63D] hover:text-[#fae5a2] transition flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Voir tous les résultats dans la boutique pour « {query} »</span>
+              <span>{t('view_all_in_shop', { query })}</span>
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>
             <span className="hidden sm:inline text-[11px] font-mono text-white/40">
-              Appuyez sur <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Entrée ↵</kbd>
+              {t('press_enter')}
             </span>
           </div>
         )}
@@ -350,4 +363,3 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     </div>
   );
 }
-

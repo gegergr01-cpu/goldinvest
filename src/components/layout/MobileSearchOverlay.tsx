@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 type MobileSearchOverlayProps = {
   isOpen: boolean;
@@ -9,8 +10,14 @@ type MobileSearchOverlayProps = {
   placeholder?: string;
 };
 
-export default function MobileSearchOverlay({ isOpen, onClose, placeholder = 'Rechercher un produit...' }: MobileSearchOverlayProps) {
+export default function MobileSearchOverlay({ isOpen, onClose, placeholder }: MobileSearchOverlayProps) {
+  const t = useTranslations('Search');
   const router = useRouter();
+  const pathname = usePathname();
+  const pathMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
+  const activeLocale = pathMatch ? pathMatch[1] : 'fr';
+  const localePrefix = activeLocale && activeLocale !== 'fr' ? `/${activeLocale}` : '';
+
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,7 +39,7 @@ export default function MobileSearchOverlay({ isOpen, onClose, placeholder = 'Re
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`);
+      router.push(`${localePrefix}/shop?q=${encodeURIComponent(query)}`);
       onClose();
     }
   };
@@ -44,7 +51,8 @@ export default function MobileSearchOverlay({ isOpen, onClose, placeholder = 'Re
       <div className="flex justify-end px-4 mb-4">
         <button 
           onClick={onClose}
-          className="w-10 h-10 bg-orange-600 hover:bg-orange-700 text-white rounded-md flex items-center justify-center transition-colors"
+          className="w-10 h-10 bg-orange-600 hover:bg-orange-700 text-white rounded-md flex items-center justify-center transition-colors cursor-pointer"
+          aria-label={t('close_modal')}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -60,12 +68,13 @@ export default function MobileSearchOverlay({ isOpen, onClose, placeholder = 'Re
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={placeholder}
+            placeholder={placeholder || t('input_placeholder')}
             className="flex-1 w-full h-14 pl-4 pr-16 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg shadow-sm"
           />
           <button 
             type="submit"
-            className="absolute right-0 top-0 h-14 w-14 bg-gray-900 hover:bg-gray-800 text-white rounded-r-md flex items-center justify-center transition-colors"
+            className="absolute right-0 top-0 h-14 w-14 bg-gray-900 hover:bg-gray-800 text-white rounded-r-md flex items-center justify-center transition-colors cursor-pointer"
+            aria-label={t('input_placeholder')}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

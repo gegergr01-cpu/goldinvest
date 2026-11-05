@@ -17,7 +17,22 @@
     "cart": "Indkøbskurv",
     "new": "Nyheder",
     "hot": "Populære",
-    "sale": "Tilbud"
+    "sale": "Tilbud",
+    "tagline": "GULDUR · SØLV · OPBEVARING",
+    "nav_home": "Forside",
+    "nav_coins": "Guldmønter",
+    "nav_bars": "Guldbarrer",
+    "nav_silver": "Fint sølv",
+    "nav_services": "Tjenester",
+    "nav_contact": "Kontakt",
+    "request_quote": "Anmod om tilbud",
+    "request_quote_title": "Få et personligt tilbud",
+    "info_contact": "Information & Kontakt",
+    "open_contact_panel": "Åbn kontaktpanel",
+    "search_products": "Søg efter produkter",
+    "search_title": "Søg (Esc)",
+    "quick_contact": "Hurtig kontakt",
+    "open_menu": "Åbn menu"
   },
   "MobileSidebar": {
     "categories": "Kategorier",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Søg efter guldbarrer, mønter, investeringssølv...",
+    "searching_catalog": "Live-søgning i det certificerede katalog...",
+    "certified_products": "Certificerede produkter ({count})",
+    "lbma_live": "Live LBMA-kurser",
+    "lbma_certified": "LBMA Certificeret",
+    "no_results_for": "Ingen produkter fundet for \"{query}\"",
+    "no_results_tip": "Tjek stavningen eller prøv et bredere søgeord som guld, sølv, barre, ounce eller mønt.",
+    "suggested_searches": "Foreslåede hurtigsøgninger",
+    "precious_metals": "Ædelmetaller",
+    "browse_by_category": "Gennemse efter kategori",
+    "cat_gold_coins": "Guldmønter",
+    "cat_gold_bars": "Guldbarrer",
+    "cat_silver": "Investeringssølv",
+    "view_all_in_shop": "Se alle resultater i shoppen for \"{query}\"",
+    "press_enter": "Tryk på Enter ↵",
+    "clear_input": "Ryd søgefelt",
+    "close_modal": "Luk vindue (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Guldbarrer",
+      "Guldmønter",
+      "Sølvbarrer",
+      "1 Ounce",
+      "1 Kilogram",
+      "Valcambi Schweiz",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Somalia Elefant"
+    ]
   },
   "Cart": {
     "empty_cart": "Your cart is currently empty.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Ounce (oz)",
       "unit_g": "Gram (g)"
     }
+  },
+  "TopBar": {
+    "gold": "GULDUR (1 oz):",
+    "silver": "SØLV (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "GULDUR · SØLV · OPBEVARING",
+    "description": "Specialister i handel, tilbagekøb og sikker opbevaring af ædelmetaller: guldmønter, barrer og fint sølv med personlig rådgivning i hele forløbet.",
+    "contact_title": "Kontakt",
+    "phone_whatsapp": "Telefon / WhatsApp",
+    "second_phone": "Sekundært nummer",
+    "email": "E-mail",
+    "head_office": "Hovedkontor",
+    "follow_us": "Følg os:",
+    "request_free_quote": "Anmod om et gratis tilbud",
+    "close": "Luk"
+  },
+  "Devis": {
+    "badge": "✨ Privat Investeringsservice",
+    "title": "Anmodning om Personligt Tilbud",
+    "subtitle": "Modtag et detaljeret pristilbud inden for 24-48 timer baseret på officielle live markedskurser. Vores tilbud omfatter LBMA-kursgaranti og er momsfritaget.",
+    "success_badge": "Anmodning sendt",
+    "success_title": "Dit tilbud behandles nu",
+    "reference": "REFERENCE:",
+    "success_desc": "En formuerådgiver gennemgår i øjeblikket din anmodning. Så snart det er udstedt, vil dit officielle PDF-tilbud være tilgængeligt på din kundekonto, og en forseglet kopi sendes via e-mail.",
+    "btn_my_quotes": "Gå til mine tilbud",
+    "btn_home": "Tilbage til forsiden",
+    "form_title": "Formular til investeringsestimat",
+    "form_desc": "Udfyld nedenstående oplysninger for at modtage gennemskuelige priser tilpasset dine mål.",
+    "section_contact": "1. Dine Kontaktoplysninger",
+    "label_name": "Fulde navn",
+    "placeholder_name": "f.eks. Lars Hansen",
+    "label_email": "E-mailadresse",
+    "placeholder_email": "lars.hansen@eksempel.dk",
+    "label_phone": "Telefonnummer",
+    "label_address": "By / Postnummer",
+    "placeholder_address": "f.eks. 1050 København, Danmark",
+    "section_project": "2. Dit Investeringsprojekt",
+    "label_metal": "Foretrukken metaltype",
+    "metal_options": {
+      "opt1": "Investeringsguld (Barrer og Mønter)",
+      "opt2": "Sølvmetal (1 kg barrer og ounces)",
+      "opt3": "LBMA Guldbarrer (50g, 100g, 250g, 1kg)",
+      "opt4": "Handlebare guldmønter (Krugerrand, Sovereign, Maple Leaf...)",
+      "opt5": "Diversificeret portefølje (Guld + Sølv + Platin)"
+    },
+    "label_budget": "Anslået budget",
+    "budget_options": {
+      "opt1": "Under 5.000 €",
+      "opt2": "5.000 € til 15.000 €",
+      "opt3": "15.000 € til 50.000 €",
+      "opt4": "50.000 € til 150.000 €",
+      "opt5": "Over 150.000 € (Private Wealth)"
+    },
+    "label_delivery": "Foretrukken opbevarings- eller leveringsform",
+    "delivery_options": {
+      "opt1": "Sikker fuldt forsikret hjemmelevering (diskret forseglet forsendelse)",
+      "opt2": "Sikker afhentning efter aftale i privat afdeling",
+      "opt3": "Højsikkerhedsopbevaring i bankboks (Zürich / Genève / Paris)"
+    },
+    "label_message": "Ønskede produkter eller særlige instruktioner",
+    "placeholder_message": "Angiv dine ønsker her (f.eks. 2 x 100g C.Hafner barrer, 10 x Sovereigns, hurtig levering...)",
+    "legal_title": "🛡️ LBMA Garantier & Certificering",
+    "legal_text": "Investeringsguld er lovmæssigt momsfritaget i henhold til gældende EU-regler. Dine oplysninger behandles strengt fortroligt og videregives ikke.",
+    "btn_loading": "Sender anmodning...",
+    "btn_submit": "Modtag mit officielle investeringstilbud"
   }
 }

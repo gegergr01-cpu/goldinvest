@@ -3,6 +3,8 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface ContactDrawerProps {
   isOpen: boolean;
@@ -23,8 +25,16 @@ export default function ContactDrawer({
   phone2 = '+33 6 05 82 51 96',
   email = 'azevia.solutions@gmail.com',
   address = 'Laval, France',
-  description = "Spécialistes de l'import, l'export et du négoce de métaux précieux : pièces d'or, lingots et argent fin, avec un accompagnement personnalisé à chaque étape jusqu'à la livraison sécurisée.",
+  description,
 }: ContactDrawerProps) {
+  const t = useTranslations('ContactDrawer');
+  const pathname = usePathname();
+  const pathMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
+  const activeLocale = pathMatch ? pathMatch[1] : 'fr';
+  const localePrefix = activeLocale && activeLocale !== 'fr' ? `/${activeLocale}` : '';
+
+  const drawerDescription = description || t('description');
+
   // Lock body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -60,12 +70,12 @@ export default function ContactDrawer({
       {/* Quick panel (matching Capture 1 & AZ Solutions .quick-panel) */}
       <aside
         className="relative z-10 w-[380px] max-w-[92vw] bg-[#0E2036] text-white h-screen overflow-y-auto p-[40px_30px] flex flex-col justify-between shadow-[-24px_0_60px_rgba(0,0,0,0.4)] animate-in slide-in-from-right duration-300"
-        aria-label="Informations de contact"
+        aria-label={t('contact_title')}
       >
         <div>
           {/* Head: Logo + Circular White Close Button */}
           <div className="flex items-start justify-between gap-3.5 mb-8">
-            <Link href="/" onClick={onClose} className="flex items-center select-none">
+            <Link href={`${localePrefix || '/'}`} onClick={onClose} className="flex items-center select-none">
               {logoImage ? (
                 <Image
                   src={logoImage}
@@ -81,7 +91,7 @@ export default function ContactDrawer({
                     GOLD<span className="text-[#E8A63D]">INVEST</span>
                   </span>
                   <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
-                    OR · ARGENT · GROUPAGE
+                    {t('tagline')}
                   </span>
                 </div>
               )}
@@ -92,7 +102,7 @@ export default function ContactDrawer({
               onClick={onClose}
               type="button"
               className="w-[38px] h-[38px] rounded-full bg-white text-[#0E2036] flex items-center justify-center cursor-pointer transition-transform duration-200 hover:rotate-90 flex-none shadow-md"
-              aria-label="Fermer"
+              aria-label={t('close')}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" className="w-[15px] h-[15px]">
                 <path d="M6 6l12 12M18 6L6 18" />
@@ -102,17 +112,17 @@ export default function ContactDrawer({
 
           {/* Description */}
           <p className="text-white/65 text-[14.5px] leading-[1.65] mb-8 font-normal">
-            {description}
+            {drawerDescription}
           </p>
 
           {/* Title: Contact */}
           <h3 className="font-serif text-white text-[21px] font-bold mb-4">
-            Contact
+            {t('contact_title')}
           </h3>
 
           {/* Field: Téléphone / WhatsApp */}
           <div className="mb-5">
-            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">Téléphone / WhatsApp</p>
+            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">{t('phone_whatsapp')}</p>
             <p className="flex items-center gap-2.5 text-white font-semibold text-[15.5px] m-0">
               <span className="w-2 h-2 rounded-full bg-[#D2571E] flex-none" />
               <a href={`tel:${phone1.replace(/\s+/g, '')}`} className="text-white hover:text-[#E8A63D] transition-colors">
@@ -124,7 +134,7 @@ export default function ContactDrawer({
           {/* Field: Second numéro */}
           {phone2 && (
             <div className="mb-5">
-              <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">Second numéro</p>
+              <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">{t('second_phone')}</p>
               <p className="text-white font-semibold text-[15.5px] m-0">
                 <a href={`tel:${phone2.replace(/\s+/g, '')}`} className="text-white hover:text-[#E8A63D] transition-colors">
                   {phone2}
@@ -135,7 +145,7 @@ export default function ContactDrawer({
 
           {/* Field: Email */}
           <div className="mb-5">
-            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">Email</p>
+            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">{t('email')}</p>
             <p className="text-white font-semibold text-[15.5px] m-0">
               <a href={`mailto:${email}`} className="text-white hover:text-[#E8A63D] transition-colors break-all">
                 {email}
@@ -145,7 +155,7 @@ export default function ContactDrawer({
 
           {/* Field: Siège social */}
           <div className="mb-6">
-            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">Siège social</p>
+            <p className="text-[12.5px] text-white/50 mb-1.5 font-normal">{t('head_office')}</p>
             <p className="text-white font-semibold text-[15.5px] m-0">
               {address}
             </p>
@@ -153,7 +163,7 @@ export default function ContactDrawer({
 
           {/* Title: Suivez-nous : */}
           <h3 className="font-serif text-white text-[21px] font-bold mb-3">
-            Suivez-nous :
+            {t('follow_us')}
           </h3>
 
           <div className="flex gap-2.5 mt-1">
@@ -201,11 +211,11 @@ export default function ContactDrawer({
         {/* Bottom CTA Button */}
         <div className="pt-6 mt-6 border-t border-white/10">
           <Link
-            href="/contact"
+            href={`${localePrefix}/devis`}
             onClick={onClose}
             className="w-full bg-[#D2571E] hover:bg-[#A8420F] text-white font-bold py-3 px-6 rounded-md flex items-center justify-center gap-2 shadow-lg transition-all text-[14.5px]"
           >
-            <span>Demander un devis gratuit</span>
+            <span>{t('request_free_quote')}</span>
             <span className="text-sm">↗</span>
           </Link>
         </div>

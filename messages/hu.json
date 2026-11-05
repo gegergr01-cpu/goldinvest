@@ -17,7 +17,22 @@
     "cart": "Kosár",
     "new": "Új",
     "hot": "Népszerű",
-    "sale": "Akció"
+    "sale": "Akció",
+    "tagline": "ARANY · EZÜST · TÁROLÁS",
+    "nav_home": "Főoldal",
+    "nav_coins": "Aranyérmék",
+    "nav_bars": "Aranyrudak",
+    "nav_silver": "Színezüst",
+    "nav_services": "Szolgáltatások",
+    "nav_contact": "Kapcsolat",
+    "request_quote": "Árajánlat kérése",
+    "request_quote_title": "Személyre szabott árajánlat kérése",
+    "info_contact": "Információ és Kapcsolat",
+    "open_contact_panel": "Kapcsolati panel megnyitása",
+    "search_products": "Termékek keresése",
+    "search_title": "Keresés (Esc)",
+    "quick_contact": "Gyors kapcsolat",
+    "open_menu": "Menü megnyitása"
   },
   "MobileSidebar": {
     "categories": "Kategóriák",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Aranyrudak, érmék, befektetési ezüst keresése...",
+    "searching_catalog": "Élő keresés a tanúsított katalógusban...",
+    "certified_products": "Hitelesített termékek ({count})",
+    "lbma_live": "Élő LBMA árfolyamok",
+    "lbma_certified": "LBMA Tanúsított",
+    "no_results_for": "Nincs találat erre: „{query}”",
+    "no_results_tip": "Ellenőrizze az írásmódot, vagy próbáljon általánosabb kifejezést, például arany, ezüst, rúd vagy uncia.",
+    "suggested_searches": "Javasolt gyorskeresések",
+    "precious_metals": "Nemesfémek",
+    "browse_by_category": "Böngészés kategóriák szerint",
+    "cat_gold_coins": "Aranyérmék",
+    "cat_gold_bars": "Aranyrudak",
+    "cat_silver": "Befektetési ezüst",
+    "view_all_in_shop": "Az összes találat megtekintése az áruházban: „{query}”",
+    "press_enter": "Nyomja meg az Entert ↵",
+    "clear_input": "Mező törlése",
+    "close_modal": "Ablak bezárása (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Aranyrudak",
+      "Aranyérmék",
+      "Ezüstrudak",
+      "1 uncia",
+      "1 kilogramm",
+      "Valcambi Svájc",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Szomáliai elefánt"
+    ]
   },
   "Cart": {
     "empty_cart": "Az Ön kosara jelenleg üres.",
@@ -1801,5 +1845,71 @@
       "unit_oz": "Uncia (oz)",
       "unit_g": "Gramm (g)"
     }
+  },
+  "TopBar": {
+    "gold": "ARANY (1 uncia):",
+    "silver": "EZÜST (1 uncia):"
+  },
+  "ContactDrawer": {
+    "tagline": "ARANY · EZÜST · TÁROLÁS",
+    "description": "Nemesfém kereskedelmére, visszavásárlására és független biztonsági tárolására szakosodott partner: aranyérmék, rudak és színezüst, személyre szabott támogatással.",
+    "contact_title": "Kapcsolat",
+    "phone_whatsapp": "Telefon / WhatsApp",
+    "second_phone": "Másodlagos telefonszám",
+    "email": "E-mail",
+    "head_office": "Székhely",
+    "follow_us": "Kövessen minket:",
+    "request_free_quote": "Ingyenes árajánlat kérése",
+    "close": "Bezárás"
+  },
+  "Devis": {
+    "badge": "✨ Privát Befektetési Szolgáltatás",
+    "title": "Személyre Szabott Árajánlatkérés",
+    "subtitle": "Kapjon részletes árajánlatot 24-48 órán belül a hivatalos élő piaci árfolyamok alapján. Ajánlataink LBMA árgaranciát tartalmaznak és megfelelnek az áfamentességi előírásoknak.",
+    "success_badge": "A kérés sikeresen elküldve",
+    "success_title": "Árajánlatkérését feldolgozzuk",
+    "reference": "HIVATKOZÁSI SZÁM:",
+    "success_desc": "Vagyonkezelési tanácsadónk feldolgozza kérését. A hivatalos PDF árajánlat elkészültével az közvetlenül elérhetővé válik ügyfélfiókjában, és hitelesített másolatot küldünk e-mailben is.",
+    "btn_my_quotes": "Árajánlataim megtekintése",
+    "btn_home": "Vissza a főoldalra",
+    "form_title": "Befektetésbecslési űrlap",
+    "form_desc": "Töltse ki az alábbi mezőket, hogy átlátható és céljaihoz igazított árajánlatot kapjon.",
+    "section_contact": "1. Az Ön Elérhetőségei",
+    "label_name": "Teljes név",
+    "placeholder_name": "pl. Kovács János",
+    "label_email": "E-mail cím",
+    "placeholder_email": "kovacs.janos@pelda.hu",
+    "label_phone": "Telefonszám",
+    "label_address": "Város / Irányítószám",
+    "placeholder_address": "pl. 1051 Budapest, Magyarország",
+    "section_project": "2. Az Ön Befektetési Terve",
+    "label_metal": "Kívánt fémtípus",
+    "metal_options": {
+      "opt1": "Befektetési arany (Rudak és Érmék)",
+      "opt2": "Fizikai ezüst (1 kg-os rudak és unciák)",
+      "opt3": "LBMA aranyrudak (50g, 100g, 250g, 1kg)",
+      "opt4": "Forgalomban lévő aranyérmék (Krugerrand, Sovereign, Dukát...)",
+      "opt5": "Diverzifikált portfólió (Arany + Ezüst + Platina)"
+    },
+    "label_budget": "Becsült költségvetés",
+    "budget_options": {
+      "opt1": "5 000 € alatt",
+      "opt2": "5 000 € - 15 000 €",
+      "opt3": "15 000 € - 50 000 €",
+      "opt4": "50 000 € - 150 000 €",
+      "opt5": "Több mint 150 000 € (Privát vagyonkezelés)"
+    },
+    "label_delivery": "Előnyben részesített tárolási vagy átvételi mód",
+    "delivery_options": {
+      "opt1": "100%-ban biztosított diszkrét házhozszállítás (zárt biztonsági csomagban)",
+      "opt2": "Biztonságos személyes átvétel előzetes egyeztetéssel a privát irodában",
+      "opt3": "Biztonságos széftárolás független széfekben (Zürich / Genf / Párizs)"
+    },
+    "label_message": "Kívánt termékek vagy egyedi megjegyzések",
+    "placeholder_message": "Itt adhatja meg kívánságait (pl. 2 x 100 g C.Hafner rúd, 10 x Sovereign, gyors kiszállítás...)",
+    "legal_title": "🛡️ LBMA Garanciák és Tanúsítás",
+    "legal_text": "A befektetési arany törvényileg mentes az áfa alól az EU irányelvei szerint. Az Ön adatai szigorúan bizalmasak, nem képezik kéretlen reklámok tárgyát.",
+    "btn_loading": "Küldés folyamatban...",
+    "btn_submit": "Hivatalos befektetési árajánlatom kérése"
   }
 }

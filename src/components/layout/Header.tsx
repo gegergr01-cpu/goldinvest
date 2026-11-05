@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { searchProducts } from '@/actions/public';
@@ -70,6 +71,7 @@ export default function Header({
   mobileContactWebsite = '',
   userRole: initialUserRole = null,
 }: HeaderProps) {
+  const t = useTranslations('Header');
   const router = useRouter();
   const pathname = usePathname();
   const isHomePage = pathname === '/' || pathname === '';
@@ -115,16 +117,14 @@ export default function Header({
     });
   }, []);
 
-
-
   // Nav links inspired by user reference & AZ Solutions
   const defaultNavLinks = [
-    { label: 'Accueil', url: '/' },
-    { label: "Pièces d'or", url: '/shop?category=pieces-dor' },
-    { label: "Lingots d'or", url: '/shop?category=lingots-dor' },
-    { label: "Argent fin", url: '/shop?category=lingots-dargent' },
-    { label: 'Services', url: '/services' },
-    { label: 'Contact', url: '/contact' },
+    { label: t('nav_home'), url: `${localePrefix || ''}/` },
+    { label: t('nav_coins'), url: `${localePrefix}/shop?category=pieces-dor` },
+    { label: t('nav_bars'), url: `${localePrefix}/shop?category=lingots-dor` },
+    { label: t('nav_silver'), url: `${localePrefix}/shop?category=lingots-dargent` },
+    { label: t('nav_services'), url: `${localePrefix}/services` },
+    { label: t('nav_contact'), url: `${localePrefix}/contact` },
   ];
 
   const activeNavLinks = menuLinks && menuLinks.length > 0 ? menuLinks : defaultNavLinks;
@@ -168,7 +168,7 @@ export default function Header({
           <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
             {/* Logo Line (Left) */}
-            <Link href="/" className="flex items-center flex-none select-none group">
+            <Link href={`${localePrefix || '/'}`} className="flex items-center flex-none select-none group">
               {logoImage ? (
                 <div className="relative flex items-center py-1">
                   <Image
@@ -188,7 +188,7 @@ export default function Header({
                     GOLD<span className="text-[#E8A63D]">INVEST</span>
                   </span>
                   <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
-                    OR · ARGENT · GROUPAGE
+                    {t('tagline')}
                   </span>
                 </div>
               )}
@@ -224,8 +224,8 @@ export default function Header({
                 <Link
                   href={`${localePrefix}/devis`}
                   className="w-10 h-10 rounded-full bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] hover:from-[#D88334] hover:to-[#A85514] text-white flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-[#9C4E0F]/30 border border-[#E8A63D]/40 group relative"
-                  title="Demander un devis personnalisé"
-                  aria-label="Demander un devis"
+                  title={t('request_quote_title')}
+                  aria-label={t('request_quote')}
                 >
                   <svg
                     className="w-4 h-4 text-white drop-shadow-sm transition-transform group-hover:scale-110"
@@ -242,7 +242,7 @@ export default function Header({
                   </svg>
                   {/* Subtle hover tooltip badge */}
                   <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-[#0E2036] border border-white/20 text-[11px] font-medium text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
-                    Demander un devis
+                    {t('request_quote')}
                   </span>
                 </Link>
 
@@ -251,8 +251,8 @@ export default function Header({
                   type="button"
                   onClick={() => setIsContactDrawerOpen(true)}
                   className="w-11 h-11 rounded-full bg-[#0a1420] hover:bg-[#050b13] text-white border-none flex items-center justify-center transition-all duration-150 cursor-pointer shadow-sm"
-                  title="Informations & Contact"
-                  aria-label="Ouvrir le panneau de contact"
+                  title={t('info_contact')}
+                  aria-label={t('open_contact_panel')}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-[17px] h-[17px]">
                     <rect x="3" y="3" width="7" height="7" rx="1.6" />
@@ -267,8 +267,8 @@ export default function Header({
                   type="button"
                   onClick={() => setIsSearchModalOpen(true)}
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer"
-                  aria-label="Rechercher des produits"
-                  title="Rechercher (Échap)"
+                  aria-label={t('search_products')}
+                  title={t('search_title')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -279,8 +279,8 @@ export default function Header({
                 <button
                   onClick={() => cartStore.setIsOpen(true)}
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer relative"
-                  aria-label="Panier"
-                  title="Panier"
+                  aria-label={t('cart')}
+                  title={t('cart')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.9} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -303,8 +303,8 @@ export default function Header({
               <Link
                 href={`${localePrefix}/devis`}
                 className="w-9 h-9 rounded-full bg-gradient-to-r from-[#C8732A] to-[#B8641C] text-white flex items-center justify-center border border-[#E8A63D]/40 shadow-sm shrink-0"
-                aria-label="Demander un devis"
-                title="Demander un devis"
+                aria-label={t('request_quote')}
+                title={t('request_quote')}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -314,8 +314,8 @@ export default function Header({
                 type="button"
                 onClick={() => setIsSearchModalOpen(true)}
                 className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 text-white/80 hover:text-white transition cursor-pointer"
-                aria-label="Rechercher"
-                title="Rechercher"
+                aria-label={t('search_products')}
+                title={t('search_products')}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -326,7 +326,7 @@ export default function Header({
                 type="button"
                 onClick={() => setIsContactDrawerOpen(true)}
                 className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center"
-                aria-label="Contact rapide"
+                aria-label={t('quick_contact')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4">
                   <rect x="3" y="3" width="7" height="7" rx="1.6" />
@@ -339,7 +339,7 @@ export default function Header({
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="text-white text-2xl p-1 focus:outline-none"
-                aria-label="Ouvrir le menu"
+                aria-label={t('open_menu')}
               >
                 ☰
               </button>

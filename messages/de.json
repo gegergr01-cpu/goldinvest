@@ -17,7 +17,22 @@
     "cart": "Warenkorb",
     "new": "Neu",
     "hot": "Heiß",
-    "sale": "Sale"
+    "sale": "Sale",
+    "tagline": "GOLD · SILBER · LAGERUNG",
+    "nav_home": "Startseite",
+    "nav_coins": "Goldmünzen",
+    "nav_bars": "Goldbarren",
+    "nav_silver": "Feinsilber",
+    "nav_services": "Dienstleistungen",
+    "nav_contact": "Kontakt",
+    "request_quote": "Angebot anfordern",
+    "request_quote_title": "Individuelles Angebot anfordern",
+    "info_contact": "Information & Kontakt",
+    "open_contact_panel": "Kontaktbereich öffnen",
+    "search_products": "Produkte suchen",
+    "search_title": "Suchen (Esc)",
+    "quick_contact": "Schnellkontakt",
+    "open_menu": "Menü öffnen"
   },
   "MobileSidebar": {
     "categories": "Kategorien",
@@ -154,7 +169,36 @@
     "no_products_match": "Wir konnten keine Produkte finden, die Ihrer Suche entsprechen.",
     "back_to_home": "Zurück nach Hause",
     "no_image": "Kein Bild",
-    "sale": "VERKAUF"
+    "sale": "VERKAUF",
+    "input_placeholder": "Nach Goldbarren, Münzen, Anlagesilber suchen...",
+    "searching_catalog": "Live-Suche im zertifizierten Katalog...",
+    "certified_products": "Zertifizierte Produkte ({count})",
+    "lbma_live": "LBMA-Livekurse",
+    "lbma_certified": "LBMA Zertifiziert",
+    "no_results_for": "Keine Produkte gefunden für „{query}“",
+    "no_results_tip": "Prüfen Sie die Schreibweise oder versuchen Sie einen allgemeineren Begriff wie Gold, Silber, Barren, Unze oder Münze.",
+    "suggested_searches": "Vorgeschlagene Suchbegriffe",
+    "precious_metals": "Edelmetalle",
+    "browse_by_category": "Nach Kategorie durchsuchen",
+    "cat_gold_coins": "Goldmünzen",
+    "cat_gold_bars": "Goldbarren",
+    "cat_silver": "Anlagesilber",
+    "view_all_in_shop": "Alle Ergebnisse im Shop für „{query}“ ansehen",
+    "press_enter": "Drücken Sie die Eingabetaste ↵",
+    "clear_input": "Eingabe löschen",
+    "close_modal": "Fenster schließen (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Goldbarren",
+      "Goldmünzen",
+      "Silberbarren",
+      "1 Unze",
+      "1 Kilogramm",
+      "Valcambi Schweiz",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Somalia Elefant"
+    ]
   },
   "Cart": {
     "empty_cart": "Ihr Warenkorb ist derzeit leer.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Unze (oz)",
       "unit_g": "Gramm (g)"
     }
+  },
+  "TopBar": {
+    "gold": "GOLD (1 Unze):",
+    "silver": "SILBER (1 Unze):"
+  },
+  "ContactDrawer": {
+    "tagline": "GOLD · SILBER · LAGERUNG",
+    "description": "Spezialisten für Handel, Ankauf und zollfreie Hochsicherheitslagerung von Edelmetallen: Goldmünzen, Barren und Feinsilber mit persönlicher Betreuung.",
+    "contact_title": "Kontakt",
+    "phone_whatsapp": "Telefon / WhatsApp",
+    "second_phone": "Zweite Telefonnummer",
+    "email": "E-Mail",
+    "head_office": "Hauptsitz",
+    "follow_us": "Folgen Sie uns:",
+    "request_free_quote": "Kostenloses Angebot anfordern",
+    "close": "Schließen"
+  },
+  "Devis": {
+    "badge": "✨ Privater Investitionsservice",
+    "title": "Individuelle Angebotsanfrage",
+    "subtitle": "Erhalten Sie innerhalb von 24 bis 48 Stunden ein konkretes Angebot zu offiziellen Live-Marktkursen. Unsere Angebote beinhalten die LBMA-Kursgarantie und Mehrwertsteuerbefreiung.",
+    "success_badge": "Anfrage erfolgreich übermittelt",
+    "success_title": "Ihr Angebot wird bearbeitet",
+    "reference": "REFERENZ:",
+    "success_desc": "Ein Vermögensberater prüft derzeit Ihre Anfrage. Sobald Ihr offizielles PDF-Angebot erstellt ist, finden Sie es in Ihrem Kundenbereich; zudem erhalten Sie eine versiegelte Kopie per E-Mail.",
+    "btn_my_quotes": "Zu meinen Angeboten",
+    "btn_home": "Zurück zur Startseite",
+    "form_title": "Formular zur Investitionsschätzung",
+    "form_desc": "Füllen Sie das untenstehende Formular aus, um ein transparentes, auf Ihre Ziele abgestimmtes Angebot zu erhalten.",
+    "section_contact": "1. Ihre Kontaktdaten",
+    "label_name": "Vollständiger Name",
+    "placeholder_name": "z.B. Max Mustermann",
+    "label_email": "E-Mail-Adresse",
+    "placeholder_email": "max.mustermann@beispiel.de",
+    "label_phone": "Telefonnummer",
+    "label_address": "Stadt / Postleitzahl",
+    "placeholder_address": "z.B. 10115 Berlin, Deutschland",
+    "section_project": "2. Ihr Investitionsvorhaben",
+    "label_metal": "Gewünschte Metallart",
+    "metal_options": {
+      "opt1": "Anlagegold (Barren & Münzen)",
+      "opt2": "Silber (1kg Barren & Unzen)",
+      "opt3": "LBMA-Goldbarren (50g, 100g, 250g, 1kg)",
+      "opt4": "Handelsfähige Goldmünzen (Krügerrand, Maple Leaf, Vreneli...)",
+      "opt5": "Diversifiziertes Portfolio (Gold + Silber + Platin)"
+    },
+    "label_budget": "Geschätztes Budget",
+    "budget_options": {
+      "opt1": "Unter 5.000 €",
+      "opt2": "5.000 € bis 15.000 €",
+      "opt3": "15.000 € bis 50.000 €",
+      "opt4": "50.000 € bis 150.000 €",
+      "opt5": "Über 150.000 € (Private Wealth)"
+    },
+    "label_delivery": "Bevorzugte Lager- oder Liefermethode",
+    "delivery_options": {
+      "opt1": "Versicherter Wertversand (diskrete versiegelte Hauszustellung)",
+      "opt2": "Sichere Abholung nach Terminvereinbarung in privater Filiale",
+      "opt3": "Hochsicherheitslagerung im Tresor (Zürich / Genf / Paris)"
+    },
+    "label_message": "Gesuchte Produkte oder besondere Hinweise",
+    "placeholder_message": "Geben Sie hier Ihre Wünsche an (z.B. 2 x 100g C.Hafner Barren, 10 x Vreneli, schnelle Lieferung...)",
+    "legal_title": "🛡️ LBMA-Garantien & Zertifizierung",
+    "legal_text": "Anlagegold ist nach geltendem EU-Steuerrecht von der Mehrwertsteuer befreit. Ihre Angaben sind streng vertraulich und werden niemals unbefugt weitergegeben.",
+    "btn_loading": "Übermittlung läuft...",
+    "btn_submit": "Mein offizielles Anlageangebot anfordern"
   }
 }

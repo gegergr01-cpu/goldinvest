@@ -17,7 +17,22 @@
     "cart": "Carrello",
     "new": "Nuovo",
     "hot": "Popolari",
-    "sale": "Offerte"
+    "sale": "Offerte",
+    "tagline": "ORO · ARGENTO · DEPOSITO",
+    "nav_home": "Home",
+    "nav_coins": "Monete d'oro",
+    "nav_bars": "Lingotti d'oro",
+    "nav_silver": "Argento puro",
+    "nav_services": "Servizi",
+    "nav_contact": "Contatti",
+    "request_quote": "Richiedi un preventivo",
+    "request_quote_title": "Richiedi un preventivo personalizzato",
+    "info_contact": "Informazioni & Contatti",
+    "open_contact_panel": "Apri pannello contatti",
+    "search_products": "Cerca prodotti",
+    "search_title": "Cerca (Esc)",
+    "quick_contact": "Contatto rapido",
+    "open_menu": "Apri menu"
   },
   "MobileSidebar": {
     "categories": "Categorie",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Cerca lingotti d'oro, monete, argento da investimento...",
+    "searching_catalog": "Ricerca in tempo reale nel catalogo certificato...",
+    "certified_products": "Prodotti certificati ({count})",
+    "lbma_live": "Prezzi LBMA in tempo reale",
+    "lbma_certified": "Certificato LBMA",
+    "no_results_for": "Nessun prodotto trovato per «{query}»",
+    "no_results_tip": "Controlla l'ortografia o prova un termine più generale come oro, argento, lingotto, oncia o sterlina.",
+    "suggested_searches": "Ricerche rapide suggerite",
+    "precious_metals": "Metalli Preziosi",
+    "browse_by_category": "Sfoglia per categoria",
+    "cat_gold_coins": "Monete d'oro",
+    "cat_gold_bars": "Lingotti d'oro",
+    "cat_silver": "Argento da investimento",
+    "view_all_in_shop": "Visualizza tutti i risultati nel negozio per «{query}»",
+    "press_enter": "Premi Invio ↵",
+    "clear_input": "Cancella input",
+    "close_modal": "Chiudi finestra (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Lingotti d'oro",
+      "Monete d'oro",
+      "Lingotti d'argento",
+      "1 Oncia",
+      "1 Chilogrammo",
+      "Valcambi Svizzera",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Elefante della Somalia"
+    ]
   },
   "Cart": {
     "empty_cart": "Your cart is currently empty.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Oncia (oz)",
       "unit_g": "Grammo (g)"
     }
+  },
+  "TopBar": {
+    "gold": "ORO (1 oz):",
+    "silver": "ARGENTO (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "ORO · ARGENTO · DEPOSITO",
+    "description": "Specialisti nel commercio, riacquisto e custodia sicura di metalli preziosi: monete d'oro, lingotti e argento puro, con assistenza privata su misura.",
+    "contact_title": "Contatto",
+    "phone_whatsapp": "Telefono / WhatsApp",
+    "second_phone": "Secondo numero",
+    "email": "Email",
+    "head_office": "Sede legale",
+    "follow_us": "Seguici:",
+    "request_free_quote": "Richiedi un preventivo gratuito",
+    "close": "Chiudi"
+  },
+  "Devis": {
+    "badge": "✨ Servizio Privato di Investimento",
+    "title": "Richiesta di Preventivo Personalizzato",
+    "subtitle": "Ricevi una proposta dettagliata entro 24-48 ore alle quotazioni ufficiali di mercato in tempo reale. I nostri preventivi beneficiano della garanzia di prezzo LBMA e dell'esenzione IVA.",
+    "success_badge": "Richiesta inviata con successo",
+    "success_title": "Il tuo preventivo è in lavorazione",
+    "reference": "RIFERIMENTO:",
+    "success_desc": "Un consulente patrimoniale sta esaminando la tua richiesta. Non appena emesso, il preventivo ufficiale in formato PDF sarà disponibile nella tua area personale e riceverai una copia via email.",
+    "btn_my_quotes": "Accedi ai miei preventivi",
+    "btn_home": "Torna alla home",
+    "form_title": "Modulo di stima dell'investimento",
+    "form_desc": "Compila i dettagli seguenti per ricevere una quotazione trasparente e su misura per i tuoi obiettivi di investimento.",
+    "section_contact": "1. I Tuoi Recapiti",
+    "label_name": "Nome completo",
+    "placeholder_name": "es: Mario Rossi",
+    "label_email": "Indirizzo email",
+    "placeholder_email": "mario.rossi@esempio.it",
+    "label_phone": "Numero di telefono",
+    "label_address": "Città / CAP",
+    "placeholder_address": "es: 20121 Milano, Italia",
+    "section_project": "2. Il Tuo Progetto di Investimento",
+    "label_metal": "Tipo di metallo desiderato",
+    "metal_options": {
+      "opt1": "Oro da investimento (Lingotti e Monete)",
+      "opt2": "Argento fisico (Lingotti 1kg e Once)",
+      "opt3": "Lingotti d'Oro LBMA (50g, 100g, 250g, 1kg)",
+      "opt4": "Monete d'Oro da borsa (Sterlina, Krugerrand, Marengo...)",
+      "opt5": "Portafoglio diversificato (Oro + Argento + Platino)"
+    },
+    "label_budget": "Budget stimato",
+    "budget_options": {
+      "opt1": "Meno di 5.000 €",
+      "opt2": "Da 5.000 € a 15.000 €",
+      "opt3": "Da 15.000 € a 50.000 €",
+      "opt4": "Da 50.000 € a 150.000 €",
+      "opt5": "Oltre 150.000 € (Private Wealth)"
+    },
+    "label_delivery": "Modalità di custodia o consegna preferita",
+    "delivery_options": {
+      "opt1": "Consegna assicurata 100% a domicilio (plico sigillato discreto)",
+      "opt2": "Ritiro sicuro su appuntamento presso agenzia privata",
+      "opt3": "Custodia sicura in caveau ad alta sicurezza (Zurigo / Ginevra / Parigi)"
+    },
+    "label_message": "Prodotti desiderati o istruzioni particolari",
+    "placeholder_message": "Specifica qui i tuoi desideri (es: 2 x lingotti da 100g C.Hafner, 10 x Sterline, consegna rapida...)",
+    "legal_title": "🛡️ Garanzie e Certificazione LBMA",
+    "legal_text": "L'oro da investimento è legalmente esente da IVA (Direttiva 2006/112/CE). I tuoi dati sono strettamente confidenziali e non saranno oggetto di comunicazioni commerciali indesiderate.",
+    "btn_loading": "Invio in corso...",
+    "btn_submit": "Ricevi il preventivo ufficiale di investimento"
   }
 }

@@ -17,7 +17,22 @@
     "cart": "Cart",
     "new": "New",
     "hot": "Hot",
-    "sale": "Sale"
+    "sale": "Sale",
+    "tagline": "GOLD · SILVER · STORAGE",
+    "nav_home": "Home",
+    "nav_coins": "Gold Coins",
+    "nav_bars": "Gold Bars",
+    "nav_silver": "Fine Silver",
+    "nav_services": "Services",
+    "nav_contact": "Contact",
+    "request_quote": "Request a quote",
+    "request_quote_title": "Request a personalized quote",
+    "info_contact": "Information & Contact",
+    "open_contact_panel": "Open contact panel",
+    "search_products": "Search products",
+    "search_title": "Search (Esc)",
+    "quick_contact": "Quick contact",
+    "open_menu": "Open menu"
   },
   "MobileSidebar": {
     "categories": "Categories",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Search for gold bars, coins, investment silver...",
+    "searching_catalog": "Live search in the certified catalog...",
+    "certified_products": "Certified products ({count})",
+    "lbma_live": "Live LBMA Prices",
+    "lbma_certified": "LBMA Certified",
+    "no_results_for": "No products found for \"{query}\"",
+    "no_results_tip": "Check your spelling or try a broader term like gold, silver, bar, ounce or sovereign.",
+    "suggested_searches": "Suggested quick searches",
+    "precious_metals": "Precious Metals",
+    "browse_by_category": "Browse by category",
+    "cat_gold_coins": "Gold Coins",
+    "cat_gold_bars": "Gold Bars",
+    "cat_silver": "Investment Silver",
+    "view_all_in_shop": "View all results in the shop for \"{query}\"",
+    "press_enter": "Press Enter ↵",
+    "clear_input": "Clear input",
+    "close_modal": "Close window (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Gold Bars",
+      "Gold Coins",
+      "Silver Bars",
+      "1 Ounce",
+      "1 Kilogram",
+      "Valcambi Swiss",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Somalia Elephant"
+    ]
   },
   "Cart": {
     "empty_cart": "Your cart is currently empty.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Ounce (oz)",
       "unit_g": "Gram (g)"
     }
+  },
+  "TopBar": {
+    "gold": "GOLD (1 oz):",
+    "silver": "SILVER (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "GOLD · SILVER · STORAGE",
+    "description": "Specialists in trading, buyback and secure vault storage of precious metals: gold coins, bars and fine silver, with dedicated private guidance at every step.",
+    "contact_title": "Contact",
+    "phone_whatsapp": "Phone / WhatsApp",
+    "second_phone": "Secondary number",
+    "email": "Email",
+    "head_office": "Headquarters",
+    "follow_us": "Follow us:",
+    "request_free_quote": "Request a free quote",
+    "close": "Close"
+  },
+  "Devis": {
+    "badge": "✨ Private Investment Service",
+    "title": "Personalized Quote Request",
+    "subtitle": "Receive a detailed price proposal within 24 to 48 hours based on real-time official market prices. Our quotes include LBMA price guarantees and comply with VAT exemption regulations.",
+    "success_badge": "Request submitted successfully",
+    "success_title": "Your quote request is being processed",
+    "reference": "REFERENCE:",
+    "success_desc": "A wealth advisor is currently reviewing your request. Once issued, your official PDF quote will be accessible in your customer portal and a sealed copy will be sent to your email.",
+    "btn_my_quotes": "View my quotes",
+    "btn_home": "Back to home",
+    "form_title": "Investment Estimation Form",
+    "form_desc": "Complete the details below to receive transparent pricing tailored to your wealth preservation goals.",
+    "section_contact": "1. Your Contact Information",
+    "label_name": "Full name",
+    "placeholder_name": "e.g. John Doe",
+    "label_email": "Email address",
+    "placeholder_email": "john.doe@example.com",
+    "label_phone": "Phone number",
+    "label_address": "City / Postal Code",
+    "placeholder_address": "e.g. London SW1A, United Kingdom",
+    "section_project": "2. Your Investment Project",
+    "label_metal": "Preferred metal type",
+    "metal_options": {
+      "opt1": "Investment Gold (Bars & Coins)",
+      "opt2": "Silver Metal (1kg Bars & Ounces)",
+      "opt3": "LBMA Gold Bars (50g, 100g, 250g, 1kg)",
+      "opt4": "Tradeable Gold Coins (Sovereign, Krugerrand, Napoleon...)",
+      "opt5": "Diversified Portfolio (Gold + Silver + Platinum)"
+    },
+    "label_budget": "Estimated budget",
+    "budget_options": {
+      "opt1": "Under €5,000",
+      "opt2": "€5,000 to €15,000",
+      "opt3": "€15,000 to €50,000",
+      "opt4": "€50,000 to €150,000",
+      "opt5": "Over €150,000 (Private Wealth)"
+    },
+    "label_delivery": "Preferred storage or delivery method",
+    "delivery_options": {
+      "opt1": "Secure insured delivery (discreet sealed parcel to your door)",
+      "opt2": "Secure collection by appointment at private branch",
+      "opt3": "High-security bonded vault storage (Zurich / Geneva / Paris)"
+    },
+    "label_message": "Requested products or specific instructions",
+    "placeholder_message": "Specify your preferences here (e.g. 2 x 100g C.Hafner bars, 10 x Sovereigns, urgent delivery...)",
+    "legal_title": "🛡️ LBMA Guarantees & Certification",
+    "legal_text": "Investment gold is legally exempt from VAT under European tax directives. Your personal data remains strictly confidential and will never be subject to unsolicited marketing.",
+    "btn_loading": "Submitting request...",
+    "btn_submit": "Receive my official investment quote"
   }
 }

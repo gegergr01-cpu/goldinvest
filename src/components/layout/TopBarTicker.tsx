@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface MetalPrices {
   goldEur: number;
@@ -70,6 +71,7 @@ const CURRENCIES: CurrencyConfig[] = [
 ];
 
 export default function TopBarTicker() {
+  const t = useTranslations('TopBar');
   const [prices, setPrices] = useState<MetalPrices>(DEFAULT_PRICES);
 
   useEffect(() => {
@@ -102,7 +104,7 @@ export default function TopBarTicker() {
 
         {/* Gold item */}
         <div className="inline-flex items-center gap-1.5 text-xs">
-          <span className="text-white/60 font-medium">OR (1 oz):</span>
+          <span className="text-white/60 font-medium">{t('gold')}</span>
           <span className="font-semibold text-white tracking-wide">
             {cur.formatGold(prices.goldEur)}
           </span>
@@ -115,7 +117,7 @@ export default function TopBarTicker() {
 
         {/* Silver item */}
         <div className="inline-flex items-center gap-1.5 text-xs">
-          <span className="text-white/60 font-medium">ARGENT (1 oz):</span>
+          <span className="text-white/60 font-medium">{t('silver')}</span>
           <span className="font-semibold text-white tracking-wide">
             {cur.formatSilver(prices.silverEur)}
           </span>

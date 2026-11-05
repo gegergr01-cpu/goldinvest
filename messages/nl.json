@@ -17,7 +17,22 @@
     "cart": "Winkelwagen",
     "new": "Nieuw",
     "hot": "Populair",
-    "sale": "Aanbieding"
+    "sale": "Aanbieding",
+    "tagline": "GOUD · ZILVER · OPSLAG",
+    "nav_home": "Home",
+    "nav_coins": "Gouden munten",
+    "nav_bars": "Goudstaven",
+    "nav_silver": "Fijn zilver",
+    "nav_services": "Diensten",
+    "nav_contact": "Contact",
+    "request_quote": "Offerte aanvragen",
+    "request_quote_title": "Vraag een offerte op maat aan",
+    "info_contact": "Informatie & Contact",
+    "open_contact_panel": "Contactpaneel openen",
+    "search_products": "Producten zoeken",
+    "search_title": "Zoeken (Esc)",
+    "quick_contact": "Snel contact",
+    "open_menu": "Menu openen"
   },
   "MobileSidebar": {
     "categories": "Categorieën",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Zoeken naar goudstaven, munten, beleggingszilver...",
+    "searching_catalog": "Live zoeken in de gecertificeerde catalogus...",
+    "certified_products": "Gecertificeerde producten ({count})",
+    "lbma_live": "Live LBMA-koersen",
+    "lbma_certified": "LBMA Gecertificeerd",
+    "no_results_for": "Geen producten gevonden voor \"{query}\"",
+    "no_results_tip": "Controleer de spelling of probeer een bredere zoekterm zoals goud, zilver, staaf, ounce of munt.",
+    "suggested_searches": "Aanbevolen zoekopdrachten",
+    "precious_metals": "Edelmetalen",
+    "browse_by_category": "Bladeren per categorie",
+    "cat_gold_coins": "Gouden munten",
+    "cat_gold_bars": "Goudstaven",
+    "cat_silver": "Beleggingszilver",
+    "view_all_in_shop": "Bekijk alle resultaten in de winkel voor \"{query}\"",
+    "press_enter": "Druk op Enter ↵",
+    "clear_input": "Invoer wissen",
+    "close_modal": "Venster sluiten (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Goudstaven",
+      "Gouden munten",
+      "Zilverstaven",
+      "1 Troy Ounce",
+      "1 Kilogram",
+      "Valcambi Zwitserland",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Somalië Olifant"
+    ]
   },
   "Cart": {
     "empty_cart": "Your cart is currently empty.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Troy Ounce (oz)",
       "unit_g": "Gram (g)"
     }
+  },
+  "TopBar": {
+    "gold": "GOUD (1 oz):",
+    "silver": "ZILVER (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "GOUD · ZILVER · OPSLAG",
+    "description": "Specialisten in handel, terugkoop en beveiligde kluisopslag van edelmetalen: gouden munten, baren en fijn zilver, met private begeleiding bij elke stap.",
+    "contact_title": "Contact",
+    "phone_whatsapp": "Telefoon / WhatsApp",
+    "second_phone": "Tweede telefoonnummer",
+    "email": "E-mail",
+    "head_office": "Hoofdkantoor",
+    "follow_us": "Volg ons:",
+    "request_free_quote": "Gratis offerte aanvragen",
+    "close": "Sluiten"
+  },
+  "Devis": {
+    "badge": "✨ Private Beleggingsservice",
+    "title": "Aanvraag van een Offerte op Maat",
+    "subtitle": "Ontvang binnen 24 tot 48 uur een offerte op basis van officiële live marktkoersen. Onze offertes bevatten de LBMA-koersgarantie en zijn conform het btw-vrijstellingsregime.",
+    "success_badge": "Aanvraag succesvol verzonden",
+    "success_title": "Uw offerte is in behandeling genomen",
+    "reference": "REFERENTIE:",
+    "success_desc": "Een vermogensadviseur bekijkt momenteel uw aanvraag. Zodra uw officiële pdf-offerte gereed is, is deze beschikbaar in uw klantenzone en ontvangt u een verzegeld exemplaar per e-mail.",
+    "btn_my_quotes": "Naar mijn offertes",
+    "btn_home": "Terug naar startpagina",
+    "form_title": "Formulier investeringsschatting",
+    "form_desc": "Vul onderstaande gegevens in voor een transparante prijsstelling op maat van uw doelen.",
+    "section_contact": "1. Uw Contactgegevens",
+    "label_name": "Volledige naam",
+    "placeholder_name": "bijv. Jan Jansen",
+    "label_email": "E-mailadres",
+    "placeholder_email": "jan.jansen@voorbeeld.nl",
+    "label_phone": "Telefoonnummer",
+    "label_address": "Stad / Postcode",
+    "placeholder_address": "bijv. 1012 AB Amsterdam, Nederland",
+    "section_project": "2. Uw Beleggingsproject",
+    "label_metal": "Gewenst metaaltype",
+    "metal_options": {
+      "opt1": "Beleggingsgoud (Baren en Munten)",
+      "opt2": "Zilver fysiek (1kg baren en Ounces)",
+      "opt3": "LBMA-goudstaven (50g, 100g, 250g, 1kg)",
+      "opt4": "Verhandelbare gouden munten (Krugerrand, Maple Leaf, Tientje...)",
+      "opt5": "Gediversifieerde portefeuille (Goud + Zilver + Platina)"
+    },
+    "label_budget": "Geschat budget",
+    "budget_options": {
+      "opt1": "Minder dan € 5.000",
+      "opt2": "€ 5.000 tot € 15.000",
+      "opt3": "€ 15.000 tot € 50.000",
+      "opt4": "€ 50.000 tot € 150.000",
+      "opt5": "Meer dan € 150.000 (Private Wealth)"
+    },
+    "label_delivery": "Voorkeur voor opslag of levering",
+    "delivery_options": {
+      "opt1": "Volledig verzekerde bezorging aan huis (discreet verzegeld)",
+      "opt2": "Veilige afhaling op afspraak in privékantoor",
+      "opt3": "Hoogbeveiligde kluisopslag (Zürich / Genève / Parijs)"
+    },
+    "label_message": "Gewenste producten of specifieke instructies",
+    "placeholder_message": "Geef hier uw wensen door (bijv. 2 x 100g C.Hafner baren, 10 x Tientjes, snelle levering...)",
+    "legal_title": "🛡️ LBMA Garanties & Certificering",
+    "legal_text": "Beleggingsgoud is wettelijk vrijgesteld van btw. Uw gegevens zijn strikt vertrouwelijk en worden nooit voor ongewenste commerciële doeleinden gebruikt.",
+    "btn_loading": "Verzenden...",
+    "btn_submit": "Mijn officiële beleggingsofferte ontvangen"
   }
 }

@@ -17,7 +17,22 @@
     "cart": "Carrinho",
     "new": "Novo",
     "hot": "Populares",
-    "sale": "Promoções"
+    "sale": "Promoções",
+    "tagline": "OURO · PRATA · ARMAZENAMENTO",
+    "nav_home": "Início",
+    "nav_coins": "Moedas de ouro",
+    "nav_bars": "Barras de ouro",
+    "nav_silver": "Prata fina",
+    "nav_services": "Serviços",
+    "nav_contact": "Contacto",
+    "request_quote": "Solicitar orçamento",
+    "request_quote_title": "Pedir um orçamento personalizado",
+    "info_contact": "Informações e Contacto",
+    "open_contact_panel": "Abrir painel de contacto",
+    "search_products": "Pesquisar produtos",
+    "search_title": "Pesquisar (Esc)",
+    "quick_contact": "Contacto rápido",
+    "open_menu": "Abrir menu"
   },
   "MobileSidebar": {
     "categories": "Categorias",
@@ -154,7 +169,36 @@
     "no_products_match": "We couldn't find any products matching your search.",
     "back_to_home": "Back to Home",
     "no_image": "No Image",
-    "sale": "SALE"
+    "sale": "SALE",
+    "input_placeholder": "Pesquisar barras de ouro, moedas, prata de investimento...",
+    "searching_catalog": "Pesquisa em tempo real no catálogo certificado...",
+    "certified_products": "Produtos certificados ({count})",
+    "lbma_live": "Cotações LBMA em direto",
+    "lbma_certified": "Certificado LBMA",
+    "no_results_for": "Nenhum produto encontrado para «{query}»",
+    "no_results_tip": "Verifique a ortografia ou tente um termo mais genérico como ouro, prata, barra, onça ou moeda.",
+    "suggested_searches": "Pesquisas rápidas sugeridas",
+    "precious_metals": "Metais Preciosos",
+    "browse_by_category": "Navegar por categoria",
+    "cat_gold_coins": "Moedas de ouro",
+    "cat_gold_bars": "Barras de ouro",
+    "cat_silver": "Prata de investimento",
+    "view_all_in_shop": "Ver todos os resultados na loja para «{query}»",
+    "press_enter": "Pressione Enter ↵",
+    "clear_input": "Limpar pesquisa",
+    "close_modal": "Fechar janela (Esc)",
+    "esc_key": "Esc",
+    "quick_tags": [
+      "Barras de ouro",
+      "Moedas de ouro",
+      "Barras de prata",
+      "1 Onça",
+      "1 Quilograma",
+      "Valcambi Suíça",
+      "C.HAFNER",
+      "StoneX Bullion",
+      "Elefante da Somália"
+    ]
   },
   "Cart": {
     "empty_cart": "Your cart is currently empty.",
@@ -1791,5 +1835,71 @@
       "unit_oz": "Onça (oz)",
       "unit_g": "Grama (g)"
     }
+  },
+  "TopBar": {
+    "gold": "OURO (1 oz):",
+    "silver": "PRATA (1 oz):"
+  },
+  "ContactDrawer": {
+    "tagline": "OURO · PRATA · ARMAZENAMENTO",
+    "description": "Especialistas em negociação, recompra e custódia segura de metais preciosos: moedas de ouro, barras e prata fina, com assessoria privada personalizada.",
+    "contact_title": "Contacto",
+    "phone_whatsapp": "Telefone / WhatsApp",
+    "second_phone": "Segundo número",
+    "email": "Email",
+    "head_office": "Sede",
+    "follow_us": "Siga-nos:",
+    "request_free_quote": "Pedir orçamento gratuito",
+    "close": "Fechar"
+  },
+  "Devis": {
+    "badge": "✨ Serviço Privado de Investimento",
+    "title": "Pedido de Orçamento Personalizado",
+    "subtitle": "Obtenha uma proposta detalhada no prazo de 24 a 48 horas com base nas cotações oficiais do mercado em tempo real. As nossas propostas beneficiam de garantia LBMA e isenção de IVA.",
+    "success_badge": "Pedido enviado com sucesso",
+    "success_title": "O seu orçamento foi recebido",
+    "reference": "REFERÊNCIA:",
+    "success_desc": "Um consultor patrimonial está a analisar o seu pedido. Assim que for emitido, o seu orçamento oficial em PDF estará disponível na sua área de cliente e receberá uma cópia selada por e-mail.",
+    "btn_my_quotes": "Aceder aos meus orçamentos",
+    "btn_home": "Voltar ao início",
+    "form_title": "Formulário de estimativa de investimento",
+    "form_desc": "Preencha os dados abaixo para receber uma proposta transparente e adaptada aos seus objetivos.",
+    "section_contact": "1. Os Seus Contactos",
+    "label_name": "Nome completo",
+    "placeholder_name": "ex: João Silva",
+    "label_email": "Endereço de email",
+    "placeholder_email": "joao.silva@exemplo.pt",
+    "label_phone": "Número de telefone",
+    "label_address": "Cidade / Código Postal",
+    "placeholder_address": "ex: 1000-001 Lisboa, Portugal",
+    "section_project": "2. O Seu Projeto de Investimento",
+    "label_metal": "Tipo de metal pretendido",
+    "metal_options": {
+      "opt1": "Ouro de investimento (Barras e Moedas)",
+      "opt2": "Prata física (Barras de 1kg e Onças)",
+      "opt3": "Barras de Ouro LBMA (50g, 100g, 250g, 1kg)",
+      "opt4": "Moedas de Ouro cotadas (Soberano, Krugerrand, Libra...)",
+      "opt5": "Carteira diversificada (Ouro + Prata + Platina)"
+    },
+    "label_budget": "Orçamento estimado",
+    "budget_options": {
+      "opt1": "Menos de 5.000 €",
+      "opt2": "5.000 € a 15.000 €",
+      "opt3": "15.000 € a 50.000 €",
+      "opt4": "50.000 € a 150.000 €",
+      "opt5": "Mais de 150.000 € (Gestão privada)"
+    },
+    "label_delivery": "Método preferencial de custódia ou entrega",
+    "delivery_options": {
+      "opt1": "Entrega segura 100% segurada ao domicílio (embalagem selada discreta)",
+      "opt2": "Levantamento seguro mediante marcação em balcão privado",
+      "opt3": "Custódia em cofres de alta segurança (Zurique / Genebra / Paris)"
+    },
+    "label_message": "Produtos pretendidos ou instruções específicas",
+    "placeholder_message": "Especifique aqui as suas preferências (ex: 2 x barras de 100g C.Hafner, 10 x Soberanos, entrega rápida...)",
+    "legal_title": "🛡️ Garantias e Certificação LBMA",
+    "legal_text": "O ouro de investimento está legalmente isento de IVA. As suas informações são estritamente confidenciais e nunca serão utilizadas para prospeção não solicitada.",
+    "btn_loading": "A enviar...",
+    "btn_submit": "Receber a minha proposta oficial de investimento"
   }
 }
