@@ -616,7 +616,9 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {/* 1. Métal */}
+            {/* LIGNE 1 : 1. Type de Métal | 2. Poids Brut Total | 3. Millésime / Année */}
+
+            {/* 1. Type de Métal */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
                 Type de Métal
@@ -633,7 +635,37 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
               </select>
             </div>
 
-            {/* 2. Pureté / Titrage */}
+            {/* 2. Poids Brut (optionnel) */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Poids brut total <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
+              </label>
+              <input
+                type="text"
+                value={grossWeight}
+                onChange={(e) => setGrossWeight(e.target.value)}
+                placeholder="ex: 6,45 g (pour Napoléon 20F)"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent font-medium"
+              />
+            </div>
+
+            {/* 3. Année / Millésime (optionnel) */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Millésime / Année <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
+              </label>
+              <input
+                type="text"
+                value={mintYear}
+                onChange={(e) => setMintYear(e.target.value)}
+                placeholder="ex: 1904, 1883, 2025"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent font-medium"
+              />
+            </div>
+
+            {/* LIGNE 2 : 4. Pureté / Titrage | 5. Poids Fin | 6. Certification & Sceau */}
+
+            {/* 4. Pureté / Titrage */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -663,7 +695,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
               </div>
             </div>
 
-            {/* 3. Poids Fin */}
+            {/* 5. Poids Fin */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -693,21 +725,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
               </div>
             </div>
 
-            {/* 4. Poids Brut (optionnel) */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                Poids brut total <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
-              </label>
-              <input
-                type="text"
-                value={grossWeight}
-                onChange={(e) => setGrossWeight(e.target.value)}
-                placeholder="ex: 6,45 g (pour Napoléon 20F)"
-                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
-              />
-            </div>
-
-            {/* 5. Certification & Conditionnement */}
+            {/* 6. Certification & Conditionnement */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
                 Certification & Sceau
@@ -717,7 +735,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                 value={certification}
                 onChange={(e) => setCertification(e.target.value)}
                 placeholder="ex: Certifié LBMA, Sous blister scellé"
-                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
+                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent font-medium"
               />
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {['Certifié LBMA', 'Sous blister scellé', 'Sachet scellé sécurisé'].map((c) => (
@@ -731,20 +749,6 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* 6. Année / Millésime (optionnel) */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                Millésime / Année <span className="text-gray-400 font-normal lowercase">(optionnel)</span>
-              </label>
-              <input
-                type="text"
-                value={mintYear}
-                onChange={(e) => setMintYear(e.target.value)}
-                placeholder="ex: 1904, 1883, 2025"
-                className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#C8732A] focus:border-transparent"
-              />
             </div>
           </div>
         </div>
