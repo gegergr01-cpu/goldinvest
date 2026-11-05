@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LOCALES, LOCALE_DETAILS, type Locale } from '@/i18n/config';
+import FlagIcon from '@/components/ui/FlagIcon';
 
 interface LanguageSelectorProps {
   currentLocale?: string;
@@ -74,12 +75,14 @@ export default function LanguageSelector({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/10 text-white text-[13px] font-semibold transition-all duration-150 cursor-pointer shadow-sm select-none"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/15 text-white text-[13px] font-semibold transition-all duration-150 cursor-pointer shadow-sm select-none"
           aria-expanded={isOpen}
           aria-haspopup="true"
           title="Changer de langue / Change language"
         >
-          <span className="text-sm leading-none">{activeDetail.flag}</span>
+          <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/20">
+            <FlagIcon code={activeCode} className="w-full h-full object-cover" />
+          </span>
           <span className="font-mono text-xs tracking-wider uppercase text-white/90">{activeDetail.code}</span>
           <svg
             className={`w-3 h-3 text-white/60 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -92,11 +95,12 @@ export default function LanguageSelector({
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-[#0E2036]/95 backdrop-blur-xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.5)] py-2 z-50 text-white divide-y divide-white/5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-3 py-1.5 text-[11px] font-mono tracking-wider text-white/40 uppercase">
-              Sélectionnez une langue
+          <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-[#0E2036] border border-white/20 shadow-[0_16px_50px_rgba(0,0,0,0.7)] py-2 z-[9999] text-white divide-y divide-white/10 animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-3.5 py-1.5 text-[10.5px] font-mono tracking-wider text-white/50 uppercase flex items-center justify-between">
+              <span>Sélectionnez une langue</span>
+              <span className="text-[9px] text-[#E8A63D] font-bold">9 LANGUES</span>
             </div>
-            <div className="py-1 max-h-72 overflow-y-auto">
+            <div className="py-1 max-h-80 overflow-y-auto">
               {SUPPORTED_LOCALES.map((loc) => {
                 const detail = LOCALE_DETAILS[loc];
                 const isCurrent = loc === activeCode;
@@ -104,15 +108,17 @@ export default function LanguageSelector({
                   <button
                     key={loc}
                     onClick={() => handleSelectLanguage(loc)}
-                    className={`w-full flex items-center justify-between px-3.5 py-2 text-left text-xs transition-colors cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 text-left text-xs transition-colors cursor-pointer ${
                       isCurrent
-                        ? 'bg-[#C8732A]/20 text-[#E8A63D] font-bold'
-                        : 'hover:bg-white/10 text-white/80 hover:text-white'
+                        ? 'bg-[#C8732A]/25 text-[#E8A63D] font-bold'
+                        : 'hover:bg-white/10 text-white/85 hover:text-white'
                     }`}
                   >
                     <span className="flex items-center gap-2.5">
-                      <span className="text-base leading-none">{detail.flag}</span>
-                      <span>{detail.nativeName}</span>
+                      <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-sm shrink-0 flex items-center justify-center border border-white/15">
+                        <FlagIcon code={loc} className="w-full h-full object-cover" />
+                      </span>
+                      <span className="text-xs font-medium">{detail.nativeName}</span>
                     </span>
                     <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">
                       {detail.code}
@@ -145,7 +151,9 @@ export default function LanguageSelector({
               }`}
               title={detail.nativeName}
             >
-              <span>{detail.flag}</span>
+              <span className="w-4 h-3 rounded-[2px] overflow-hidden shrink-0 flex items-center justify-center border border-white/15">
+                <FlagIcon code={loc} className="w-full h-full object-cover" />
+              </span>
               <span className="uppercase text-[11px] font-mono tracking-wider">{detail.code}</span>
             </button>
           );
@@ -174,7 +182,9 @@ export default function LanguageSelector({
                   : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
               }`}
             >
-              <span className="text-sm">{detail.flag}</span>
+              <span className="w-4 h-3 rounded-[2px] overflow-hidden shrink-0 flex items-center justify-center border border-white/15">
+                <FlagIcon code={loc} className="w-full h-full object-cover" />
+              </span>
               <span className="uppercase font-mono text-[11px]">{detail.code}</span>
             </button>
           );
@@ -183,4 +193,3 @@ export default function LanguageSelector({
     </div>
   );
 }
-

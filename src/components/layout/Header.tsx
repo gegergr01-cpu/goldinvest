@@ -191,11 +191,11 @@ export default function Header({
         On other pages: RELATIVE in normal document flow with solid #0E2036 dark background.
       */}
       <div
-        className={`w-full max-w-full overflow-x-hidden transition-all duration-300 ${isScrolled
+        className={`w-full max-w-full transition-all duration-300 ${isScrolled
             ? 'fixed top-0 left-0 right-0 z-50'
             : isHomePage
-              ? 'absolute top-0 left-0 right-0 z-40'
-              : 'relative z-40'
+              ? 'absolute top-0 left-0 right-0 z-50'
+              : 'relative z-50'
           }`}
       >
         {/* 1. TOP BAR TICKER (Cycles in infinite scroll through EUR, DKK, Forint, GBP, USD, CAD) */}
