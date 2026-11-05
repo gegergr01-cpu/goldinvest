@@ -9,13 +9,17 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  
   const contactSettings = await getContactSettings();
   if (resolvedParams.slug === contactSettings.slug) {
-    return { title: contactSettings.title };
+    return {
+      title: `${contactSettings.title} - ${storeName}`,
+      description: "Contactez les conseillers et spécialistes en métaux précieux de Gold Silver Invest. Conseil personnalisé en investissement or et argent physique, gardiennage et achat sécurisé.",
+    };
   }
 
   const { data: page } = await getPageBySlug(resolvedParams.slug);
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
   
   if (!page || !page.isPublished) {
     return {

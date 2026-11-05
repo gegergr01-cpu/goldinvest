@@ -28,16 +28,35 @@ export async function getContactSettings() {
     return acc;
   }, {});
 
+  const isDefaultGermanAct = !settingsMap.CONTACT_TEXT || 
+    settingsMap.CONTACT_TEXT.includes('German Telemedia Act') || 
+    settingsMap.CONTACT_TEXT.includes('Prestataire De Services');
+
+  const isDefaultTitle = !settingsMap.CONTACT_TITLE || 
+    settingsMap.CONTACT_TITLE === 'Content Responsibility';
+
   return {
-    title: settingsMap.CONTACT_TITLE !== undefined ? settingsMap.CONTACT_TITLE : 'Content Responsibility',
+    title: (!isDefaultTitle && settingsMap.CONTACT_TITLE)
+      ? settingsMap.CONTACT_TITLE
+      : 'Conseil & Accompagnement Patrimonial',
     slug: settingsMap.CONTACT_SLUG !== undefined ? settingsMap.CONTACT_SLUG : 'contact',
-    text: settingsMap.CONTACT_TEXT !== undefined ? settingsMap.CONTACT_TEXT : `En Tant Que Prestataire De Services, Nous Sommes Responsables De Nos Propres\nContent on these pages in accordance with Section 7, Paragraph 1 of the\nGerman Telemedia Act (TMG).\n\nHowever, under Sections 8 to 10 of the TMG, we are not\nobligated to monitor transmitted or stored third-party information or\ninvestigate circumstances indicating illegal activity.\n\nLes Obligations De Retrait Ou De Blocage De L'utilisation D'informations En Vertu\nGeneral legal obligations remain unchanged.`,
-    address: settingsMap.CONTACT_ADDRESS !== undefined ? settingsMap.CONTACT_ADDRESS : 'Chaussée de Tirlemont 110, 5030 Gembloux, BELGIQUE\nLondon, UK',
-    phone: settingsMap.CONTACT_PHONE !== undefined ? settingsMap.CONTACT_PHONE : '+32456761781',
-    emailDisplay: settingsMap.CONTACT_EMAIL_DISPLAY !== undefined ? settingsMap.CONTACT_EMAIL_DISPLAY : 'info@goldsilversinvest.com',
-    formRecipient: settingsMap.CONTACT_FORM_RECIPIENT || 'info@goldsilversinvest.com',
+    text: (!isDefaultGermanAct && settingsMap.CONTACT_TEXT)
+      ? settingsMap.CONTACT_TEXT
+      : `Nos conseillers et spécialistes en métaux précieux physiques vous accueillent et vous guident avec discrétion et rigueur.\n\nQue vous souhaitiez débuter la constitution d'un portefeuille de précaution en lingots certifiés ou sécuriser des capitaux importants en coffres sécurisés, nous vous apportons un conseil personnalisé, transparent et appuyé sur les cours officiels en direct.\n\nNous sommes à votre entière disposition pour répondre à toutes vos questions relatives à la fiscalité de l'or d'investissement (0% TVA), aux modalités de livraison sécurisée ou au gardiennage en coffres de haute sécurité.`,
+    address: settingsMap.CONTACT_ADDRESS !== undefined && settingsMap.CONTACT_ADDRESS.trim() !== ''
+      ? settingsMap.CONTACT_ADDRESS
+      : 'Chaussée de Tirlemont 110, 5030 Gembloux, BELGIQUE\n100 Pall Mall, St. James\'s, London SW1Y 5NQ, UK',
+    phone: settingsMap.CONTACT_PHONE !== undefined && settingsMap.CONTACT_PHONE.trim() !== ''
+      ? settingsMap.CONTACT_PHONE
+      : '+32 455 76 17 81',
+    emailDisplay: settingsMap.CONTACT_EMAIL_DISPLAY !== undefined && settingsMap.CONTACT_EMAIL_DISPLAY.trim() !== ''
+      ? settingsMap.CONTACT_EMAIL_DISPLAY
+      : 'contact@goldsilverinvest.com',
+    formRecipient: settingsMap.CONTACT_FORM_RECIPIENT || 'contact@goldsilverinvest.com',
     bottomText: settingsMap.CONTACT_BOTTOM_TEXT !== undefined ? settingsMap.CONTACT_BOTTOM_TEXT : '',
-    phonePlaceholder: settingsMap.CONTACT_PHONE_PLACEHOLDER !== undefined ? settingsMap.CONTACT_PHONE_PLACEHOLDER : '+32 XXX .....'
+    phonePlaceholder: settingsMap.CONTACT_PHONE_PLACEHOLDER !== undefined && settingsMap.CONTACT_PHONE_PLACEHOLDER.trim() !== ''
+      ? settingsMap.CONTACT_PHONE_PLACEHOLDER
+      : '+32 455 76 17 81'
   };
 }
 
