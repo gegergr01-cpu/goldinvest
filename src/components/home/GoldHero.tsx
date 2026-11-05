@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslations, useLocale } from 'next-intl';
 import { HeroDailyCard } from '@/types/heroCards';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
@@ -76,32 +77,46 @@ function CategoryIcon({ type }: { type: 'gold-bar' | 'silver-bar' | 'gold-coin' 
 
 export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Hero');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  // Headline & Subtitle matching the reference capture & AZ Solutions template
-  const rawTitle = c.title;
-  const title = rawTitle || "Vos investissements prennent de la valeur, votre patrimoine en sécurité .";
-  const highlight = c.highlight || "sécurité .";
+  // Headline & Subtitle matching the reference capture & translations
+  const rawTitle = isFrench && c.title ? c.title : t('title');
+  const title = rawTitle || t('title');
+  const highlight = (isFrench && c.highlight) || t('highlight');
 
-  const rawTagline = c.tagline;
-  const tagline = rawTagline || "IMPORT · EXPORT · GROUPAGE — OR & ARGENT PHYSIQUE";
+  const rawTagline = isFrench && c.tagline ? c.tagline : t('tagline');
+  const tagline = rawTagline || t('tagline');
 
-  const rawSubtitle = c.subtitle;
-  const subtitle = rawSubtitle || "Pièces d'or, lingots d'or et d'argent d'investissement, sélectionnés au meilleur prix.";
+  const rawSubtitle = isFrench && c.subtitle ? c.subtitle : t('subtitle');
+  const subtitle = rawSubtitle || t('subtitle');
 
-  const btnText = c.btnText || "Découvrir notre gamme";
-  const btnUrl = c.btnUrl || "/shop";
+  const btnText = (isFrench && c.btnText) || t('btnText');
+  const rawBtnUrl = c.btnUrl || "/shop";
 
-  const btn2Text = c.btn2Text || "Demander un devis";
-  const btn2Url = c.btn2Url || "/devis";
+  const btn2Text = (isFrench && c.btn2Text) || t('btn2Text');
+  const rawBtn2Url = c.btn2Url || "/devis";
+
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+  const btnUrl = rawBtnUrl.startsWith('/') ? `${localePrefix}${rawBtnUrl}` : rawBtnUrl;
+  const btn2Url = rawBtn2Url.startsWith('/') ? `${localePrefix}${rawBtn2Url}` : rawBtn2Url;
 
   // Daily Cards: only categories that actually contain real products in DB
   const activeCards = dailyCards || [];
 
+  const categoryTitleMap: Record<string, string> = {
+    'gold-bars': t('card_gold_bars'),
+    'silver-bars': t('card_silver_bars'),
+    'gold-coins': t('card_gold_coins'),
+    'silver-coins': t('card_silver_coins'),
+  };
+
   const titleMap: Record<string, string | undefined> = {
-    'gold-bars': c.card1_title,
-    'silver-bars': c.card2_title,
-    'gold-coins': c.card3_title,
-    'silver-coins': c.card4_title,
+    'gold-bars': (isFrench && c.card1_title) || categoryTitleMap['gold-bars'],
+    'silver-bars': (isFrench && c.card2_title) || categoryTitleMap['silver-bars'],
+    'gold-coins': (isFrench && c.card3_title) || categoryTitleMap['gold-coins'],
+    'silver-coins': (isFrench && c.card4_title) || categoryTitleMap['silver-coins'],
   };
 
   // Background artwork
@@ -253,7 +268,7 @@ export default function GoldHero({ config, dailyCards }: GoldHeroProps) {
                 return (
                   <Link
                     key={card.id}
-                    href={`/product/${product.slug}`}
+                    href={`${localePrefix}/product/${product.slug}`}
                     className="relative group rounded-[16px] p-[1.5px] overflow-hidden shadow-[0_14px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 block text-left"
                   >
                   {/* Outer base border */}

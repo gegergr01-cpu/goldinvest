@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface ReassuranceBarProps {
   config?: Record<string, string>;
@@ -8,11 +9,14 @@ interface ReassuranceBarProps {
 
 export default function ReassuranceBar({ config }: ReassuranceBarProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Reassurance');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
   const items = [
     {
-      title: c.item1_title || 'Qualité garantie',
-      desc: c.item1_desc || 'Des produits certifiés et authentiques',
+      title: (isFrench && c.item1_title) || t('item1_title'),
+      desc: (isFrench && c.item1_desc) || t('item1_desc'),
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 3h12l4 6-10 12L2 9l4-6z" />
@@ -22,8 +26,8 @@ export default function ReassuranceBar({ config }: ReassuranceBarProps) {
       )
     },
     {
-      title: c.item2_title || 'Prix compétitifs',
-      desc: c.item2_desc || 'Un excellent rapport qualité-prix',
+      title: (isFrench && c.item2_title) || t('item2_title'),
+      desc: (isFrench && c.item2_desc) || t('item2_desc'),
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <circle cx="12" cy="12" r="10" strokeWidth={1.7} />
@@ -33,8 +37,8 @@ export default function ReassuranceBar({ config }: ReassuranceBarProps) {
       )
     },
     {
-      title: c.item3_title || 'Livraison rapide',
-      desc: c.item3_desc || 'Partout en Europe',
+      title: (isFrench && c.item3_title) || t('item3_title'),
+      desc: (isFrench && c.item3_desc) || t('item3_desc'),
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M5 8h10v9H5z" />
@@ -45,8 +49,8 @@ export default function ReassuranceBar({ config }: ReassuranceBarProps) {
       )
     },
     {
-      title: c.item4_title || 'Service client réactif',
-      desc: c.item4_desc || 'Notre équipe à votre écoute',
+      title: (isFrench && c.item4_title) || t('item4_title'),
+      desc: (isFrench && c.item4_desc) || t('item4_desc'),
       icon: (
         <svg className="w-8 h-8 text-[#c59a3f]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M3 18v-6a9 9 0 0118 0v6" />

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslations, useLocale } from 'next-intl';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface CtaBannerProps {
@@ -11,11 +12,16 @@ interface CtaBannerProps {
 
 export default function CtaBanner({ config }: CtaBannerProps) {
   const c = config || {};
+  const t = useTranslations('Landing.CtaBanner');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  const title = c.title || 'Investissez dès aujourd’hui';
-  const subtitle = c.subtitle || 'Profitez de la stabilité et de la valeur intemporelle de l’or et de l’argent.';
-  const btnText = c.btnText || 'Découvrir notre gamme';
-  const btnUrl = c.btnUrl || '/shop';
+  const title = (isFrench && c.title) || t('title');
+  const subtitle = (isFrench && c.subtitle) || t('subtitle');
+  const btnText = (isFrench && c.btnText) || t('btnText');
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+  const rawBtnUrl = c.btnUrl || '/shop';
+  const btnUrl = rawBtnUrl.startsWith('/') ? `${localePrefix}${rawBtnUrl}` : rawBtnUrl;
 
   const image = typeof c.image !== 'undefined' ? c.image : '/images/gold-banner-cta.jpg';
   const hasImage = Boolean(image && typeof image === 'string' && image.trim() !== '');

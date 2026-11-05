@@ -1,7 +1,7 @@
 import React from 'react';
 import prisma from '@/lib/prisma';
 import BestDealsClient, { TabConfig } from './BestDealsClient';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 interface BestDealsProps {
   config?: Record<string, any>;
@@ -329,47 +329,46 @@ export default async function BestDeals({ config }: BestDealsProps) {
       : 'gold';
 
   const isSilver = metalType === 'silver';
+  const locale = await getLocale();
+  const isFrench = locale === 'fr';
+  const t = await getTranslations(isSilver ? 'Landing.SilverDeals' : 'Landing.BestDeals');
 
-  // Titles, Subtitles, Badges with luxury defaults
-  const defaultBadge = isSilver ? "INVESTIR DANS L'ARGENT" : "INVESTIR DANS L'OR";
-  const badge = c.badge && !["NOS PIÈCES D'OR", "L'OR D'INVESTISSEMENT", "L'ARGENT D'INVESTISSEMENT"].includes(c.badge)
+  const badge = (isFrench && c.badge && !["NOS PIÈCES D'OR", "L'OR D'INVESTISSEMENT", "L'ARGENT D'INVESTISSEMENT"].includes(c.badge))
     ? c.badge
-    : defaultBadge;
+    : t('badge');
 
-  const defaultTitle = isSilver
-    ? "Achetez de l'Argent d'Investissement"
-    : "Achetez de l'Or d'Investissement";
-  const title = c.title && !["Nos Pièces d'Or", "Nos Produits d'Or d'Investissement", "Nos Produits d'Argent d'Investissement"].includes(c.title)
+  const title = (isFrench && c.title && !["Nos Pièces d'Or", "Nos Produits d'Or d'Investissement", "Nos Produits d'Argent d'Investissement"].includes(c.title))
     ? c.title
-    : defaultTitle;
+    : t('title');
 
-  const defaultHighlight = isSilver ? "Argent d'Investissement" : "Or d'Investissement";
-  const highlight = c.highlight && !["Pièces d'Or"].includes(c.highlight) ? c.highlight : defaultHighlight;
+  const highlight = (isFrench && c.highlight && !["Pièces d'Or"].includes(c.highlight))
+    ? c.highlight
+    : t('highlight');
 
-  const defaultSubtitle = isSilver
-    ? "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine."
-    : "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé pour sécuriser votre épargne.";
-  const subtitle = c.subtitle && !c.subtitle.includes("Des pièces d'or authentiques, sélectionnées avec soin")
+  const subtitle = (isFrench && c.subtitle && !c.subtitle.includes("Des pièces d'or authentiques, sélectionnées avec soin"))
     ? c.subtitle
-    : defaultSubtitle;
+    : t('subtitle');
 
-  const cardBadge = c.cardBadge || 'Investissement';
+  const cardBadge = (isFrench && c.cardBadge) ? c.cardBadge : t('cardBadge');
   const maxNum = parseInt(c.maxProducts || '4', 10) || 4;
 
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+
   // Tabs labels and URLs
-  const tab1Label = c.tab1_title || (isSilver ? "Pièces d'argent" : "Pièces d'or");
-  const tab2Label = c.tab2_title || (isSilver ? "Lingots d'argent" : "Lingots d'or");
+  const tab1Label = (isFrench && c.tab1_title) ? c.tab1_title : t('tab1_title');
+  const tab2Label = (isFrench && c.tab2_title) ? c.tab2_title : t('tab2_title');
 
-  const tab1BtnText = c.tab1_btn_text || (isSilver ? "Voir toutes les pièces d'argent" : "Voir toutes les pièces d'or");
-  const tab1BtnUrl = c.tab1_btn_url || (isSilver ? "/shop?category=pieces-dargent" : "/shop?category=pieces-dor");
+  const tab1BtnText = (isFrench && c.tab1_btn_text) ? c.tab1_btn_text : t('tab1_btn_text');
+  const tab1RawUrl = c.tab1_btn_url || (isSilver ? "/shop?category=pieces-dargent" : "/shop?category=pieces-dor");
+  const tab1BtnUrl = tab1RawUrl.startsWith('/') ? `${localePrefix}${tab1RawUrl}` : tab1RawUrl;
 
-  const tab2BtnText = c.tab2_btn_text || (isSilver ? "Voir tous les lingots d'argent" : "Voir tous les lingots d'or");
-  const tab2BtnUrl = c.tab2_btn_url || (isSilver ? "/shop?category=lingots-dargent" : "/shop?category=lingots-dor");
+  const tab2BtnText = (isFrench && c.tab2_btn_text) ? c.tab2_btn_text : t('tab2_btn_text');
+  const tab2RawUrl = c.tab2_btn_url || (isSilver ? "/shop?category=lingots-dargent" : "/shop?category=lingots-dor");
+  const tab2BtnUrl = tab2RawUrl.startsWith('/') ? `${localePrefix}${tab2RawUrl}` : tab2RawUrl;
 
   // Fetch DB products in parallel
   let tab1Products: any[] = [];
   let tab2Products: any[] = [];
-  const locale = await getLocale();
 
   try {
     if (isSilver) {

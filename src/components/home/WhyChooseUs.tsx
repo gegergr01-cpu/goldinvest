@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface WhyChooseUsProps {
@@ -17,54 +18,6 @@ interface ServiceItem {
   url: string;
   iconType: 'purchase' | 'storage' | 'delivery' | 'pickup' | 'buyback';
 }
-
-const SERVICES: ServiceItem[] = [
-  {
-    id: 'purchase',
-    title: 'Purchase',
-    tag: 'Authenticité & Pureté',
-    desc: 'Buy bullion bars and coins from certified, globally recognized refiners, guaranteeing the authenticity, purity, and quality of precious metals. Enjoy a wide selection of products at the best price.',
-    ctaText: 'Learn more',
-    url: '/services#purchase',
-    iconType: 'purchase',
-  },
-  {
-    id: 'storage',
-    title: 'Storage',
-    tag: 'Coffres Haute Sécurité',
-    desc: 'Store your precious metals outside the banking system in highly secure vaults located in free-trade zones in Zurich, Singapore, New York, or Toronto.',
-    ctaText: 'Learn more',
-    url: '/services#storage',
-    iconType: 'storage',
-  },
-  {
-    id: 'delivery',
-    title: 'Delivery',
-    tag: 'Livraison Assurée 100%',
-    desc: 'Receive your precious metals directly at home with a fast, secure, and discreet delivery service. Package delivery with real-time tracking.',
-    ctaText: 'Learn more',
-    url: '/services#delivery',
-    iconType: 'delivery',
-  },
-  {
-    id: 'pickup',
-    title: 'Pickup',
-    tag: 'Retrait en Main Propre',
-    desc: 'Visit one of our storage vaults to collect your precious metals order in person in complete discretion, security, and confidentiality.',
-    ctaText: 'Learn more',
-    url: '/services#pickup',
-    iconType: 'pickup',
-  },
-  {
-    id: 'buyback',
-    title: 'Buyback',
-    tag: 'Liquidité Immédiate',
-    desc: 'Easily sell your bars and coins stored in the vaults. Through our buyback service, you can sell all or part of your precious metals quickly, transparently, and without having to move them physically.',
-    ctaText: 'Learn more',
-    url: '/services#buyback',
-    iconType: 'buyback',
-  },
-];
 
 function ServiceIcon({ type }: { type: ServiceItem['iconType'] }) {
   switch (type) {
@@ -185,13 +138,67 @@ function LuxuryServiceCard({ service, delay = '0s' }: { service: ServiceItem; de
 
 export default function WhyChooseUs({ config }: WhyChooseUsProps) {
   const c = config || {};
+  const t = useTranslations('Landing.WhyChooseUs');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  const badge = c.badge || 'NOS SERVICES EXCLUSIFS';
-  const title = c.title || 'Nos services';
-  const subtitle = c.subtitle || "L'excellence et la maîtrise de vos investissements en métaux précieux.";
-  const description = c.description || "De l'achat de lingots et pièces certifiés au gardiennage en coffre sécurisé hors système bancaire, nous vous offrons un écosystème haut de gamme complet, liquide et transparent.";
-  const btnText = c.btnText || 'Découvrir nos solutions';
-  const btnUrl = c.btnUrl || '/services';
+  const badge = (isFrench && c.badge) || t('badge');
+  const title = (isFrench && c.title) || t('title');
+  const subtitle = (isFrench && c.subtitle) || t('subtitle');
+  const description = (isFrench && c.description) || t('description');
+  const btnText = (isFrench && c.btnText) || t('btnText');
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+  const rawBtnUrl = c.btnUrl || '/services';
+  const btnUrl = rawBtnUrl.startsWith('/') ? `${localePrefix}${rawBtnUrl}` : rawBtnUrl;
+  const ctaText = t('ctaText');
+
+  const services: ServiceItem[] = [
+    {
+      id: 'purchase',
+      title: t('purchase_title'),
+      tag: t('purchase_tag'),
+      desc: t('purchase_desc'),
+      ctaText: ctaText,
+      url: `${localePrefix}/services#purchase`,
+      iconType: 'purchase',
+    },
+    {
+      id: 'storage',
+      title: t('storage_title'),
+      tag: t('storage_tag'),
+      desc: t('storage_desc'),
+      ctaText: ctaText,
+      url: `${localePrefix}/services#storage`,
+      iconType: 'storage',
+    },
+    {
+      id: 'delivery',
+      title: t('delivery_title'),
+      tag: t('delivery_tag'),
+      desc: t('delivery_desc'),
+      ctaText: ctaText,
+      url: `${localePrefix}/services#delivery`,
+      iconType: 'delivery',
+    },
+    {
+      id: 'pickup',
+      title: t('pickup_title'),
+      tag: t('pickup_tag'),
+      desc: t('pickup_desc'),
+      ctaText: ctaText,
+      url: `${localePrefix}/services#pickup`,
+      iconType: 'pickup',
+    },
+    {
+      id: 'buyback',
+      title: t('buyback_title'),
+      tag: t('buyback_tag'),
+      desc: t('buyback_desc'),
+      ctaText: ctaText,
+      url: `${localePrefix}/services#buyback`,
+      iconType: 'buyback',
+    },
+  ];
 
   // Height of each card slot in pixels for exact mathematical translation
   const CARD_HEIGHT = 350;
@@ -199,8 +206,8 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
   // Seamless Odometer Reel: 5 items + clone of index 0 at position 5
   // Col 1 items: [0, 1, 2, 3, 4, 0]
   // Col 2 items: [1, 2, 3, 4, 0, 1]
-  const col1Items = [...SERVICES, SERVICES[0]];
-  const col2Items = [...SERVICES.slice(1), SERVICES[0], SERVICES[1]];
+  const col1Items = [...services, services[0]];
+  const col2Items = [...services.slice(1), services[0], services[1]];
 
   const [step, setStep] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -219,11 +226,11 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
       // Instantly jump to clone position without transition, then animate to step 4
       isHandlingTransition.current = true;
       setIsTransitioning(false);
-      setStep(SERVICES.length);
+      setStep(services.length);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsTransitioning(true);
-          setStep(SERVICES.length - 1);
+          setStep(services.length - 1);
           isHandlingTransition.current = false;
         });
       });
@@ -235,7 +242,7 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
 
   // When step hits 5 (the clone), silently reset to 0 without transition
   const handleTransitionEnd = () => {
-    if (step >= SERVICES.length) {
+    if (step >= services.length) {
       isHandlingTransition.current = true;
       setIsTransitioning(false);
       setStep(0);
@@ -256,7 +263,7 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
     return () => clearInterval(timer);
   }, [isPaused, step]);
 
-  const activeNumber = (step % SERVICES.length) + 1;
+  const activeNumber = (step % services.length) + 1;
 
   return (
     <section 
@@ -294,14 +301,18 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
 
             {/* Title */}
             <h2 className="font-serif font-bold text-[34px] sm:text-[44px] lg:text-[48px] text-white tracking-tight leading-[1.1] mb-4">
-              {title.includes('services') ? (
+              {title.includes(' ') ? (
                 <>
-                  Nos{' '}
+                  {title.split(' ').slice(0, -1).join(' ')}{' '}
                   <span className="bg-gradient-to-r from-[#fae5a2] via-[#E8A63D] to-[#c59a3f] bg-clip-text text-transparent drop-shadow-[0_2px_18px_rgba(232,166,61,0.4)] italic">
-                    services
+                    {title.split(' ').slice(-1).join(' ')}
                   </span>
                 </>
-              ) : title}
+              ) : (
+                <span className="bg-gradient-to-r from-[#fae5a2] via-[#E8A63D] to-[#c59a3f] bg-clip-text text-transparent drop-shadow-[0_2px_18px_rgba(232,166,61,0.4)] italic">
+                  {title}
+                </span>
+              )}
             </h2>
 
             {/* Subtitle */}
@@ -378,7 +389,7 @@ export default function WhyChooseUs({ config }: WhyChooseUsProps) {
                     setStep(idx);
                   }}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    (step % SERVICES.length) === idx ? 'w-7 bg-[#E8A63D]' : 'w-2 bg-white/20 hover:bg-white/40'
+                    (step % services.length) === idx ? 'w-7 bg-[#E8A63D]' : 'w-2 bg-white/20 hover:bg-white/40'
                   }`}
                   aria-label={`Aller au service ${idx + 1}`}
                 />

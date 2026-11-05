@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface PreciousMetalsTickerProps {
@@ -20,12 +21,19 @@ function formatCleanPrice(val: string | number): string {
 
 export default function PreciousMetalsTicker({ config }: PreciousMetalsTickerProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Ticker');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
   const isManual = c.mode === 'manual';
-  const title = c.title || 'Cours des métaux précieux';
-  const subtitle = c.subtitle || 'Actualisé en temps réel';
-  const btnText = c.btnText || 'Voir les cours en détail';
-  const btnUrl = c.btnUrl || '/shop';
+  const title = (isFrench && c.title) || t('title');
+  const subtitle = (isFrench && c.subtitle) || t('subtitle');
+  const btnText = (isFrench && c.btnText) || t('btnText');
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+  const rawBtnUrl = c.btnUrl || '/shop';
+  const btnUrl = rawBtnUrl.startsWith('/') ? `${localePrefix}${rawBtnUrl}` : rawBtnUrl;
+  const goldLabel = t('gold');
+  const silverLabel = t('silver');
 
   // Unit toggle: 'oz' (Once de Troy) or 'g' (Gramme)
   const [unit, setUnit] = useState<'oz' | 'g'>((c.defaultUnit as 'oz' | 'g') || 'oz');
@@ -178,7 +186,7 @@ export default function PreciousMetalsTicker({ config }: PreciousMetalsTickerPro
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-[#c59a3f]" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900/70">
-                    Or ({unit === 'oz' ? '1 oz' : '1 g'})
+                    {goldLabel} ({unit === 'oz' ? '1 oz' : '1 g'})
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2 whitespace-nowrap">
@@ -226,7 +234,7 @@ export default function PreciousMetalsTicker({ config }: PreciousMetalsTickerPro
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-slate-400" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Argent ({unit === 'oz' ? '1 oz' : '1 g'})
+                    {silverLabel} ({unit === 'oz' ? '1 oz' : '1 g'})
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2 whitespace-nowrap">

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface FaqItem {
@@ -95,15 +96,47 @@ const FAQ_SLIDES: FaqItem[][] = [
 
 export default function FaqSection({ config }: FaqSectionProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Faq');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  const badge = c.badge || 'QUESTIONS FRÉQUENTES';
-  const title = c.title || "Tout savoir sur l'investissement dans les métaux précieux";
-  const subtitle = c.subtitle || "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat.";
+  const badge = (isFrench && c.badge) || t('badge');
+  const title = (isFrench && c.title) || t('title');
+  const subtitle = (isFrench && c.subtitle) || t('subtitle');
 
-  const ctaTitle = c.cta_title || "Vous avez une question spécifique sur votre investissement ?";
-  const ctaDesc = c.cta_desc || "Nos conseillers spécialistes de l'or physique vous accompagnent du lundi au vendredi.";
-  const ctaBtnText = c.cta_btn_text || "Contacter un conseiller";
-  const ctaBtnUrl = c.cta_btn_url || "/contact";
+  const ctaTitle = (isFrench && c.cta_title) || t('cta_title');
+  const ctaDesc = (isFrench && c.cta_desc) || t('cta_desc');
+  const ctaBtnText = (isFrench && c.cta_btn_text) || t('cta_btn_text');
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+  const rawCtaBtnUrl = c.cta_btn_url || "/contact";
+  const ctaBtnUrl = rawCtaBtnUrl.startsWith('/') ? `${localePrefix}${rawCtaBtnUrl}` : rawCtaBtnUrl;
+
+  const faqSlides: FaqItem[][] = [
+    [
+      { q: t('slide1_q1'), a: t('slide1_a1') },
+      { q: t('slide1_q2'), a: t('slide1_a2') },
+      { q: t('slide1_q3'), a: t('slide1_a3') },
+      { q: t('slide1_q4'), a: t('slide1_a4') },
+    ],
+    [
+      { q: t('slide2_q1'), a: t('slide2_a1') },
+      { q: t('slide2_q2'), a: t('slide2_a2') },
+      { q: t('slide2_q3'), a: t('slide2_a3') },
+      { q: t('slide2_q4'), a: t('slide2_a4') },
+    ],
+    [
+      { q: t('slide3_q1'), a: t('slide3_a1') },
+      { q: t('slide3_q2'), a: t('slide3_a2') },
+      { q: t('slide3_q3'), a: t('slide3_a3') },
+      { q: t('slide3_q4'), a: t('slide3_a4') },
+    ],
+    [
+      { q: t('slide4_q1'), a: t('slide4_a1') },
+      { q: t('slide4_q2'), a: t('slide4_a2') },
+      { q: t('slide4_q3'), a: t('slide4_a3') },
+      { q: t('slide4_q4'), a: t('slide4_a4') },
+    ],
+  ];
 
   // Active slide index (0 to 3)
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -117,12 +150,12 @@ export default function FaqSection({ config }: FaqSectionProps) {
     if (isPaused) return;
 
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % FAQ_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % faqSlides.length);
       setOpenIndex(0); // Open the first item of the new slide
     }, 6500);
 
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, faqSlides.length]);
 
   const toggleItem = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
@@ -133,7 +166,7 @@ export default function FaqSection({ config }: FaqSectionProps) {
     setOpenIndex(0);
   };
 
-  const activeQuestions = FAQ_SLIDES[currentSlide] || FAQ_SLIDES[0];
+  const activeQuestions = faqSlides[currentSlide] || faqSlides[0];
 
   return (
     <section 
@@ -309,7 +342,7 @@ export default function FaqSection({ config }: FaqSectionProps) {
 
             {/* Autoslide Navigation Buttons at the Bottom Right (Pure WHITE, aligned with bottom of left card) */}
             <div className="flex items-center justify-end gap-2 pt-4 sm:pt-5 pb-1">
-              {FAQ_SLIDES.map((_, slideIdx) => {
+              {faqSlides.map((_, slideIdx) => {
                 const isActive = currentSlide === slideIdx;
                 return (
                   <button

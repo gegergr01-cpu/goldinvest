@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface TestimonialsSectionProps {
   config?: Record<string, string>;
@@ -8,41 +9,44 @@ interface TestimonialsSectionProps {
 
 export default function TestimonialsSection({ config }: TestimonialsSectionProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Testimonials');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  const badge = c.badge || 'AVIS CLIENTS VÉRIFIÉS';
-  const title = c.title || 'Ils nous font confiance';
-  const subtitle = c.subtitle || 'Découvrez les retours d’expérience de nos clients investisseurs en métaux précieux physiques.';
-  const ratingScore = c.rating_score || '4.9 / 5';
-  const investorsText = c.investors_text || 'Plus de 450 investisseurs accompagnés';
+  const badge = (isFrench && c.badge) || t('badge');
+  const title = (isFrench && c.title) || t('title');
+  const subtitle = (isFrench && c.subtitle) || t('subtitle');
+  const ratingScore = t('rating_score');
+  const investorsText = t('investors_text');
 
-  // Build dynamic reviews list from config
+  // Build dynamic reviews list from config or translations
   const rawReviews = [
     {
       id: 1,
-      name: c.review1_name || 'Thomas D.',
-      city: c.review1_city || 'Paris, France',
-      asset: c.review1_asset || "Lingot d'Or 100 g C.Hafner",
-      text: c.review1_text || '« Première commande de lingots d’or scellés LBMA. Colis ultra-discret, livraison sécurisée avec signature et certificat de conformité parfait. Un service d’un professionnalisme exemplaire. »',
+      name: (isFrench && c.review1_name) || t('review1_name'),
+      city: (isFrench && c.review1_city) || t('review1_city'),
+      asset: (isFrench && c.review1_asset) || t('review1_asset'),
+      text: (isFrench && c.review1_text) || t('review1_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review1_rating || '5', 10) || 5)),
-      date: c.review1_date || 'Il y a 3 jours',
+      date: (isFrench && c.review1_date) || t('review1_date'),
     },
     {
       id: 2,
-      name: c.review2_name || 'Sophie M.',
-      city: c.review2_city || 'Genève, Suisse',
-      asset: c.review2_asset || "20 Francs Napoléon III & Krugerrand",
-      text: c.review2_text || '« Conseillers très réactifs et à l’écoute. Les cours en direct sont limpides et sans frais cachés. Les pièces sont arrivées sous pochettes sécurisées scellées sous 48 heures. »',
+      name: (isFrench && c.review2_name) || t('review2_name'),
+      city: (isFrench && c.review2_city) || t('review2_city'),
+      asset: (isFrench && c.review2_asset) || t('review2_asset'),
+      text: (isFrench && c.review2_text) || t('review2_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review2_rating || '5', 10) || 5)),
-      date: c.review2_date || 'Il y a 1 semaine',
+      date: (isFrench && c.review2_date) || t('review2_date'),
     },
     {
       id: 3,
-      name: c.review3_name || 'Pierre L.',
-      city: c.review3_city || 'Bruxelles, Belgique',
-      asset: c.review3_asset || "Lingots d'Argent 1 kg LBMA",
-      text: c.review3_text || '« Excellent accompagnement pour la diversification de mon patrimoine. Prix très compétitifs face aux comptoirs bancaires traditionnels. Je recommande les yeux fermés. »',
+      name: (isFrench && c.review3_name) || t('review3_name'),
+      city: (isFrench && c.review3_city) || t('review3_city'),
+      asset: (isFrench && c.review3_asset) || t('review3_asset'),
+      text: (isFrench && c.review3_text) || t('review3_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review3_rating || '5', 10) || 5)),
-      date: c.review3_date || 'Il y a 2 semaines',
+      date: (isFrench && c.review3_date) || t('review3_date'),
     },
     // Optional additional reviews if configured in editor
     c.review4_name ? {

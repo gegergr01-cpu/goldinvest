@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslations, useLocale } from 'next-intl';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 interface SelectionGridProps {
@@ -11,38 +12,46 @@ interface SelectionGridProps {
 
 export default function SelectionGrid({ config }: SelectionGridProps) {
   const c = config || {};
+  const t = useTranslations('Landing.Selection');
+  const locale = useLocale();
+  const isFrench = locale === 'fr';
 
-  const badge = c.badge || 'Notre sélection';
-  const title = c.title || 'Or & Argent';
+  const badge = (isFrench && c.badge) || t('badge');
+  const title = (isFrench && c.title) || t('title');
+  const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
+
+  const getHref = (rawUrl: string) => {
+    return rawUrl.startsWith('/') ? `${localePrefix}${rawUrl}` : rawUrl;
+  };
 
   const items = [
     {
       id: 'card1',
-      title: c.card1_title || "Pièces d'or",
-      desc: c.card1_desc || 'Un patrimoine intemporel',
+      title: (isFrench && c.card1_title) || t('card1_title'),
+      desc: (isFrench && c.card1_desc) || t('card1_desc'),
       image: typeof c.card1_img !== 'undefined' ? c.card1_img : '/images/gold-coins.jpg',
-      href: c.card1_url || '/shop?category=pieces-dor'
+      href: getHref(c.card1_url || '/shop?category=pieces-dor')
     },
     {
       id: 'card2',
-      title: c.card2_title || "Lingots d'or",
-      desc: c.card2_desc || 'Une valeur sûre',
+      title: (isFrench && c.card2_title) || t('card2_title'),
+      desc: (isFrench && c.card2_desc) || t('card2_desc'),
       image: typeof c.card2_img !== 'undefined' ? c.card2_img : '/images/gold-bars.jpg',
-      href: c.card2_url || '/shop?category=lingots-dor'
+      href: getHref(c.card2_url || '/shop?category=lingots-dor')
     },
     {
       id: 'card3',
-      title: c.card3_title || "Lingots d'argent",
-      desc: c.card3_desc || 'Investir autrement',
+      title: (isFrench && c.card3_title) || t('card3_title'),
+      desc: (isFrench && c.card3_desc) || t('card3_desc'),
       image: typeof c.card3_img !== 'undefined' ? c.card3_img : '/images/silver-bars.jpg',
-      href: c.card3_url || '/shop?category=lingots-dargent'
+      href: getHref(c.card3_url || '/shop?category=lingots-dargent')
     },
     {
       id: 'card4',
-      title: c.card4_title || "Pièces d'argent",
-      desc: c.card4_desc || 'Un investissement accessible',
+      title: (isFrench && c.card4_title) || t('card4_title'),
+      desc: (isFrench && c.card4_desc) || t('card4_desc'),
       image: typeof c.card4_img !== 'undefined' ? c.card4_img : '/images/silver-coins.jpg',
-      href: c.card4_url || '/shop?category=pieces-dargent'
+      href: getHref(c.card4_url || '/shop?category=pieces-dargent')
     }
   ];
 
