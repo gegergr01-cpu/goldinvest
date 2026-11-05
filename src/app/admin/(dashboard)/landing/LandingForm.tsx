@@ -227,11 +227,11 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         subtitle: "Retrouvez les réponses de nos experts sur la certification LBMA, la fiscalité, la livraison sécurisée et nos garanties de rachat."
       };
     } else if (type === 'BestDeals') {
-      newSec.name = "L'Or d'Investissement (Pièces & Lingots)";
+      newSec.name = "Investir dans l'Or (Pièces & Lingots)";
       newSec.settings = { 
         metal: 'gold',
-        badge: "L'OR D'INVESTISSEMENT",
-        title: "Nos Produits d'Or d'Investissement", 
+        badge: "INVESTIR DANS L'OR",
+        title: "Achetez de l'Or d'Investissement", 
         highlight: "Or d'Investissement",
         subtitle: "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé.",
         cardBadge: "Investissement",
@@ -250,11 +250,11 @@ export default function LandingForm({ initialSettings, categories }: { initialSe
         categoryId: '' 
       };
     } else if (type === 'SilverDeals') {
-      newSec.name = "L'Argent d'Investissement (Pièces & Lingots)";
+      newSec.name = "Investir dans l'Argent (Pièces & Lingots)";
       newSec.settings = { 
         metal: 'silver',
-        badge: "L'ARGENT D'INVESTISSEMENT",
-        title: "Nos Produits d'Argent d'Investissement", 
+        badge: "INVESTIR DANS L'ARGENT",
+        title: "Achetez de l'Argent d'Investissement", 
         highlight: "Argent d'Investissement",
         subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
         cardBadge: "Investissement",

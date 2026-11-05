@@ -57,12 +57,12 @@ export default async function Home() {
     const autoSilverSection: SectionConfig = {
       id: 'sec_silver_deals_auto',
       type: 'SilverDeals',
-      name: "L'Argent d'Investissement (Pièces & Lingots)",
+      name: "Investir dans l'Argent (Pièces & Lingots)",
       enabled: true,
       settings: {
         metal: 'silver',
-        badge: "L'ARGENT D'INVESTISSEMENT",
-        title: "Nos Produits d'Argent d'Investissement",
+        badge: "INVESTIR DANS L'ARGENT",
+        title: "Achetez de l'Argent d'Investissement",
         highlight: "Argent d'Investissement",
         subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
         cardBadge: "Investissement",

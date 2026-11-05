@@ -93,12 +93,12 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
   {
     id: 'sec_gold_deals',
     type: 'BestDeals',
-    name: "L'Or d'Investissement (Pièces & Lingots)",
+    name: "Investir dans l'Or (Pièces & Lingots)",
     enabled: true,
     settings: {
       metal: 'gold',
-      badge: "L'OR D'INVESTISSEMENT",
-      title: "Nos Produits d'Or d'Investissement",
+      badge: "INVESTIR DANS L'OR",
+      title: "Achetez de l'Or d'Investissement",
       highlight: "Or d'Investissement",
       subtitle: "Pièces d'or d'investissement boursables et lingots certifiés LBMA sous blister scellé.",
       cardBadge: "Investissement",
@@ -114,12 +114,12 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
   {
     id: 'sec_silver_deals',
     type: 'SilverDeals',
-    name: "L'Argent d'Investissement (Pièces & Lingots)",
+    name: "Investir dans l'Argent (Pièces & Lingots)",
     enabled: true,
     settings: {
       metal: 'silver',
-      badge: "L'ARGENT D'INVESTISSEMENT",
-      title: "Nos Produits d'Argent d'Investissement",
+      badge: "INVESTIR DANS L'ARGENT",
+      title: "Achetez de l'Argent d'Investissement",
       highlight: "Argent d'Investissement",
       subtitle: "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine.",
       cardBadge: "Investissement",

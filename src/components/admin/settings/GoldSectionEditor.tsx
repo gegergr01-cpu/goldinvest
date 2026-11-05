@@ -552,7 +552,7 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Badge sur-titre</label>
                     <input
                       type="text"
-                      value={s.badge ?? (section.type === 'SilverDeals' ? "L'ARGENT D'INVESTISSEMENT" : "L'OR D'INVESTISSEMENT")}
+                      value={s.badge ?? (section.type === 'SilverDeals' ? "INVESTIR DANS L'ARGENT" : "INVESTIR DANS L'OR")}
                       onChange={(e) => handleFieldChange('badge', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />
@@ -572,7 +572,7 @@ export default function GoldSectionEditor({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Titre principal</label>
                     <input
                       type="text"
-                      value={s.title ?? (section.type === 'SilverDeals' ? "Nos Produits d'Argent d'Investissement" : "Nos Produits d'Or d'Investissement")}
+                      value={s.title ?? (section.type === 'SilverDeals' ? "Achetez de l'Argent d'Investissement" : "Achetez de l'Or d'Investissement")}
                       onChange={(e) => handleFieldChange('title', e.target.value)}
                       className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-gray-500"
                     />

@@ -331,16 +331,20 @@ export default async function BestDeals({ config }: BestDealsProps) {
   const isSilver = metalType === 'silver';
 
   // Titles, Subtitles, Badges with luxury defaults
-  const defaultBadge = isSilver ? "L'ARGENT D'INVESTISSEMENT" : "L'OR D'INVESTISSEMENT";
-  const badge = c.badge && c.badge !== "NOS PIÈCES D'OR" ? c.badge : defaultBadge;
+  const defaultBadge = isSilver ? "INVESTIR DANS L'ARGENT" : "INVESTIR DANS L'OR";
+  const badge = c.badge && !["NOS PIÈCES D'OR", "L'OR D'INVESTISSEMENT", "L'ARGENT D'INVESTISSEMENT"].includes(c.badge)
+    ? c.badge
+    : defaultBadge;
 
   const defaultTitle = isSilver
-    ? "Nos Produits d'Argent d'Investissement"
-    : "Nos Produits d'Or d'Investissement";
-  const title = c.title && c.title !== "Nos Pièces d'Or" ? c.title : defaultTitle;
+    ? "Achetez de l'Argent d'Investissement"
+    : "Achetez de l'Or d'Investissement";
+  const title = c.title && !["Nos Pièces d'Or", "Nos Produits d'Or d'Investissement", "Nos Produits d'Argent d'Investissement"].includes(c.title)
+    ? c.title
+    : defaultTitle;
 
   const defaultHighlight = isSilver ? "Argent d'Investissement" : "Or d'Investissement";
-  const highlight = c.highlight && c.highlight !== "Pièces d'Or" ? c.highlight : defaultHighlight;
+  const highlight = c.highlight && !["Pièces d'Or"].includes(c.highlight) ? c.highlight : defaultHighlight;
 
   const defaultSubtitle = isSilver
     ? "Pièces d'argent pures 999‰ et lingots certifiés LBMA sous blister scellé pour diversifier votre patrimoine."
