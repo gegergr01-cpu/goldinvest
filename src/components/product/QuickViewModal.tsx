@@ -79,7 +79,7 @@ function extractSpecs(product: any, locale: string) {
   const metal = metalLabels[locale]?.[metalType] || metalLabels.fr[metalType];
 
   // 2. Purity
-  let purity = product.purity || findAttr(['pureté', 'purete', 'titrage', 'purity']);
+  let purity = product.purity || findAttr(['pureté', 'purete', 'titrage', 'purity', 'feingehalt', 'reinheit']);
   if (!purity) {
     if (
       title.includes('20 francs') ||
@@ -88,12 +88,10 @@ function extractSpecs(product: any, locale: string) {
       title.includes('napoleon') ||
       title.includes('tunesien') ||
       title.includes('10 roubles') ||
-      title.includes('chervonetz') ||
-      title.includes('souverain') ||
-      title.includes('sovereign')
+      title.includes('chervonetz')
     ) {
       purity = '900‰ (21.6K)';
-    } else if (title.includes('krugerrand')) {
+    } else if (title.includes('krugerrand') || title.includes('souverain') || title.includes('sovereign') || title.includes('22k')) {
       purity = '916.7‰ (22K)';
     } else if (metalType === 'silver') {
       purity = locale === 'de' ? 'Feinsilber 999‰' : (locale === 'en' ? 'Fine Silver 999‰' : 'Argent 999‰');
@@ -110,19 +108,42 @@ function extractSpecs(product: any, locale: string) {
   }
 
   // 3. Fine Weight
-  let weight = product.weight || findAttr(['poids fin', 'poids or fin', 'poids', 'fine weight', 'weight']);
-  if (!weight) {
+  let weight = product.weight || findAttr(['poids fin', 'poids or fin', 'poids fin en or pur', 'poids fin total', 'poids', 'fine weight', 'feingewicht', 'weight']);
+
+  // If Tube of coins, prioritize individual coin weight
+  if (/tube/i.test(title)) {
+    if (title.includes('1/10 oz') || title.includes('1/10 once')) weight = '1/10 oz (3,11 g)';
+    else if (title.includes('1/4 oz') || title.includes('1/4 once')) weight = '1/4 oz (7,78 g)';
+    else if (title.includes('1/2 oz') || title.includes('1/2 once')) weight = '1/2 oz (15,55 g)';
+    else if (title.includes('1 oz') || title.includes('1oz') || title.includes('1 once') || title.includes('1 unze')) weight = '1 oz (31,10 g)';
+  }
+
+  // If contains "par pièce" or "pro münze", strip total tube weight
+  if (/par pièce|pro münze|per coin|par piece/i.test(weight)) {
+    weight = weight.split(/par pièce|pro münze|per coin|par piece/i)[0].trim();
+  }
+
+  // Clean trailing descriptive phrases
+  weight = weight.replace(/\s+d'(?:or|argent)\s+pur/gi, '').replace(/\s+d'or\s+fin/gi, '').replace(/\s+or\s+pur/gi, '').trim();
+
+  if (!weight || /or d'investissement|argent d'investissement|anlagegewicht|poids d'investissement/i.test(weight)) {
     if (title.includes('20 francs') || title.includes('20 lei') || title.includes('napoléon') || title.includes('tunesien')) {
-      weight = locale === 'de' ? '5,81 g Feingold' : (locale === 'en' ? '5.81 g fine gold' : '5,81 g or fin');
+      weight = locale === 'de' ? '5,80 g Feingold' : (locale === 'en' ? '5.80 g fine gold' : '5,80 g or fin');
     } else if (title.includes('10 roubles') || title.includes('chervonetz')) {
       weight = locale === 'de' ? '7,74 g Feingold' : (locale === 'en' ? '7.74 g fine gold' : '7,74 g or fin');
+    } else if (title.includes('souverain') || title.includes('sovereign')) {
+      if (title.includes('coffret') || title.includes('4 sovereign') || title.includes('4 souverain')) {
+        weight = locale === 'de' ? '29,29 g Feingold' : (locale === 'en' ? '29.29 g fine gold' : '29,29 g or fin');
+      } else {
+        weight = locale === 'de' ? '7,32 g Feingold' : (locale === 'en' ? '7.32 g fine gold' : '7,32 g or fin');
+      }
     } else if (title.includes('1/2 oz') || title.includes('1/2 once')) {
       weight = '1/2 oz (15,55 g)';
     } else if (title.includes('1/4 oz') || title.includes('1/4 once')) {
       weight = '1/4 oz (7,78 g)';
     } else if (title.includes('1/10 oz') || title.includes('1/10 once')) {
       weight = '1/10 oz (3,11 g)';
-    } else if (title.includes('1 oz') || title.includes('1oz') || title.includes('1 once')) {
+    } else if (title.includes('1 oz') || title.includes('1oz') || title.includes('1 once') || title.includes('1 unze')) {
       weight = '1 oz (31,10 g)';
     } else if (title.includes('100g') || title.includes('100 g')) {
       weight = '100 g';
@@ -251,7 +272,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
   const reviewCount = Array.isArray(product.reviews) ? product.reviews.length : 0;
 
   const reviewLabel = reviewCount > 0 
-    ? t('customer_reviews', { count: reviewCount })
+    ? `${reviewCount} ${locale === 'fr' ? (reviewCount > 1 ? 'avis clients' : 'avis client') : (locale === 'de' ? (reviewCount > 1 ? 'Kundenbewertungen' : 'Kundenbewertung') : (reviewCount > 1 ? 'reviews' : 'review'))}`
     : ({
         fr: "Avis vérifiés",
         en: "Verified reviews",

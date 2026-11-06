@@ -37,90 +37,220 @@ interface BestDealsCardProps {
   btnHoverTextColor?: string;
 }
 
+function parseAttributes(rawAttrs: any): Array<{ name: string; options: any }> {
+  if (!rawAttrs) return [];
+  if (Array.isArray(rawAttrs)) return rawAttrs;
+  if (typeof rawAttrs === 'string') {
+    try {
+      const parsed = JSON.parse(rawAttrs);
+      if (Array.isArray(parsed)) return parsed;
+      if (parsed && typeof parsed === 'object') {
+        return Object.entries(parsed).map(([name, val]) => ({
+          name,
+          options: Array.isArray(val) ? val : [String(val)]
+        }));
+      }
+    } catch {}
+  }
+  return [];
+}
+
+function cleanPurity(rawPurity: string, isSilver: boolean, isGold: boolean, title: string): string {
+  const p = (rawPurity || '').toLowerCase();
+  const t = title.toLowerCase();
+
+  // Latin Monetary Union coins (Napoleon, Carol I, Chervonetz, 20 Francs Tunisia, etc.)
+  if (
+    p.includes('900') || 
+    p.includes('21.6') || 
+    p.includes('21,6') || 
+    t.includes('20 francs') || 
+    t.includes('20 lei') || 
+    t.includes('napoléon') || 
+    t.includes('napoleon') || 
+    t.includes('chervonetz') || 
+    t.includes('10 roubles') ||
+    t.includes('tunesien')
+  ) {
+    return '900‰ (21.6K)';
+  }
+
+  // British Sovereigns and Krugerrands are 22K (916.7‰)
+  if (
+    p.includes('916') || 
+    p.includes('22k') || 
+    p.includes('22 k') || 
+    p.includes('22 carats') || 
+    t.includes('22k') || 
+    t.includes('souverain') || 
+    t.includes('sovereign') || 
+    t.includes('krugerrand')
+  ) {
+    return 'Or 916.7‰ (22K)';
+  }
+
+  // 999.9 fine
+  if (
+    p.includes('999,9') || 
+    p.includes('999.9') || 
+    p.includes('99,99') || 
+    t.includes('999,9') || 
+    t.includes('999.9')
+  ) {
+    return isSilver ? 'Argent 999.9‰' : 'Or 999.9‰ (24K)';
+  }
+
+  // 999 fine
+  if (
+    p.includes('999') || 
+    p.includes('99,9') || 
+    t.includes('999') || 
+    t.includes('99,9')
+  ) {
+    return isSilver ? 'Argent 999‰' : 'Or 999‰ (24K)';
+  }
+
+  // Fallbacks based on metal
+  if (isSilver) return 'Argent 999‰';
+  return 'Or 999.9‰ (24K)';
+}
+
+function cleanWeight(rawWeight: string, title: string): string {
+  let w = (rawWeight || '').trim();
+  const t = title.toLowerCase();
+
+  // If CombiBar (e.g. 100 x 1 g, 50 x 1 g, 25 x 1 g, 20 x 1 g)
+  const combiMatch = t.match(/(\d+)\s*[x×]\s*1\s*g/i);
+  if (combiMatch) {
+    return `${combiMatch[1]} × 1 g (${combiMatch[1]} g)`;
+  }
+
+  // If title is a Tube of coins, prioritize the unit coin weight so cards remain unified
+  if (/tube/i.test(t)) {
+    if (t.includes('1/10 oz') || t.includes('1/10 once')) return '1/10 oz (3,11 g)';
+    if (t.includes('1/4 oz') || t.includes('1/4 once')) return '1/4 oz (7,78 g)';
+    if (t.includes('1/2 oz') || t.includes('1/2 once')) return '1/2 oz (15,55 g)';
+    if (t.includes('1 oz') || t.includes('1oz') || t.includes('1 once') || t.includes('1 unze')) return '1 oz (31,10 g)';
+  }
+
+  // If contains "par pièce" or "pro münze" or "per coin", keep only the individual coin specification
+  if (/par pièce|pro münze|per coin|par piece/i.test(w)) {
+    w = w.split(/par pièce|pro münze|per coin|par piece/i)[0].trim();
+  }
+
+  // Clean trailing descriptive text
+  w = w.replace(/\s+d'(?:or|argent)\s+pur/gi, '');
+  w = w.replace(/\s+de\s+(?:feingold|feinsilber)/gi, '');
+  w = w.replace(/\s+d'or\s+fin/gi, '');
+  w = w.replace(/\s+or\s+pur/gi, '');
+
+  // 1/2 oz variations
+  if (/15,55\s*g/i.test(w)) {
+    return '1/2 oz (15,55 g)';
+  }
+
+  // 1/4 oz variations
+  if (/7,78\s*g|7,776\s*g/i.test(w)) {
+    return '1/4 oz (7,78 g)';
+  }
+
+  // 1/10 oz variations
+  if (/3,11\s*g/i.test(w)) {
+    return '1/10 oz (3,11 g)';
+  }
+
+  // Historic coins
+  if (/7,74\s*g/i.test(w)) {
+    return '7,74 g or fin';
+  }
+
+  // 1 once bar / coin variations
+  if (/31,1035\s*g|31,10\s*g/i.test(w) || (t.includes('1 once') && !w.includes('oz'))) {
+    return '1 oz (31,10 g)';
+  }
+
+  // If w is empty or generic fallback, extract from title
+  if (!w || /or d'investissement|argent d'investissement|anlagegewicht/i.test(w)) {
+    if (t.includes('1/10 oz') || t.includes('1/10 once')) return '1/10 oz (3,11 g)';
+    if (t.includes('1/4 oz') || t.includes('1/4 once')) return '1/4 oz (7,78 g)';
+    if (t.includes('1/2 oz') || t.includes('1/2 once')) return '1/2 oz (15,55 g)';
+    if (t.includes('1 oz') || t.includes('1oz') || t.includes('1 once') || t.includes('1 unze')) return '1 oz (31,10 g)';
+    if (t.includes('20 francs') || t.includes('20 lei') || t.includes('napoléon') || t.includes('napoleon') || t.includes('tunesien')) return '5,80 g or fin';
+    if (t.includes('10 roubles') || t.includes('chervonetz')) return '7,74 g or fin';
+    if (t.includes('souverain') || t.includes('sovereign')) {
+      if (t.includes('coffret') || t.includes('4 sovereign') || t.includes('4 souverain')) return '29,29 g or fin';
+      return '7,32 g or fin';
+    }
+    if (t.includes('100g') || t.includes('100 g')) return '100 g';
+    if (t.includes('50g') || t.includes('50 g')) return '50 g';
+    if (t.includes('250g') || t.includes('250 g')) return '250 g';
+    if (t.includes('500g') || t.includes('500 g')) return '500 g';
+    if (t.includes('1kg') || t.includes('1 kg') || t.includes('1 kilogramme')) return '1 kg';
+    if (t.includes('20g') || t.includes('20 g')) return '20 g';
+    if (t.includes('10g') || t.includes('10 g')) return '10 g';
+    if (t.includes('5g') || t.includes('5 g')) return '5 g';
+    if (t.includes('2,5g') || t.includes('2.5g')) return '2,5 g';
+    if (t.includes('2g') || t.includes('2 g')) return '2 g';
+    if (t.includes('1g') || t.includes('1 g')) return '1 g';
+  }
+
+  // Format round grams: 50,00 g -> 50 g or 2,00 g -> 2 g or 250,00 g -> 250 g
+  w = w.replace(/^(\d+)[,\.]00\s*g$/i, '$1 g');
+  w = w.replace(/^(\d+)[,\.]0\s*g$/i, '$1 g');
+
+  // Format 1 kg (1 000 g) -> 1 kg
+  if (/^1\s*kg\s*\(\s*1\s*000\s*g\s*\)$/i.test(w)) {
+    return '1 kg';
+  }
+
+  // If w is just "5,80 g" or "5,81 g" or "29,29 g"
+  if (w === '5,80 g' || w === '5,81 g') return '5,80 g or fin';
+  if (w === '29,29 g') return '29,29 g or fin';
+
+  return w;
+}
+
 // Smart precious metal specifications extractor
 function getPreciousMetalSpecs(product: BestDealsCardProps['product']) {
-  if (product.purity && product.weight) {
-    return {
-      purity: product.purity,
-      weight: product.weight,
-      inStock: product.inStock ?? (product.stock === undefined || product.stock === null || product.stock > 0),
-    };
-  }
+  const title = (product.title || '').trim();
+  const titleLower = title.toLowerCase();
+  const attrs = parseAttributes(product.attributes);
 
-  const title = (product.title || '').toLowerCase();
-  let purity = product.attributes?.purity || product.attributes?.purete;
-  let weight = product.attributes?.weight || product.attributes?.poids;
+  const isSilver = 
+    titleLower.includes('argent') || 
+    titleLower.includes('silver') || 
+    titleLower.includes('silber') ||
+    attrs.some(a => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()) && 
+      (Array.isArray(a.options) ? a.options.join(' ') : String(a.options || '')).toLowerCase().includes('argent'));
 
-  // If attributes is stored as an array (standard Prisma JSON array of { name, options })
-  if (!purity && Array.isArray(product.attributes)) {
-    const a = product.attributes.find((x: any) => 
-      ['pureté', 'purete', 'titrage', 'purity'].includes(String(x?.name || '').toLowerCase())
-    );
-    if (a) purity = Array.isArray(a.options) ? a.options[0] : (a.options || '');
-  }
+  const isGold = !isSilver;
 
-  if (!weight && Array.isArray(product.attributes)) {
-    const a = product.attributes.find((x: any) => 
-      ['poids fin', 'poids or fin', 'poids', 'fine weight', 'weight'].includes(String(x?.name || '').toLowerCase())
-    );
-    if (a) weight = Array.isArray(a.options) ? a.options[0] : (a.options || '');
-  }
-
-  if (!purity) {
-    if (
-      title.includes('20 francs') ||
-      title.includes('20 lei') ||
-      title.includes('napoléon') ||
-      title.includes('napoleon') ||
-      title.includes('tunesien') ||
-      title.includes('chervonetz') ||
-      title.includes('10 roubles') ||
-      title.includes('souverain') ||
-      title.includes('sovereign')
-    ) {
-      purity = '900‰ (21.6K)';
-    } else if (title.includes('krugerrand')) {
-      purity = '916.7‰ (22K)';
-    } else if (title.includes('argent') || title.includes('silver')) {
-      purity = 'Argent 999.9‰';
-    } else {
-      purity = 'Or 999.9‰ (24K)';
+  // Extract raw purity from product or attributes
+  let rawPurity = product.purity || product.attributes?.purity || product.attributes?.purete || '';
+  if (!rawPurity) {
+    const purityAttr = attrs.find(a => {
+      const n = String(a.name || '').toLowerCase();
+      return n.includes('puret') || n.includes('titrage') || n.includes('purity') || n.includes('feingehalt');
+    });
+    if (purityAttr) {
+      rawPurity = Array.isArray(purityAttr.options) ? purityAttr.options[0] : String(purityAttr.options || '');
     }
   }
 
-  if (!weight) {
-    if (
-      title.includes('20 francs') ||
-      title.includes('20 lei') ||
-      title.includes('napoléon') ||
-      title.includes('tunesien')
-    ) {
-      weight = '5,81 g or fin';
-    } else if (title.includes('10 roubles') || title.includes('chervonetz')) {
-      weight = '7,74 g or fin';
-    } else if (title.includes('1/2 oz')) {
-      weight = '1/2 oz (15,55 g)';
-    } else if (title.includes('1/4 oz')) {
-      weight = '1/4 oz (7,78 g)';
-    } else if (title.includes('1/10 oz')) {
-      weight = '1/10 oz (3,11 g)';
-    } else if (title.includes('1 oz') || title.includes('1oz')) {
-      weight = '1 oz (31,10 g)';
-    } else if (title.includes('50g')) {
-      weight = '50 g';
-    } else if (title.includes('100g')) {
-      weight = '100 g';
-    } else if (title.includes('250g')) {
-      weight = '250 g';
-    } else if (title.includes('500g')) {
-      weight = '500 g';
-    } else if (title.includes('1kg') || title.includes('1 kg')) {
-      weight = '1 kg';
-    } else {
-      weight = 'Or d\'investissement';
+  // Extract raw weight from product or attributes
+  let rawWeight = product.weight || product.attributes?.weight || product.attributes?.poids || '';
+  if (!rawWeight) {
+    const weightAttr = attrs.find(a => {
+      const n = String(a.name || '').toLowerCase();
+      return n.includes('poids fin') || n.includes('fine weight') || n.includes('feingewicht') || n === 'poids' || n.includes('poids total');
+    });
+    if (weightAttr) {
+      rawWeight = Array.isArray(weightAttr.options) ? weightAttr.options[0] : String(weightAttr.options || '');
     }
   }
 
+  const purity = cleanPurity(rawPurity, isSilver, isGold, title);
+  const weight = cleanWeight(rawWeight, title);
   const inStock = product.inStock ?? (product.stock === undefined || product.stock === null || product.stock > 0);
 
   return { purity, weight, inStock };
@@ -230,10 +360,10 @@ export default function BestDealsCard({
         {/* 3. Product Info: Technical Metal Specs & Title */}
         <div className="flex flex-col items-center text-center mt-2 mb-3">
           {/* Technical Specs: Pureté · Poids fin */}
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#FAF5EB] border border-[#E8A63D]/25 text-[11px] font-mono font-medium text-[#8C6D23] mb-2 tracking-wide">
-            <span>{specs.purity}</span>
-            <span className="text-[#C8732A]/70 font-bold">•</span>
-            <span>{specs.weight}</span>
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 rounded-full bg-[#FAF5EB] border border-[#E8A63D]/25 text-[11px] font-mono font-medium text-[#8C6D23] mb-2 tracking-wide max-w-full whitespace-nowrap overflow-hidden">
+            <span className="truncate">{specs.purity}</span>
+            <span className="text-[#C8732A]/70 font-bold shrink-0">•</span>
+            <span className="truncate">{specs.weight}</span>
           </div>
 
           <h3 
