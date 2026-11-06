@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -175,6 +176,7 @@ function extractSpecs(product: any, locale: string) {
 }
 
 export default function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const cartStore = useCartStore();
@@ -185,12 +187,22 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
 
   const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
 
-  // Reset state when product changes or modal opens + Escape listener
+  // Ensure portal target (document.body) is ready on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Reset state when product changes or modal opens + Escape listener + Lock background scroll
   useEffect(() => {
     if (isOpen) {
       setQuantity(1);
       setActiveImage(0);
+
+      // Lock both body and documentElement to strictly prevent any background scrolling
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
@@ -199,14 +211,13 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
 
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = '';
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
       };
-    } else {
-      document.body.style.overflow = '';
     }
   }, [isOpen, product, onClose]);
 
-  if (!isOpen || !product) return null;
+  if (!isOpen || !product || !mounted) return null;
 
   // Normalize images
   const images: string[] = Array.isArray(product.images) && product.images.length > 0
@@ -432,9 +443,10 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
 
   const badgeText = product.badge || product.category || (locale === 'de' ? 'Anlageprodukte' : 'Investissement');
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-8"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-5 md:p-8"
+      style={{ isolation: 'isolate' }}
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
     >
       {/* Luxury Backdrop with smooth blur */}
@@ -705,6 +717,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
