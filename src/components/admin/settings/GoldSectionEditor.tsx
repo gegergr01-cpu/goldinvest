@@ -656,16 +656,58 @@ export default function GoldSectionEditor({
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-700 mb-1 text-center">Cols (Desktop)</label>
+                      <select
+                        value={s.colsDesktop || '5'}
+                        onChange={(e) => handleFieldChange('colsDesktop', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
+                      >
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-700 mb-1 text-center">Cols (Tablet)</label>
+                      <select
+                        value={s.colsTablet || '3'}
+                        onChange={(e) => handleFieldChange('colsTablet', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
+                      >
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-700 mb-1 text-center">Cols (Mobile)</label>
+                      <select
+                        value={s.colsMobile || '1'}
+                        onChange={(e) => handleFieldChange('colsMobile', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
+                      >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
                     <select
-                      value={s.maxProducts || '4'}
+                      value={s.maxProducts || '5'}
                       onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
                     >
-                      <option value="4">4 produits (1 rangée standard - comme la maquette)</option>
-                      <option value="8">8 produits (2 rangées)</option>
-                      <option value="12">12 produits (3 rangées)</option>
+                      <option value="4">4 produits (1 rangée de 4)</option>
+                      <option value="5">5 produits (1 rangée de 5)</option>
+                      <option value="8">8 produits (2 rangées de 4)</option>
+                      <option value="10">10 produits (2 rangées de 5)</option>
+                      <option value="12">12 produits (3 rangées de 4)</option>
+                      <option value="15">15 produits (3 rangées de 5)</option>
                     </select>
                   </div>
                 </>

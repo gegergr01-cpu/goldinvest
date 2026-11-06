@@ -308,7 +308,7 @@ function isGoldProduct(p: any): boolean {
           metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
         }
       }
-    } catch {}
+    } catch { }
   }
 
   if (metalAttr.toLowerCase().includes('argent') || metalAttr.toLowerCase().includes('silver')) return false;
@@ -340,7 +340,7 @@ function isSilverProduct(p: any): boolean {
           metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
         }
       }
-    } catch {}
+    } catch { }
   }
 
   if (catSlugs.includes('pieces-dargent') || catSlugs.includes('lingots-dargent') || catSlugs.includes('silver-coins') || catSlugs.includes('silver-bars')) return true;
@@ -407,7 +407,10 @@ export default async function BestDeals({ config }: BestDealsProps) {
     : t('subtitle');
 
   const cardBadge = (isFrench && c.cardBadge) ? c.cardBadge : t('cardBadge');
-  const maxNum = parseInt(c.maxProducts || '4', 10) || 4;
+  const colsDesktop = c.colsDesktop || '5';
+  const colsTablet = c.colsTablet || '3';
+  const colsMobile = c.colsMobile || '1';
+  const maxNum = parseInt(c.maxProducts || colsDesktop, 10) || 5;
 
   const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
 
@@ -611,6 +614,9 @@ export default async function BestDeals({ config }: BestDealsProps) {
       cardBadge={cardBadge}
       hideMobile={c.hideMobile}
       metal={metalType}
+      colsDesktop={colsDesktop}
+      colsTablet={colsTablet}
+      colsMobile={colsMobile}
       tab1={tab1Config}
       tab2={tab2Config}
     />

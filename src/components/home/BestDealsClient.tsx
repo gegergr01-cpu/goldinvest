@@ -24,6 +24,9 @@ export interface BestDealsClientProps {
   metal: 'gold' | 'silver';
   tab1: TabConfig;
   tab2: TabConfig;
+  colsDesktop?: string | number;
+  colsTablet?: string | number;
+  colsMobile?: string | number;
 }
 
 export default function BestDealsClient({
@@ -36,11 +39,29 @@ export default function BestDealsClient({
   metal = 'gold',
   tab1,
   tab2,
+  colsDesktop = '5',
+  colsTablet = '3',
+  colsMobile = '1',
 }: BestDealsClientProps) {
   const [activeTab, setActiveTab] = useState<'tab1' | 'tab2'>('tab1');
   const isSilver = metal === 'silver';
 
   const currentTab = activeTab === 'tab1' ? tab1 : tab2;
+
+  const dCols = String(colsDesktop || '5');
+  const tCols = String(colsTablet || '3');
+  const mCols = String(colsMobile || '1');
+
+  const mClass = mCols === '2' ? 'grid-cols-2' : 'grid-cols-1';
+  const tClass = tCols === '4' ? 'sm:grid-cols-2 md:grid-cols-4' : tCols === '2' ? 'sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3';
+  let dClass = 'lg:grid-cols-5';
+  if (dCols === '4') dClass = 'lg:grid-cols-4';
+  else if (dCols === '3') dClass = 'lg:grid-cols-3';
+  else if (dCols === '6') dClass = 'lg:grid-cols-6';
+  else if (dCols === '2') dClass = 'lg:grid-cols-2';
+
+  const gridColsClass = `${mClass} ${tClass} ${dClass}`;
+  const gapClass = dCols === '5' || dCols === '6' ? 'gap-4 sm:gap-4 lg:gap-5' : 'gap-6';
 
   // Render title with gold/silver highlight if specified
   const renderTitle = () => {
@@ -145,7 +166,7 @@ export default function BestDealsClient({
         </div>
 
         {/* 2. Products Grid with transition */}
-        <div key={activeTab} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 md:mt-12 transition-opacity duration-300">
+        <div key={activeTab} className={`grid ${gridColsClass} ${gapClass} mt-10 md:mt-12 transition-opacity duration-300`}>
           {currentTab.products.map((product) => (
             <BestDealsCard
               key={`${activeTab}-${product.id}`}
