@@ -320,7 +320,17 @@ export default function BestDealsCard({
           slug: product.slug || '',
           title: product.title,
           price: typeof product.rawPrice === 'number' ? product.rawPrice : Number(product.price) || 0,
+          compareAtPrice: (product as any).compareAtPrice,
           images: product.imageUrl ? [product.imageUrl] : [],
+          attributes: product.attributes,
+          category: product.category,
+          badge: badge || product.badge,
+          purity: specs.purity,
+          weight: specs.weight,
+          stock: product.stock,
+          rating: product.rating,
+          ratingText: product.ratingText,
+          shortDescription: (product as any).shortDescription || (product as any).description,
         }} 
       />
     </>
