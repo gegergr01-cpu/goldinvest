@@ -39,8 +39,8 @@ export default function BestDealsClient({
   metal = 'gold',
   tab1,
   tab2,
-  colsDesktop = '5',
-  colsTablet = '3',
+  colsDesktop = '4',
+  colsTablet = '2',
   colsMobile = '1',
 }: BestDealsClientProps) {
   const [activeTab, setActiveTab] = useState<'tab1' | 'tab2'>('tab1');
@@ -48,8 +48,8 @@ export default function BestDealsClient({
 
   const currentTab = activeTab === 'tab1' ? tab1 : tab2;
 
-  const dCols = String(colsDesktop || '5');
-  const tCols = String(colsTablet || '3');
+  const dCols = String(colsDesktop || '4');
+  const tCols = String(colsTablet || '2');
   const mCols = String(colsMobile || '1');
 
   const mClass = mCols === '2' ? 'grid-cols-2' : 'grid-cols-1';

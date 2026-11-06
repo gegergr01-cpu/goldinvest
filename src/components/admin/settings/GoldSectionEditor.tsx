@@ -660,7 +660,7 @@ export default function GoldSectionEditor({
                     <div>
                       <label className="block text-[11px] font-medium text-gray-700 mb-1 text-center">Cols (Desktop)</label>
                       <select
-                        value={s.colsDesktop || '5'}
+                        value={s.colsDesktop || '4'}
                         onChange={(e) => handleFieldChange('colsDesktop', e.target.value)}
                         className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
                       >
@@ -698,7 +698,7 @@ export default function GoldSectionEditor({
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nombre maximum de produits</label>
                     <select
-                      value={s.maxProducts || '5'}
+                      value={s.maxProducts || '4'}
                       onChange={(e) => handleFieldChange('maxProducts', e.target.value)}
                       className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-gray-500 cursor-pointer"
                     >

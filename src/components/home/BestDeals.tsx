@@ -407,10 +407,10 @@ export default async function BestDeals({ config }: BestDealsProps) {
     : t('subtitle');
 
   const cardBadge = (isFrench && c.cardBadge) ? c.cardBadge : t('cardBadge');
-  const colsDesktop = c.colsDesktop || '5';
-  const colsTablet = c.colsTablet || '3';
+  const colsDesktop = c.colsDesktop || '4';
+  const colsTablet = c.colsTablet || '2';
   const colsMobile = c.colsMobile || '1';
-  const maxNum = parseInt(c.maxProducts || colsDesktop, 10) || 5;
+  const maxNum = parseInt(c.maxProducts || colsDesktop, 10) || 4;
 
   const localePrefix = locale && locale !== 'fr' ? `/${locale}` : '';
 

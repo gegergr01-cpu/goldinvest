@@ -72,10 +72,10 @@ export default async function Home() {
         tab1_btn_url: "/shop?category=pieces-dargent",
         tab2_btn_text: "Voir tous les lingots d'argent",
         tab2_btn_url: "/shop?category=lingots-dargent",
-        colsDesktop: '5',
-        colsTablet: '3',
+        colsDesktop: '4',
+        colsTablet: '2',
         colsMobile: '1',
-        maxProducts: '5'
+        maxProducts: '4'
       }
     };
     layout.splice(goldIdx + 1, 0, autoSilverSection);
