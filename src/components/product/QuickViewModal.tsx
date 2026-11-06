@@ -17,7 +17,7 @@ type QuickViewModalProps = {
 };
 
 // Smart extractor of precious metal attributes & investment specifications
-function extractSpecs(product: any) {
+function extractSpecs(product: any, locale: string) {
   let attrs: Array<{ name: string; options: any }> = [];
   if (product.attributes) {
     if (Array.isArray(product.attributes)) {
@@ -41,17 +41,41 @@ function extractSpecs(product: any) {
 
   const title = String(product.title || '').toLowerCase();
 
-  // 1. Metal
-  let metal = product.metal || findAttr(['métal', 'metal']);
-  if (!metal) {
-    if (title.includes('argent') || title.includes('silver') || title.includes('silber')) {
-      metal = 'Argent (Silver)';
-    } else if (title.includes('platine') || title.includes('platinum')) {
-      metal = 'Platine (Platinum)';
-    } else {
-      metal = 'Or (Gold)';
-    }
+  // 1. Metal Category
+  let metalType: 'gold' | 'silver' | 'platinum' = 'gold';
+  const rawMetal = String(product.metal || findAttr(['métal', 'metal'])).toLowerCase();
+
+  if (
+    rawMetal.includes('argent') ||
+    rawMetal.includes('silver') ||
+    rawMetal.includes('silber') ||
+    title.includes('argent') ||
+    title.includes('silver') ||
+    title.includes('silber')
+  ) {
+    metalType = 'silver';
+  } else if (
+    rawMetal.includes('platine') ||
+    rawMetal.includes('platinum') ||
+    title.includes('platine') ||
+    title.includes('platinum')
+  ) {
+    metalType = 'platinum';
   }
+
+  const metalLabels: Record<string, Record<'gold' | 'silver' | 'platinum', string>> = {
+    fr: { gold: "OR D'INVESTISSEMENT", silver: "ARGENT D'INVESTISSEMENT", platinum: "PLATINE D'INVESTISSEMENT" },
+    en: { gold: "INVESTMENT GOLD", silver: "INVESTMENT SILVER", platinum: "INVESTMENT PLATINUM" },
+    de: { gold: "ANLAGEGOLD", silver: "ANLAGESILBER", platinum: "ANLAGEPLATIN" },
+    es: { gold: "ORO DE INVERSIÓN", silver: "PLATA DE INVERSIÓN", platinum: "PLATINO DE INVERSIÓN" },
+    it: { gold: "ORO DA INVESTIMENTO", silver: "ARGENTO DA INVESTIMENTO", platinum: "PLATINO DA INVESTIMENTO" },
+    nl: { gold: "BELEGGINGSGOUD", silver: "BELEGGINGSZILVER", platinum: "BELEGGINGSPLATINA" },
+    pt: { gold: "OURO DE INVESTIMENTO", silver: "PRATA DE INVESTIMENTO", platinum: "PLATINA DE INVESTIMENTO" },
+    da: { gold: "INVESTERINGSGULD", silver: "INVESTERINGSSØLV", platinum: "INVESTERINGSPLATIN" },
+    hu: { gold: "BEFEKTETÉSI ARANY", silver: "BEFEKTETÉSI EZÜST", platinum: "BEFEKTETÉSI PLATINA" },
+  };
+
+  const metal = metalLabels[locale]?.[metalType] || metalLabels.fr[metalType];
 
   // 2. Purity
   let purity = product.purity || findAttr(['pureté', 'purete', 'titrage', 'purity']);
@@ -70,10 +94,17 @@ function extractSpecs(product: any) {
       purity = '900‰ (21.6K)';
     } else if (title.includes('krugerrand')) {
       purity = '916.7‰ (22K)';
-    } else if (title.includes('argent') || title.includes('silver') || title.includes('silber')) {
-      purity = 'Argent 999‰';
+    } else if (metalType === 'silver') {
+      purity = locale === 'de' ? 'Feinsilber 999‰' : (locale === 'en' ? 'Fine Silver 999‰' : 'Argent 999‰');
     } else {
-      purity = 'Or 999.9‰ (24K)';
+      purity = locale === 'de' ? '999,9‰ Feingold (24K)' : (locale === 'en' ? '999.9‰ Fine Gold (24K)' : 'Or 999.9‰ (24K)');
+    }
+  } else {
+    // Localize purity prefix if needed
+    if (locale === 'de') {
+      purity = purity.replace(/^Or\s+/i, 'Feingold ').replace(/^Argent\s+/i, 'Feinsilber ');
+    } else if (locale === 'en') {
+      purity = purity.replace(/^Or\s+/i, 'Fine Gold ').replace(/^Argent\s+/i, 'Fine Silver ');
     }
   }
 
@@ -81,9 +112,9 @@ function extractSpecs(product: any) {
   let weight = product.weight || findAttr(['poids fin', 'poids or fin', 'poids', 'fine weight', 'weight']);
   if (!weight) {
     if (title.includes('20 francs') || title.includes('20 lei') || title.includes('napoléon') || title.includes('tunesien')) {
-      weight = '5,81 g or fin';
+      weight = locale === 'de' ? '5,81 g Feingold' : (locale === 'en' ? '5.81 g fine gold' : '5,81 g or fin');
     } else if (title.includes('10 roubles') || title.includes('chervonetz')) {
-      weight = '7,74 g or fin';
+      weight = locale === 'de' ? '7,74 g Feingold' : (locale === 'en' ? '7.74 g fine gold' : '7,74 g or fin');
     } else if (title.includes('1/2 oz') || title.includes('1/2 once')) {
       weight = '1/2 oz (15,55 g)';
     } else if (title.includes('1/4 oz') || title.includes('1/4 once')) {
@@ -107,21 +138,37 @@ function extractSpecs(product: any) {
     } else if (title.includes('2g') || title.includes('2 g')) {
       weight = '2 g';
     } else {
-      weight = "Poids d'investissement";
+      weight = locale === 'de' ? 'Anlagegewicht' : (locale === 'en' ? 'Investment Weight' : "Poids d'investissement");
     }
   }
 
   // 4. Certification / Mint / Refinery
   let cert = findAttr(['certification', 'certificat', 'accréditation', 'accreditation', 'atelier', 'atelier / institut', 'fondeur', 'fondeurs']);
   if (!cert) {
-    if (title.includes('perth mint')) cert = 'The Perth Mint (Australie)';
-    else if (title.includes('austrian mint') || title.includes('vienne')) cert = 'Austrian Mint (Autriche)';
-    else if (title.includes('royal mint') || title.includes('britannia')) cert = 'The Royal Mint (Royaume-Uni)';
-    else if (title.includes('valcambi')) cert = 'Valcambi SA (Suisse) • LBMA';
-    else if (title.includes('heraeus') || title.includes('argor')) cert = 'Argor-Heraeus • LBMA';
-    else if (title.includes('metalor')) cert = 'Metalor (Suisse) • LBMA';
-    else if (title.includes('c.hafner') || title.includes('hafner')) cert = 'C.HAFNER (Allemagne) • LBMA';
-    else cert = 'Certifié LBMA Good Delivery';
+    if (title.includes('perth mint')) {
+      cert = locale === 'de' ? 'The Perth Mint (Australien)' : (locale === 'en' ? 'The Perth Mint (Australia)' : 'The Perth Mint (Australie)');
+    } else if (title.includes('austrian mint') || title.includes('vienne')) {
+      cert = locale === 'de' ? 'Münze Österreich' : (locale === 'en' ? 'Austrian Mint (Austria)' : 'Austrian Mint (Autriche)');
+    } else if (title.includes('royal mint') || title.includes('britannia') || title.includes('british lion')) {
+      cert = locale === 'de' ? 'The Royal Mint (UK)' : (locale === 'en' ? 'The Royal Mint (UK)' : 'The Royal Mint (Royaume-Uni)');
+    } else if (title.includes('valcambi')) {
+      cert = locale === 'de' ? 'Valcambi SA (Schweiz) • LBMA' : (locale === 'en' ? 'Valcambi SA (Switzerland) • LBMA' : 'Valcambi SA (Suisse) • LBMA');
+    } else if (title.includes('heraeus') || title.includes('argor')) {
+      cert = 'Argor-Heraeus • LBMA';
+    } else if (title.includes('metalor')) {
+      cert = locale === 'de' ? 'Metalor (Schweiz) • LBMA' : (locale === 'en' ? 'Metalor (Switzerland) • LBMA' : 'Metalor (Suisse) • LBMA');
+    } else if (title.includes('c.hafner') || title.includes('hafner')) {
+      cert = locale === 'de' ? 'C.HAFNER (Deutschland) • LBMA' : (locale === 'en' ? 'C.HAFNER (Germany) • LBMA' : 'C.HAFNER (Allemagne) • LBMA');
+    } else {
+      cert = locale === 'de' ? 'LBMA Good Delivery zertifiziert' : (locale === 'en' ? 'LBMA Good Delivery Certified' : 'Certifié LBMA Good Delivery');
+    }
+  } else {
+    // Localize country in cert string if French was saved
+    if (locale === 'de') {
+      cert = cert.replace(/Royaume-Uni/gi, 'Großbritannien').replace(/Suisse/gi, 'Schweiz').replace(/Australie/gi, 'Australien').replace(/Allemagne/gi, 'Deutschland');
+    } else if (locale === 'en') {
+      cert = cert.replace(/Royaume-Uni/gi, 'UK').replace(/Suisse/gi, 'Switzerland').replace(/Australie/gi, 'Australia').replace(/Allemagne/gi, 'Germany');
+    }
   }
 
   return { metal, purity, weight, cert };
@@ -175,8 +222,8 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
   const mainImage = images[activeImage] || '/images/gold-coins.jpg';
   const isWishlisted = wishlistStore.hasItem(String(product.id));
 
-  // Specifications
-  const specs = extractSpecs(product);
+  // Specifications with current locale
+  const specs = extractSpecs(product, locale);
 
   // Price calculations
   const rawPrice = typeof product.price === 'number'
@@ -187,9 +234,24 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
     : Number(product.compareAtPrice) || null;
   const hasDiscount = Boolean(comparePrice && comparePrice > rawPrice);
 
-  // Ratings
+  // Ratings & reviews safe display
   const rating = product.rating || 5;
   const ratingText = product.ratingText || '';
+  const reviewCount = Array.isArray(product.reviews) ? product.reviews.length : 0;
+
+  const reviewLabel = reviewCount > 0 
+    ? t('customer_reviews', { count: reviewCount })
+    : ({
+        fr: "Avis vérifiés",
+        en: "Verified reviews",
+        de: "Verifizierte Bewertungen",
+        es: "Opiniones verificadas",
+        it: "Recensioni verificate",
+        nl: "Geverifieerde beoordelingen",
+        pt: "Avaliações verificadas",
+        da: "Bekræftede anmeldelser",
+        hu: "Hitelesített értékelések"
+      }[locale] || "Avis vérifiés");
 
   // Product URL for full details
   const productSlug = product.slug || '';
@@ -209,7 +271,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
   }[locale] || "Voir la fiche produit complète";
 
   const taxDisclaimer = {
-    fr: "TVA 0% • Métal précieux d'investissement (Directive 2006/112/CE)",
+    fr: "0% TVA • Métal précieux d'investissement (Directive 2006/112/CE)",
     en: "0% VAT • Investment Bullion (EU Directive 2006/112/EC)",
     de: "0% MwSt. • Anlagegold & -silber (EU-Richtlinie 2006/112/EG)",
     es: "0% IVA • Metal precioso de inversión (Directiva 2006/112/CE)",
@@ -218,18 +280,77 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
     pt: "IVA 0% • Metal precioso de investimento (Diretiva 2006/112/CE)",
     da: "0% moms • Investeringsguld og -sølv (Direktiv 2006/112/EF)",
     hu: "0% ÁFA • Befektetési nemesfém (2006/112/EK irányelv)"
-  }[locale] || "TVA 0% • Métal précieux d'investissement";
+  }[locale] || "0% TVA • Métal précieux d'investissement";
+
+  // Spec box labels
+  const specLabels = {
+    purity: {
+      fr: "Pureté",
+      en: "Purity",
+      de: "Feingehalt / Reinheit",
+      es: "Pureza",
+      it: "Purezza",
+      nl: "Zuiverheid",
+      pt: "Pureza",
+      da: "Finhed",
+      hu: "Tisztaság"
+    }[locale] || "Pureté",
+    weight: {
+      fr: "Poids fin",
+      en: "Fine weight",
+      de: "Feingewicht",
+      es: "Peso fino",
+      it: "Peso netto",
+      nl: "Fijngewicht",
+      pt: "Peso fino",
+      da: "Finvægt",
+      hu: "Színtömeg"
+    }[locale] || "Poids fin",
+    cert: {
+      fr: "Certification",
+      en: "Certification",
+      de: "Zertifizierung",
+      es: "Certificación",
+      it: "Certificazione",
+      nl: "Certificering",
+      pt: "Certificação",
+      da: "Certificering",
+      hu: "Tanúsítvány"
+    }[locale] || "Certification",
+    tax: {
+      fr: "Fiscalité",
+      en: "Tax status",
+      de: "Besteuerung",
+      es: "Fiscalidad",
+      it: "Fiscalità",
+      nl: "Fiscaliteit",
+      pt: "Fiscalidade",
+      da: "Beskatning",
+      hu: "Adózás"
+    }[locale] || "Fiscalité",
+    taxFreeValue: {
+      fr: "0% TVA",
+      en: "0% VAT",
+      de: "0% MwSt.",
+      es: "0% IVA",
+      it: "0% IVA",
+      nl: "0% BTW",
+      pt: "0% IVA",
+      da: "0% moms",
+      hu: "0% ÁFA"
+    }[locale] || "0% TVA",
+  };
 
   const trustLabels = {
     fr: {
-      delivery: "Livraison discrète & assurée",
-      authenticity: "Certifié LBMA & scellé officiel",
-      buyback: "Rachat garanti au cours spot"
+      delivery: "Discrète & assurée",
+      authenticity: "LBMA certifié & scellé",
+      buyback: "Rachat garanti au spot"
     },
     en: {
-      delivery: "Discreet & fully insured delivery",
-      authenticity: "LBMA certified & tamper-proof seal",
-      buyback: "Guaranteed buyback at spot price"
+      delivery: "Discreet & insured delivery",
+      authenticity: "LBMA certified & sealed",
+      buyback: "Guaranteed spot buyback"
     },
     de: {
       delivery: "Diskrete & voll versicherte Lieferung",
@@ -237,29 +358,29 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
       buyback: "Garantierter Rückkauf zum Spotpreis"
     },
     es: {
-      delivery: "Envío discreto y asegurado al 100%",
-      authenticity: "Certificado LBMA y precinto oficial",
-      buyback: "Recompra garantizada al precio spot"
+      delivery: "Envío discreto y asegurado",
+      authenticity: "Certificado LBMA y sellado",
+      buyback: "Recompra garantizada al spot"
     },
     it: {
       delivery: "Spedizione discreta e assicurata",
-      authenticity: "Certificato LBMA e sigillo ufficiale",
-      buyback: "Riacquisto garantito al prezzo spot"
+      authenticity: "Certificato LBMA e sigillato",
+      buyback: "Riacquisto garantito a spot"
     },
     nl: {
-      delivery: "Discrete & volledig verzekerde levering",
-      authenticity: "LBMA-gecertificeerd & verzegeld",
-      buyback: "Gegarandeerde terugkoop tegen spotprijs"
+      delivery: "Discrete & verzekerde levering",
+      authenticity: "LBMA gecertificeerd & verzegeld",
+      buyback: "Gegarandeerde terugkoop spot"
     },
     pt: {
-      delivery: "Entrega discreta e 100% segura",
-      authenticity: "Certificado LBMA e selo oficial",
-      buyback: "Recompra garantida à cotação spot"
+      delivery: "Entrega discreta e segura",
+      authenticity: "Certificado LBMA e selado",
+      buyback: "Recompra garantida a spot"
     },
     da: {
-      delivery: "Diskret og fuldt forsikret levering",
+      delivery: "Diskret og forsikret levering",
       authenticity: "LBMA-certificeret og forseglet",
-      buyback: "Garanteret tilbagekøb til spotpris"
+      buyback: "Garanteret tilbagekøb til spot"
     },
     hu: {
       delivery: "Diszkrét és biztosított szállítás",
@@ -267,9 +388,9 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
       buyback: "Garantált visszavásárlás spot áron"
     }
   }[locale] || {
-    delivery: "Livraison discrète & assurée",
-    authenticity: "Certifié LBMA & scellé officiel",
-    buyback: "Rachat garanti au cours spot"
+    delivery: "Discrète & assurée",
+    authenticity: "LBMA certifié & scellé",
+    buyback: "Rachat garanti au spot"
   };
 
   const handleAddToCart = () => {
@@ -309,7 +430,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
     .replace(/\s+/g, ' ')
     .trim();
 
-  const badgeText = product.badge || product.category || 'Investissement';
+  const badgeText = product.badge || product.category || (locale === 'de' ? 'Anlageprodukte' : 'Investissement');
 
   return (
     <div 
@@ -338,7 +459,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
           </svg>
         </button>
 
-        {/* LEFT COLUMN: Visual Showcase & Gallery */}
+        {/* LEFT COLUMN: Visual Showcase & Trust Badges */}
         <div className="w-full md:w-1/2 bg-gradient-to-b from-slate-50 via-white to-slate-50/70 p-5 sm:p-6 md:p-7 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-200/80">
           <div className="relative">
             {/* Top Image Badges: Investment badge & Wishlist Heart */}
@@ -378,43 +499,59 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
                 priority
               />
             </div>
+
+            {/* Thumbnails row (if multiple images) */}
+            {images.length > 1 && (
+              <div className="flex gap-2.5 overflow-x-auto pt-3 pb-1 custom-scrollbar">
+                {images.map((img: string, idx: number) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setActiveImage(idx)}
+                    className={`w-14 h-14 flex-shrink-0 rounded-lg border-2 overflow-hidden bg-white p-1 transition-all cursor-pointer ${
+                      activeImage === idx 
+                        ? 'border-[#C8732A] shadow-md ring-2 ring-[#C8732A]/25' 
+                        : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <Image width={120} height={120} src={img} alt="" className="w-full h-full object-contain" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Thumbnails row (if multiple images) */}
-          {images.length > 1 && (
-            <div className="flex gap-2.5 overflow-x-auto pt-3 pb-1 custom-scrollbar">
-              {images.map((img: string, idx: number) => (
-                <button 
-                  key={idx}
-                  onClick={() => setActiveImage(idx)}
-                  className={`w-14 h-14 flex-shrink-0 rounded-lg border-2 overflow-hidden bg-white p-1 transition-all cursor-pointer ${
-                    activeImage === idx 
-                      ? 'border-[#C8732A] shadow-md ring-2 ring-[#C8732A]/25' 
-                      : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <Image width={120} height={120} src={img} alt="" className="w-full h-full object-contain" />
-                </button>
-              ))}
+          {/* 3 Trust Pillars under the image - perfectly balances the modal layout */}
+          <div className="mt-4 pt-3 border-t border-slate-200/80 grid grid-cols-3 gap-2 text-center select-none">
+            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-slate-200/70 shadow-xs">
+              <span className="text-base">🔒</span>
+              <span className="text-[10px] font-medium text-slate-700 leading-tight">
+                {trustLabels.delivery}
+              </span>
             </div>
-          )}
-
-          {/* Subtle certification tag below images on desktop */}
-          <div className="hidden sm:flex items-center justify-center gap-2 pt-3 text-[11px] font-medium text-slate-500">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>{specs.cert}</span>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-slate-200/70 shadow-xs">
+              <span className="text-base">🛡️</span>
+              <span className="text-[10px] font-medium text-slate-700 leading-tight">
+                {trustLabels.authenticity}
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-slate-200/70 shadow-xs">
+              <span className="text-base">⚖️</span>
+              <span className="text-[10px] font-medium text-slate-700 leading-tight">
+                {trustLabels.buyback}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN: Precious Metal Specs & Actions */}
         <div className="w-full md:w-1/2 p-5 sm:p-7 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[58vh] md:max-h-none">
           <div>
-            {/* Category / Sub-badge */}
+            {/* Category / Metal Badge */}
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <span className="text-[11px] uppercase font-serif tracking-[0.2em] text-[#C8732A] font-semibold">
                 {specs.metal}
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 {t('in_stock') || 'En stock'}
               </span>
@@ -425,7 +562,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
               {product.title}
             </h2>
 
-            {/* Stars / Reviews if available */}
+            {/* Stars / Reviews */}
             <div className="flex items-center gap-1.5 mt-2 mb-3.5">
               <div className="flex text-amber-500">
                 {[...Array(5)].map((_, i) => (
@@ -439,7 +576,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
               </span>
               <span className="text-xs text-slate-400">•</span>
               <span className="text-[11px] text-slate-500">
-                {t('customer_reviews') || 'Avis certifiés'}
+                {reviewLabel}
               </span>
             </div>
 
@@ -463,7 +600,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
             <div className="grid grid-cols-2 gap-2 mb-4">
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
                 <span className="block text-[10px] uppercase font-semibold text-slate-500 tracking-wider">
-                  {t('spec_purity') || 'Pureté'}
+                  {specLabels.purity}
                 </span>
                 <span className="text-xs font-bold text-slate-900 mt-0.5 block truncate">
                   {specs.purity}
@@ -471,7 +608,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
                 <span className="block text-[10px] uppercase font-semibold text-slate-500 tracking-wider">
-                  {t('spec_fine_weight') || 'Poids fin'}
+                  {specLabels.weight}
                 </span>
                 <span className="text-xs font-bold text-slate-900 mt-0.5 block truncate">
                   {specs.weight}
@@ -479,7 +616,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
                 <span className="block text-[10px] uppercase font-semibold text-slate-500 tracking-wider">
-                  Certification
+                  {specLabels.cert}
                 </span>
                 <span className="text-xs font-bold text-slate-900 mt-0.5 block truncate">
                   {specs.cert}
@@ -487,10 +624,10 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
                 <span className="block text-[10px] uppercase font-semibold text-slate-500 tracking-wider">
-                  Fiscalité
+                  {specLabels.tax}
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-0.5 block truncate">
-                  {t('spec_tax_free') || 'TVA 0%'}
+                  {specLabels.taxFreeValue}
                 </span>
               </div>
             </div>
@@ -565,29 +702,6 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
             </div>
-
-            {/* Bottom 3 Trust Pillars */}
-            <div className="mt-4 pt-3.5 border-t border-slate-200/70 grid grid-cols-3 gap-2 text-center select-none">
-              <div className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg bg-slate-50/90 border border-slate-100">
-                <span className="text-sm">🔒</span>
-                <span className="text-[9.5px] font-medium text-slate-700 leading-tight">
-                  {trustLabels.delivery}
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg bg-slate-50/90 border border-slate-100">
-                <span className="text-sm">🛡️</span>
-                <span className="text-[9.5px] font-medium text-slate-700 leading-tight">
-                  {trustLabels.authenticity}
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg bg-slate-50/90 border border-slate-100">
-                <span className="text-sm">⚖️</span>
-                <span className="text-[9.5px] font-medium text-slate-700 leading-tight">
-                  {trustLabels.buyback}
-                </span>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
