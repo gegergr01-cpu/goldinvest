@@ -19,13 +19,39 @@ import FullWidthBanner from '@/components/home/FullWidthBanner';
 import { getCachedSettings } from '@/lib/cache';
 import { getHeroDailyCards } from '@/lib/heroDailyProducts';
 import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
+import prisma from '@/lib/prisma';
+import { getLocale } from 'next-intl/server';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
-  const [settings, heroDailyCards] = await Promise.all([
+  const locale = await getLocale();
+  const [settings, heroDailyCards, dbApprovedReviews] = await Promise.all([
     getCachedSettings(),
     getHeroDailyCards(),
+    prisma.review.findMany({
+      where: { isApproved: true },
+      take: 6,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        product: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            translations: {
+              where: { locale },
+              select: { title: true },
+            },
+          },
+        },
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    }).catch(() => []),
   ]);
 
   let layout: SectionConfig[] = DEFAULT_SECTIONS;
@@ -99,7 +125,7 @@ export default async function Home() {
       case 'CtaBanner':
         return <CtaBanner key={section.id} config={section.settings} />;
       case 'Testimonials':
-        return <TestimonialsSection key={section.id} config={section.settings} />;
+        return <TestimonialsSection key={section.id} config={section.settings} dbReviews={dbApprovedReviews} />;
       case 'Faq':
         return <FaqSection key={section.id} config={section.settings} />;
 

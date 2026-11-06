@@ -88,6 +88,7 @@ export async function toggleReviewApproval(reviewId: string, isApproved: boolean
 
   revalidatePath('/admin/reviews');
   revalidatePath(`/product/[slug]`, 'page');
+  revalidatePath('/');
 }
 
 export async function updateReview(reviewId: string, rating: number, comment: string, createdAtStr: string) {
@@ -107,6 +108,7 @@ export async function updateReview(reviewId: string, rating: number, comment: st
 
   revalidatePath('/admin/reviews');
   revalidatePath(`/product/[slug]`, 'page');
+  revalidatePath('/');
 }
 
 export async function deleteReview(reviewId: string) {
@@ -119,4 +121,47 @@ export async function deleteReview(reviewId: string) {
 
   revalidatePath('/admin/reviews');
   revalidatePath(`/product/[slug]`, 'page');
+  revalidatePath('/');
+}
+
+export async function createAdminReview(data: {
+  productId: string;
+  reviewerName: string;
+  reviewerEmail?: string;
+  rating: number;
+  comment: string;
+  isApproved?: boolean;
+  createdAtStr?: string;
+}) {
+  await requireAdmin();
+  if (!data.productId || !UUID_REGEX.test(data.productId)) {
+    return { error: "Veuillez sélectionner un produit valide." };
+  }
+  const intRating = Math.min(Math.max(1, Math.round(Number(data.rating) || 5)), 5);
+  const cleanComment = String(data.comment || '').trim();
+  if (!cleanComment) {
+    return { error: "Le commentaire ne peut pas être vide." };
+  }
+
+  try {
+    await prisma.review.create({
+      data: {
+        productId: data.productId,
+        reviewerName: String(data.reviewerName || 'Client vérifié').trim(),
+        reviewerEmail: data.reviewerEmail ? String(data.reviewerEmail).trim() : null,
+        rating: intRating,
+        comment: cleanComment,
+        isApproved: data.isApproved ?? true,
+        createdAt: data.createdAtStr ? new Date(data.createdAtStr) : new Date(),
+      }
+    });
+
+    revalidatePath('/admin/reviews');
+    revalidatePath(`/product/[slug]`, 'page');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur création avis admin:", error);
+    return { error: "Erreur lors de la création de l'avis." };
+  }
 }

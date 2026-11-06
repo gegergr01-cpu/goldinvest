@@ -3,11 +3,81 @@
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 
-interface TestimonialsSectionProps {
-  config?: Record<string, string>;
+export interface TestimonialReviewItem {
+  id: string | number;
+  name: string;
+  city?: string;
+  asset?: string;
+  text: string;
+  rating: number;
+  date?: string;
+  isVerified?: boolean;
 }
 
-export default function TestimonialsSection({ config }: TestimonialsSectionProps) {
+interface TestimonialsSectionProps {
+  config?: Record<string, string>;
+  dbReviews?: any[];
+}
+
+function formatReviewDate(dateInput: Date | string | undefined, locale: string): string {
+  if (!dateInput) return '';
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return String(dateInput);
+
+  const diffMs = Date.now() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) {
+    return {
+      fr: "Aujourd'hui",
+      en: 'Today',
+      de: 'Heute',
+      es: 'Hoy',
+      it: 'Oggi',
+      nl: 'Vandaag',
+      pt: 'Hoje',
+      da: 'I dag',
+      hu: 'Ma',
+    }[locale] || "Aujourd'hui";
+  }
+
+  if (diffDays < 7) {
+    return {
+      fr: `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`,
+      en: `${diffDays} day${diffDays > 1 ? 's' : ''} ago`,
+      de: `Vor ${diffDays} Tag${diffDays > 1 ? 'en' : ''}`,
+      es: `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`,
+      it: `${diffDays} giorn${diffDays > 1 ? 'i' : 'o'} fa`,
+      nl: `${diffDays} dag${diffDays > 1 ? 'en' : ''} geleden`,
+      pt: `Há ${diffDays} dia${diffDays > 1 ? 's' : ''}`,
+      da: `For ${diffDays} dag${diffDays > 1 ? 'e' : ''} siden`,
+      hu: `${diffDays} napja`,
+    }[locale] || `Il y a ${diffDays} jours`;
+  }
+
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 4) {
+    return {
+      fr: `Il y a ${diffWeeks} semaine${diffWeeks > 1 ? 's' : ''}`,
+      en: `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`,
+      de: `Vor ${diffWeeks} Woche${diffWeeks > 1 ? 'n' : ''}`,
+      es: `Hace ${diffWeeks} semana${diffWeeks > 1 ? 's' : ''}`,
+      it: `${diffWeeks} settiman${diffWeeks > 1 ? 'e' : 'a'} fa`,
+      nl: `${diffWeeks} we${diffWeeks > 1 ? 'ken' : 'ek'} geleden`,
+      pt: `Há ${diffWeeks} semana${diffWeeks > 1 ? 's' : ''}`,
+      da: `For ${diffWeeks} uge${diffWeeks > 1 ? 'r' : ''} siden`,
+      hu: `${diffWeeks} hete`,
+    }[locale] || `Il y a ${diffWeeks} semaines`;
+  }
+
+  return date.toLocaleDateString(locale === 'en' ? 'en-US' : (locale === 'de' ? 'de-DE' : 'fr-FR'), {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+export default function TestimonialsSection({ config, dbReviews = [] }: TestimonialsSectionProps) {
   const c = config || {};
   const t = useTranslations('Landing.Testimonials');
   const locale = useLocale();
@@ -19,66 +89,179 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
   const ratingScore = t('rating_score');
   const investorsText = t('investors_text');
 
-  // Build dynamic reviews list from config or translations
-  const rawReviews = [
+  // Localized verified badge text
+  const verifiedBadgeText = {
+    fr: 'Achat vérifié',
+    en: 'Verified purchase',
+    de: 'Verifizierter Kauf',
+    es: 'Compra verificada',
+    it: 'Acquisto verificato',
+    nl: 'Geverifieerde aankoop',
+    pt: 'Compra verificada',
+    da: 'Verificeret køb',
+    hu: 'Ellenőrzött vásárlás',
+  }[locale] || t('verified_purchase') || 'Achat vérifié';
+
+  // Localized subtitle fallback for verified reviewers
+  const verifiedInvestorSub = {
+    fr: 'Investisseur vérifié',
+    en: 'Verified Investor',
+    de: 'Verifizierter Anleger',
+    es: 'Inversor verificado',
+    it: 'Investitore verificato',
+    nl: 'Geverifieerde belegger',
+    pt: 'Investidor verificado',
+    da: 'Verificeret investor',
+    hu: 'Hitelesített befektető',
+  }[locale] || 'Investisseur vérifié';
+
+  const defaultAssetTag = {
+    fr: "Or & Argent d'investissement",
+    en: 'Investment Gold & Silver',
+    de: 'Anlagegold & -silber',
+    es: 'Oro y Plata de inversión',
+    it: 'Oro e Argento da investimento',
+    nl: 'Beleggingsgoud & -zilver',
+    pt: 'Ouro e Prata de investimento',
+    da: 'Investeringsguld og -sølv',
+    hu: 'Befektetési arany és ezüst',
+  }[locale] || "Or d'investissement";
+
+  // Build default fallback reviews list from config or translations
+  const fallbackReviews: TestimonialReviewItem[] = [
     {
-      id: 1,
+      id: 'fb-1',
       name: (isFrench && c.review1_name) || t('review1_name'),
       city: (isFrench && c.review1_city) || t('review1_city'),
       asset: (isFrench && c.review1_asset) || t('review1_asset'),
       text: (isFrench && c.review1_text) || t('review1_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review1_rating || '5', 10) || 5)),
       date: (isFrench && c.review1_date) || t('review1_date'),
+      isVerified: true,
     },
     {
-      id: 2,
+      id: 'fb-2',
       name: (isFrench && c.review2_name) || t('review2_name'),
       city: (isFrench && c.review2_city) || t('review2_city'),
       asset: (isFrench && c.review2_asset) || t('review2_asset'),
       text: (isFrench && c.review2_text) || t('review2_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review2_rating || '5', 10) || 5)),
       date: (isFrench && c.review2_date) || t('review2_date'),
+      isVerified: true,
     },
     {
-      id: 3,
+      id: 'fb-3',
       name: (isFrench && c.review3_name) || t('review3_name'),
       city: (isFrench && c.review3_city) || t('review3_city'),
       asset: (isFrench && c.review3_asset) || t('review3_asset'),
       text: (isFrench && c.review3_text) || t('review3_text'),
       rating: Math.min(5, Math.max(1, parseInt(c.review3_rating || '5', 10) || 5)),
       date: (isFrench && c.review3_date) || t('review3_date'),
+      isVerified: true,
     },
-    // Optional additional reviews if configured in editor
     c.review4_name ? {
-      id: 4,
+      id: 'fb-4',
       name: c.review4_name,
       city: c.review4_city || 'Lyon, France',
       asset: c.review4_asset || "Lingot d'Or 50 g LBMA",
       text: c.review4_text || '',
       rating: Math.min(5, Math.max(1, parseInt(c.review4_rating || '5', 10) || 5)),
       date: c.review4_date || 'Il y a 3 semaines',
+      isVerified: true,
     } : null,
     c.review5_name ? {
-      id: 5,
+      id: 'fb-5',
       name: c.review5_name,
       city: c.review5_city || 'Bordeaux, France',
       asset: c.review5_asset || "Souverain Or Élisabeth II",
       text: c.review5_text || '',
       rating: Math.min(5, Math.max(1, parseInt(c.review5_rating || '5', 10) || 5)),
       date: c.review5_date || 'Il y a 1 mois',
+      isVerified: true,
     } : null,
     c.review6_name ? {
-      id: 6,
+      id: 'fb-6',
       name: c.review6_name,
       city: c.review6_city || 'Monaco',
       asset: c.review6_asset || "Lingot d'Or 250 g LBMA",
       text: c.review6_text || '',
       rating: Math.min(5, Math.max(1, parseInt(c.review6_rating || '5', 10) || 5)),
       date: c.review6_date || 'Il y a 1 mois',
+      isVerified: true,
     } : null
-  ];
+  ].filter((r): r is NonNullable<typeof r> => r !== null && Boolean(r.name));
 
-  const reviews = rawReviews.filter((r): r is NonNullable<typeof r> => r !== null && Boolean(r.name));
+  // Transform database approved reviews
+  const mappedDbReviews: TestimonialReviewItem[] = (dbReviews || []).map((rev: any) => {
+    const rawName = rev.reviewerName || (rev.user?.email ? rev.user.email.split('@')[0] : 'Client');
+    // Clean name: capitalize first letter
+    const cleanName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    const productTitle = rev.product?.translations?.[0]?.title || rev.product?.title || defaultAssetTag;
+
+    return {
+      id: rev.id,
+      name: cleanName,
+      city: verifiedInvestorSub,
+      asset: productTitle,
+      text: rev.comment ? `« ${rev.comment.trim()} »` : '',
+      rating: Math.min(5, Math.max(1, Number(rev.rating) || 5)),
+      date: formatReviewDate(rev.createdAt, locale),
+      isVerified: true,
+    };
+  }).filter((r: TestimonialReviewItem) => Boolean(r.text));
+
+  // Combine DB reviews with fallbacks if needed to ensure at least 3 reviews are always shown
+  let reviews: TestimonialReviewItem[] = [];
+  if (mappedDbReviews.length >= 3) {
+    reviews = mappedDbReviews.slice(0, 6);
+  } else if (mappedDbReviews.length > 0) {
+    // Prepend DB reviews, then complement with fallback reviews
+    const needed = Math.max(0, 3 - mappedDbReviews.length);
+    reviews = [...mappedDbReviews, ...fallbackReviews.slice(0, needed)];
+  } else {
+    reviews = fallbackReviews.slice(0, 3);
+  }
+
+  // Dynamic rating score calculation if DB reviews are present
+  const displayRatingScore = mappedDbReviews.length > 0
+    ? `${(mappedDbReviews.reduce((sum, r) => sum + r.rating, 0) / mappedDbReviews.length).toFixed(1)} / 5`
+    : ratingScore;
+
+  // Title highlight detection across all locales
+  const highlightWords: Record<string, string> = {
+    fr: 'confiance',
+    en: 'Investors',
+    de: 'vertrauen',
+    es: 'Nosotros',
+    it: 'fiducia',
+    nl: 'vertrouwen',
+    pt: 'confiança',
+    da: 'tillid',
+    hu: 'bizalom',
+  };
+  const targetHighlight = highlightWords[locale] || 'confiance';
+
+  const renderTitle = () => {
+    const lowerTitle = title.toLowerCase();
+    const lowerHighlight = targetHighlight.toLowerCase();
+    const idx = lowerTitle.indexOf(lowerHighlight);
+
+    if (idx !== -1) {
+      const before = title.slice(0, idx);
+      const match = title.slice(idx, idx + targetHighlight.length);
+      const after = title.slice(idx + targetHighlight.length);
+      return (
+        <>
+          {before}
+          <span className="bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] bg-clip-text text-transparent italic">
+            {match}
+          </span>
+          {after}
+        </>
+      );
+    }
+    return title;
+  };
 
   return (
     <section className="w-full py-20 lg:py-24 bg-[#FAF9F5] border-t border-b border-[#E8E4DA] relative overflow-hidden">
@@ -105,16 +288,9 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
             <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#C8732A]" />
           </div>
 
-          {/* Heading */}
+          {/* Heading with elegant highlight */}
           <h2 className="font-serif font-bold text-[32px] sm:text-[40px] text-[#0E2036] tracking-tight leading-tight mb-3">
-            {title.includes('confiance') ? (
-              <>
-                {title.replace('confiance', '')}
-                <span className="bg-gradient-to-r from-[#C8732A] via-[#B8641C] to-[#9C4E0F] bg-clip-text text-transparent italic">
-                  confiance
-                </span>
-              </>
-            ) : title}
+            {renderTitle()}
           </h2>
 
           <p className="text-[15px] sm:text-[16px] text-gray-600 font-normal leading-relaxed mb-6">
@@ -131,7 +307,7 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
                   </svg>
                 ))}
               </div>
-              <span className="font-bold text-gray-900 font-serif">{ratingScore}</span>
+              <span className="font-bold text-gray-900 font-serif">{displayRatingScore}</span>
             </div>
             <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-gray-300" />
             <span className="text-gray-600 sm:text-gray-500 font-medium sm:font-normal text-xs sm:text-[13px] text-center">
@@ -151,7 +327,7 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
               <div>
                 <div className="flex items-center justify-between mb-4">
                   {/* Dynamic Stars */}
-                  <div className="flex items-center gap-1" aria-label={`${review.rating} sur 5 étoiles`}>
+                  <div className="flex items-center gap-1" aria-label={`${review.rating} / 5`}>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <svg
                         key={star}
@@ -163,42 +339,48 @@ export default function TestimonialsSection({ config }: TestimonialsSectionProps
                     ))}
                   </div>
 
-                  {/* Verified Badge */}
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <svg className="w-3 h-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                  {/* Verified Badge (Translated) */}
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs whitespace-nowrap">
+                    <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Achat vérifié
+                    <span>{verifiedBadgeText}</span>
                   </span>
                 </div>
 
                 {/* Review Text */}
-                <p className="text-[14.5px] text-gray-700 leading-relaxed font-normal mb-5">
+                <p className="text-[14.5px] text-gray-700 leading-relaxed font-normal mb-5 line-clamp-4">
                   {review.text}
                 </p>
               </div>
 
               {/* Bottom: Client Profile & Purchased Asset Tag */}
-              <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
+              <div className="pt-4 border-t border-gray-100 flex flex-col gap-2 mt-auto">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-bold text-[14.5px] text-gray-900">
+                    <h4 className="font-bold text-[14.5px] text-gray-900 truncate max-w-[160px] sm:max-w-[180px]">
                       {review.name}
                     </h4>
-                    <span className="text-[12px] text-gray-400">
-                      {review.city}
-                    </span>
+                    {review.city && (
+                      <span className="text-[12px] text-gray-400 block truncate max-w-[160px] sm:max-w-[180px]">
+                        {review.city}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[11px] text-gray-400 font-mono">
-                    {review.date}
-                  </span>
+                  {review.date && (
+                    <span className="text-[11px] text-gray-400 font-mono shrink-0">
+                      {review.date}
+                    </span>
+                  )}
                 </div>
 
                 {/* Acquired Asset Tag */}
-                <div className="mt-1 flex items-center gap-1.5 text-[11.5px] font-medium text-[#C8732A] bg-[#C8732A]/8 px-2.5 py-1 rounded-md">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A]" />
-                  <span className="truncate">{review.asset}</span>
-                </div>
+                {review.asset && (
+                  <div className="mt-1 flex items-center gap-1.5 text-[11.5px] font-medium text-[#C8732A] bg-[#C8732A]/8 px-2.5 py-1 rounded-md max-w-full overflow-hidden">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A] shrink-0" />
+                    <span className="truncate">{review.asset}</span>
+                  </div>
+                )}
               </div>
             </div>
           ))}
