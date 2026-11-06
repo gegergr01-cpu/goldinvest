@@ -145,6 +145,10 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
     setTitle(newTitle);
     if (!isEditing) {
       setSlug(generateSlug(newTitle));
+      const lower = newTitle.toLowerCase();
+      if ((lower.includes('argent') || lower.includes('silver') || lower.includes('silber')) && metalType === 'Or') {
+        setMetalType('Argent');
+      }
     }
   };
 
@@ -462,6 +466,13 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                     onChange={(e) => {
                       if (e.target.checked) {
                         setSelectedCategories([...selectedCategories, cat.id]);
+                        const catSlug = String(cat.slug || '').toLowerCase();
+                        const catName = String(cat.name || '').toLowerCase();
+                        if (catSlug.includes('argent') || catSlug.includes('silver') || catName.includes('argent') || catName.includes('silver')) {
+                          setMetalType('Argent');
+                        } else if (catSlug.includes('dor') || catSlug.includes('gold') || catName.includes(' or') || catName.startsWith('or')) {
+                          setMetalType('Or');
+                        }
                       } else {
                         setSelectedCategories(selectedCategories.filter(id => id !== cat.id));
                       }

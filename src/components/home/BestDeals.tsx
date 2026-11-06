@@ -281,43 +281,100 @@ function formatProduct(p: any, defaultImage: string, defaultBadge: string, local
 }
 
 function isGoldProduct(p: any): boolean {
+  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
+  const title = String(p.title || '').toLowerCase();
+
+  // If assigned to a silver category or title clearly indicates silver, it is NEVER gold
+  if (
+    catSlugs.includes('pieces-dargent') ||
+    catSlugs.includes('lingots-dargent') ||
+    catSlugs.includes('silver-coins') ||
+    catSlugs.includes('silver-bars') ||
+    catSlugs.includes('silber') ||
+    title.includes('argent') ||
+    title.includes('silver') ||
+    title.includes('silber')
+  ) {
+    return false;
+  }
+
   let metalAttr = '';
   if (p.attributes) {
-    const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
-    if (Array.isArray(parsed)) {
-      const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
-      if (m) {
-        metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+    try {
+      const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
+      if (Array.isArray(parsed)) {
+        const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
+        if (m) {
+          metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+        }
       }
-    }
+    } catch {}
   }
-  const title = String(p.title || '').toLowerCase();
-  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
 
+  if (metalAttr.toLowerCase().includes('argent') || metalAttr.toLowerCase().includes('silver')) return false;
   if (metalAttr.toLowerCase().includes('or') || metalAttr.toLowerCase().includes('gold')) return true;
-  if (title.includes('feingold') || title.includes('goldbarren') || title.includes('goldmünze') || title.includes('goldm-nze')) return true;
+  if (title.includes('feingold') || title.includes('goldbarren') || title.includes('goldmünze') || title.includes('goldm-nze') || title.includes('gold')) return true;
   if (catSlugs.includes('pieces-dor') || catSlugs.includes('lingots-dor') || catSlugs.includes('anlagegold')) return true;
   return false;
 }
 
 function isSilverProduct(p: any): boolean {
+  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
+  const title = String(p.title || '').toLowerCase();
+
+  // If assigned to a gold category and not silver, it is NEVER silver
+  if (
+    (catSlugs.includes('pieces-dor') || catSlugs.includes('lingots-dor') || catSlugs.includes('anlagegold')) &&
+    !catSlugs.includes('pieces-dargent') && !catSlugs.includes('lingots-dargent')
+  ) {
+    return false;
+  }
+
   let metalAttr = '';
   if (p.attributes) {
-    const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
-    if (Array.isArray(parsed)) {
-      const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
-      if (m) {
-        metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+    try {
+      const parsed = typeof p.attributes === 'string' ? JSON.parse(p.attributes || '[]') : p.attributes;
+      if (Array.isArray(parsed)) {
+        const m = parsed.find((a: any) => ['métal', 'metal'].includes(String(a.name || '').toLowerCase()));
+        if (m) {
+          metalAttr = Array.isArray(m.options) ? m.options.join(' ') : String(m.options || '');
+        }
       }
-    }
+    } catch {}
   }
-  const title = String(p.title || '').toLowerCase();
-  const catSlugs = (p.categories || []).map((c: any) => String(c.slug || '').toLowerCase()).join(' ');
 
-  if (metalAttr.toLowerCase().includes('argent') || metalAttr.toLowerCase().includes('silver')) return true;
-  if (title.includes('feinsilber') || title.includes('silberbarren') || title.includes('silbermünze') || title.includes('silbermuenze')) return true;
-  if (catSlugs.includes('pieces-dargent') || catSlugs.includes('lingots-dargent')) return true;
+  if (catSlugs.includes('pieces-dargent') || catSlugs.includes('lingots-dargent') || catSlugs.includes('silver-coins') || catSlugs.includes('silver-bars')) return true;
+  if (metalAttr.toLowerCase().includes('argent') || metalAttr.toLowerCase().includes('silver') || metalAttr.toLowerCase().includes('silber')) return true;
+  if (title.includes('feinsilber') || title.includes('silberbarren') || title.includes('silbermünze') || title.includes('silbermuenze') || title.includes('argent') || title.includes('silver')) return true;
   return false;
+}
+
+function padWithFallbacks(
+  realProducts: any[],
+  fallbacks: any[],
+  maxNum: number
+): any[] {
+  if (realProducts.length >= maxNum) {
+    return realProducts.slice(0, maxNum);
+  }
+  const remaining = maxNum - realProducts.length;
+  const padded = fallbacks
+    .filter((f) => {
+      const fn = String(f.title || '').toLowerCase();
+      return !realProducts.some((r) => {
+        const rn = String(r.title || '').toLowerCase();
+        if (fn.includes('philharmonique') && rn.includes('philharmonique')) return true;
+        if (fn.includes('maple') && rn.includes('maple')) return true;
+        if (fn.includes('eagle') && rn.includes('eagle')) return true;
+        if (fn.includes('britannia') && rn.includes('britannia')) return true;
+        if (fn.includes('krugerrand') && rn.includes('krugerrand')) return true;
+        if (fn.includes('napoléon') && rn.includes('napoléon')) return true;
+        return false;
+      });
+    })
+    .slice(0, remaining);
+
+  return [...realProducts, ...padded];
 }
 
 export default async function BestDeals({ config }: BestDealsProps) {
@@ -377,7 +434,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['pieces-dargent', 'silver-coins', 'silbermuenzen', 'monedas-de-plata'] } } } },
+              { categories: { some: { slug: { in: ['pieces-dargent', 'silver-coins', 'silbermuenzen', 'monedas-de-plata', 'pieces-argent', 'silver-coin'] } } } },
               {
                 AND: [
                   { title: { contains: 'argent', mode: 'insensitive' } },
@@ -391,6 +448,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
                 ],
               },
               { title: { contains: 'silver eagle', mode: 'insensitive' } },
+              { title: { contains: 'silbermünze', mode: 'insensitive' } },
             ],
           },
           include: {
@@ -398,14 +456,14 @@ export default async function BestDeals({ config }: BestDealsProps) {
             translations: { where: { locale } },
             reviews: { where: { isApproved: true } },
           },
-          take: maxNum,
+          take: 20,
           orderBy: { createdAt: 'desc' },
         }),
         prisma.product.findMany({
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['lingots-dargent', 'silver-bars', 'silberbarren', 'lingotes-de-plata'] } } } },
+              { categories: { some: { slug: { in: ['lingots-dargent', 'silver-bars', 'silberbarren', 'lingotes-de-plata', 'lingot-argent'] } } } },
               {
                 AND: [
                   { title: { contains: 'argent', mode: 'insensitive' } },
@@ -425,7 +483,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
             translations: { where: { locale } },
             reviews: { where: { isApproved: true } },
           },
-          take: maxNum,
+          take: 20,
           orderBy: { createdAt: 'desc' },
         }),
       ]);
@@ -433,13 +491,15 @@ export default async function BestDeals({ config }: BestDealsProps) {
       const filteredSilverCoins = (silverCoinsDb || []).filter((p) => !isGoldProduct(p));
       const filteredSilverBars = (silverBarsDb || []).filter((p) => !isGoldProduct(p));
 
-      tab1Products = filteredSilverCoins.length > 0
-        ? filteredSilverCoins.map((p) => formatProduct(p, '/images/silver-coins.jpg', cardBadge, locale))
-        : fallbackSilverCoins.slice(0, maxNum);
+      const mappedSilverCoins = filteredSilverCoins.map((p) =>
+        formatProduct(p, '/images/silver-coins.jpg', cardBadge, locale)
+      );
+      const mappedSilverBars = filteredSilverBars.map((p) =>
+        formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié', locale)
+      );
 
-      tab2Products = filteredSilverBars.length > 0
-        ? filteredSilverBars.map((p) => formatProduct(p, '/images/silver-bars.jpg', 'LBMA Certifié', locale))
-        : fallbackSilverBars.slice(0, maxNum);
+      tab1Products = padWithFallbacks(mappedSilverCoins, fallbackSilverCoins, maxNum);
+      tab2Products = padWithFallbacks(mappedSilverBars, fallbackSilverBars, maxNum);
     } else {
       // Gold Showcase
       const [goldCoinsDb, goldBarsDb] = await Promise.all([
@@ -447,7 +507,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
           where: {
             isDeleted: false,
             OR: [
-              { categories: { some: { slug: { in: ['pieces-dor', 'goldm-nze', 'gold-coins', 'goldmuenzen', 'monedas-de-oro'] } } } },
+              { categories: { some: { slug: { in: ['pieces-dor', 'goldm-nze', 'gold-coins', 'goldmuenzen', 'monedas-de-oro', 'pieces-or'] } } } },
               {
                 AND: [
                   { title: { contains: 'or', mode: 'insensitive' } },
@@ -465,7 +525,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
             translations: { where: { locale } },
             reviews: { where: { isApproved: true } },
           },
-          take: maxNum,
+          take: 20,
           orderBy: { createdAt: 'desc' },
         }),
         prisma.product.findMany({
@@ -495,7 +555,7 @@ export default async function BestDeals({ config }: BestDealsProps) {
             translations: { where: { locale } },
             reviews: { where: { isApproved: true } },
           },
-          take: maxNum,
+          take: 20,
           orderBy: { createdAt: 'desc' },
         }),
       ]);
@@ -503,13 +563,15 @@ export default async function BestDeals({ config }: BestDealsProps) {
       const filteredGoldCoins = (goldCoinsDb || []).filter((p) => !isSilverProduct(p));
       const filteredGoldBars = (goldBarsDb || []).filter((p) => !isSilverProduct(p));
 
-      tab1Products = filteredGoldCoins.length > 0
-        ? filteredGoldCoins.map((p) => formatProduct(p, '/images/gold-coins.jpg', cardBadge, locale))
-        : fallbackGoldCoins.slice(0, maxNum);
+      const mappedGoldCoins = filteredGoldCoins.map((p) =>
+        formatProduct(p, '/images/gold-coins.jpg', cardBadge, locale)
+      );
+      const mappedGoldBars = filteredGoldBars.map((p) =>
+        formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié', locale)
+      );
 
-      tab2Products = filteredGoldBars.length > 0
-        ? filteredGoldBars.map((p) => formatProduct(p, '/images/gold-bars.jpg', 'LBMA Certifié', locale))
-        : fallbackGoldBars.slice(0, maxNum);
+      tab1Products = padWithFallbacks(mappedGoldCoins, fallbackGoldCoins, maxNum);
+      tab2Products = padWithFallbacks(mappedGoldBars, fallbackGoldBars, maxNum);
     }
   } catch (err) {
     console.error('Error fetching showcase products:', err);
