@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import BestDealsCard from './BestDealsCard';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
+import { RotatingCoin, RotatingIngot } from '@/components/ui/RotatingPreciousIcons';
 
 export interface TabConfig {
   id: string;
@@ -135,7 +136,7 @@ export default function BestDealsClient({
               <button
                 type="button"
                 onClick={() => setActiveTab('tab1')}
-                className={`relative flex items-center gap-2 sm:gap-2.5 px-5 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer select-none ${
+                className={`relative flex items-center gap-2 sm:gap-2.5 px-5 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer select-none group ${
                   activeTab === 'tab1'
                     ? isSilver
                       ? 'bg-gradient-to-r from-[#1E293B] via-[#0F172A] to-[#1E293B] text-white shadow-md shadow-slate-900/20 border border-slate-500/40'
@@ -143,14 +144,22 @@ export default function BestDealsClient({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                 }`}
               >
-                <span className="text-sm sm:text-base">{tab1.icon || '🪙'}</span>
+                {tab1.icon && tab1.icon !== '🪙' ? (
+                  <span className="text-sm sm:text-base">{tab1.icon}</span>
+                ) : (
+                  <RotatingCoin
+                    metal={isSilver ? 'silver' : 'gold'}
+                    size={21}
+                    isActive={activeTab === 'tab1'}
+                  />
+                )}
                 <span>{tab1.label}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('tab2')}
-                className={`relative flex items-center gap-2 sm:gap-2.5 px-5 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer select-none ${
+                className={`relative flex items-center gap-2 sm:gap-2.5 px-5 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer select-none group ${
                   activeTab === 'tab2'
                     ? isSilver
                       ? 'bg-gradient-to-r from-[#1E293B] via-[#0F172A] to-[#1E293B] text-white shadow-md shadow-slate-900/20 border border-slate-500/40'
@@ -158,7 +167,15 @@ export default function BestDealsClient({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                 }`}
               >
-                <span className="text-sm sm:text-base">{tab2.icon || '🧱'}</span>
+                {tab2.icon && tab2.icon !== '🧱' ? (
+                  <span className="text-sm sm:text-base">{tab2.icon}</span>
+                ) : (
+                  <RotatingIngot
+                    metal={isSilver ? 'silver' : 'gold'}
+                    size={21}
+                    isActive={activeTab === 'tab2'}
+                  />
+                )}
                 <span>{tab2.label}</span>
               </button>
             </div>
