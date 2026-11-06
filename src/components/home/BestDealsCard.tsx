@@ -183,8 +183,8 @@ function cleanWeight(rawWeight: string, title: string, isSilver: boolean, locale
     return `${combiMatch[1]} × 1 g (${combiMatch[1]} g)`;
   }
 
-  // If title is a Tube of coins, prioritize the unit coin weight so cards remain unified
-  if (/tube|tubo/i.test(t)) {
+  // If title is a Tube or Monster Box of coins, prioritize the unit coin weight so cards remain unified
+  if (/tube|tubo|monster\s*box/i.test(t)) {
     if (t.includes('1/10 oz') || t.includes('1/10 once') || t.includes('1/10 unze') || t.includes('1/10 onza') || t.includes('1/10 oncia')) return `1/10 oz (3${decSep}11 g)`;
     if (t.includes('1/4 oz') || t.includes('1/4 once') || t.includes('1/4 unze') || t.includes('1/4 onza') || t.includes('1/4 oncia')) return `1/4 oz (7${decSep}78 g)`;
     if (t.includes('1/2 oz') || t.includes('1/2 once') || t.includes('1/2 unze') || t.includes('1/2 onza') || t.includes('1/2 oncia')) return `1/2 oz (15${decSep}55 g)`;

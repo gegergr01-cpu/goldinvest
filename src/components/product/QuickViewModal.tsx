@@ -110,8 +110,8 @@ function extractSpecs(product: any, locale: string) {
   // 3. Fine Weight
   let weight = product.weight || findAttr(['poids fin', 'poids or fin', 'poids fin en or pur', 'poids fin total', 'poids', 'fine weight', 'feingewicht', 'weight']);
 
-  // If Tube of coins, prioritize individual coin weight
-  if (/tube/i.test(title)) {
+  // If Tube or Monster Box of coins, prioritize individual coin weight
+  if (/tube|monster\s*box/i.test(title)) {
     if (title.includes('1/10 oz') || title.includes('1/10 once')) weight = '1/10 oz (3,11 g)';
     else if (title.includes('1/4 oz') || title.includes('1/4 once')) weight = '1/4 oz (7,78 g)';
     else if (title.includes('1/2 oz') || title.includes('1/2 once')) weight = '1/2 oz (15,55 g)';
@@ -181,6 +181,12 @@ function extractSpecs(product: any, locale: string) {
       cert = locale === 'de' ? 'Metalor (Schweiz) • LBMA' : (locale === 'en' ? 'Metalor (Switzerland) • LBMA' : 'Metalor (Suisse) • LBMA');
     } else if (title.includes('c.hafner') || title.includes('hafner')) {
       cert = locale === 'de' ? 'C.HAFNER (Deutschland) • LBMA' : (locale === 'en' ? 'C.HAFNER (Germany) • LBMA' : 'C.HAFNER (Allemagne) • LBMA');
+    } else if (title.includes('south african mint') || title.includes('krugerrand')) {
+      cert = locale === 'de' ? 'South African Mint (Südafrika)' : (locale === 'en' ? 'South African Mint (South Africa)' : 'South African Mint (Afrique du Sud)');
+    } else if (title.includes('united states mint') || title.includes('us mint') || title.includes('american eagle')) {
+      cert = locale === 'de' ? 'United States Mint (USA)' : (locale === 'en' ? 'United States Mint (USA)' : 'United States Mint (États-Unis)');
+    } else if (title.includes('canadienne') || title.includes('canadian mint') || title.includes('maple leaf')) {
+      cert = locale === 'de' ? 'Royal Canadian Mint (Kanada)' : (locale === 'en' ? 'Royal Canadian Mint (Canada)' : 'Monnaie Royale Canadienne (Canada)');
     } else {
       cert = locale === 'de' ? 'LBMA Good Delivery zertifiziert' : (locale === 'en' ? 'LBMA Good Delivery Certified' : 'Certifié LBMA Good Delivery');
     }
