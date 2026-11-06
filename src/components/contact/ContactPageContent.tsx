@@ -108,10 +108,10 @@ export default async function ContactPageContent() {
       {/* 2. Main Grid: Presentation & Coordonnées (Left) vs Form (Right) */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10 relative z-20 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          
+
           {/* Left Column (5 cols): Presentation & Contact Channels */}
           <div className="lg:col-span-5 space-y-6">
-            
+
             {/* Advisory Presentation Card */}
             <div className="bg-white border border-gray-200/90 rounded-2xl p-6 sm:p-7 shadow-sm">
               <div className="flex items-center gap-2.5 mb-4">
@@ -144,7 +144,7 @@ export default async function ContactPageContent() {
 
             {/* Direct Contact Channels Cards */}
             <div className="space-y-3.5">
-              
+
               {/* Phone Channel - ONLY DISPLAY IF PHONE IS DEFINED */}
               {hasPhone && (
                 <div className="bg-white border border-gray-200/90 hover:border-[#E8A63D]/60 rounded-2xl p-5 shadow-xs transition-all group">
@@ -259,7 +259,7 @@ export default async function ContactPageContent() {
           {/* Right Column (7 cols): Main Form Card */}
           <div className="lg:col-span-7">
             <div className="bg-white border border-gray-200/90 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg shadow-black/[0.03]">
-              
+
               <div className="border-b border-gray-100 pb-5 mb-6">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C8732A] mb-1">
                   <span>✉️</span>
@@ -290,7 +290,7 @@ export default async function ContactPageContent() {
         {/* 3. Reassurance Pillars Section */}
         <div className="mt-16 pt-12 border-t border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+
             {/* Pillar 1: Privacy */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8A63D]/20 to-[#C8732A]/20 border border-[#E8A63D]/40 flex items-center justify-center shrink-0 text-[#C8732A]">
