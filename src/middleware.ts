@@ -18,13 +18,13 @@ if (redisUrl && redisToken) {
 }
 
 function detectPreferredLocale(request: NextRequest): Locale {
-  // 1. Check NEXT_LOCALE cookie
+  // 1. Check NEXT_LOCALE cookie (user's explicit preference)
   const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
   if (cookieLocale && (SUPPORTED_LOCALES as readonly string[]).includes(cookieLocale)) {
     return cookieLocale as Locale;
   }
 
-  // 2. Check Accept-Language header
+  // 2. Check Accept-Language header from client browser
   const acceptLang = request.headers.get('accept-language');
   if (acceptLang) {
     const preferred = acceptLang
@@ -36,10 +36,12 @@ function detectPreferredLocale(request: NextRequest): Locale {
         return code as Locale;
       }
     }
+    // If client's browser language is NOT in supported languages, fallback to English
+    return 'en';
   }
 
-  // 3. Fallback to default
-  return DEFAULT_LOCALE;
+  // 3. Fallback to English
+  return 'en';
 }
 
 export async function middleware(request: NextRequest) {

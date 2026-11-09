@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import { useTranslations } from 'next-intl';
 import LanguageSelector from './LanguageSelector';
+import CurrencySelector from './CurrencySelector';
 
 type MobileSidebarProps = {
   isOpen: boolean;
@@ -161,8 +162,9 @@ export default function MobileSidebar({
           </ul>
         </nav>
 
-        {/* Language Selector */}
-        <div className="px-6 py-4 bg-gray-900 border-t border-white/10 text-white">
+        {/* Currency & Language Selectors */}
+        <div className="px-6 py-4 bg-gray-900 border-t border-white/10 text-white space-y-4">
+          <CurrencySelector variant="mobile" />
           <LanguageSelector variant="mobile" />
         </div>
 

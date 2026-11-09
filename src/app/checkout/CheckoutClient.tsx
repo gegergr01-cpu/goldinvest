@@ -61,7 +61,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
   const [couponCode, setCouponCode] = useState('');
   // appliedCoupon state removed, using coupon from cartStore
   const [couponError, setCouponError] = useState('');
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currentCurrency, isConverted, formatReferenceEur } = useCurrency();
   const t = useTranslations('Checkout');
   const tCountries = useTranslations('Countries');
 
@@ -123,6 +123,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
     if (coupon) {
       formData.append('couponCode', coupon.code);
     }
+    formData.append('currency', currentCurrency);
     
     const res = await processCheckout(formData, cart, finalTotal, paymentMethod as any);
     
@@ -484,9 +485,16 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               </div>
             </div>
 
-            <div className="flex justify-between text-lg font-bold text-gray-900 mb-8">
+            <div className="flex justify-between items-baseline text-lg font-bold text-gray-900 mb-8">
               <span>{t('total')}</span>
-              <span>{formatPrice(finalTotal)}</span>
+              <div className="text-right">
+                <span>{formatPrice(finalTotal)}</span>
+                {isConverted && (
+                  <span className="block text-xs font-normal text-gray-500 font-mono mt-0.5">
+                    ≈ {formatReferenceEur(finalTotal)} (EUR)
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Payment method accordion */}

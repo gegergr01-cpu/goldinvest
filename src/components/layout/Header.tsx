@@ -15,6 +15,7 @@ import Price from '@/components/Price';
 import TopBarTicker from './TopBarTicker';
 import ContactDrawer from './ContactDrawer';
 import LanguageSelector from './LanguageSelector';
+import CurrencySelector from './CurrencySelector';
 import SearchModal from '@/components/search/SearchModal';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
@@ -293,14 +294,16 @@ export default function Header({
                   )}
                 </button>
 
-                {/* Multilingual Selector (9 languages) */}
+                {/* Currency & Multilingual Selectors */}
+                <CurrencySelector variant="header" />
                 <LanguageSelector variant="header" />
 
               </div>
             </div>
 
-            {/* Mobile Right Controls: Language + 4-Squares Contact + Hamburger */}
+            {/* Mobile Right Controls: Currency + Language + 4-Squares Contact + Hamburger */}
             <div className="flex lg:hidden items-center gap-2 sm:gap-2.5">
+              <CurrencySelector variant="header" />
               <LanguageSelector variant="header" />
               <button
                 type="button"

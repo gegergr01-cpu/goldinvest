@@ -252,6 +252,7 @@ export async function processCheckout(formData: FormData, cartItems: any[], fina
       subTotal: serverCartTotal,
       discount: discountAmount,
       couponCode: couponCode || null,
+      currency: (formData.get('currency') as string) || 'EUR',
     };
 
     // Fetch settings once for currency and payment config

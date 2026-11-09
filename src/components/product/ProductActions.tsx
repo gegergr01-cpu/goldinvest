@@ -41,7 +41,7 @@ export default function ProductActions({
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
-  const { formatPrice } = useCurrency();
+  const { formatPrice, isConverted, formatReferenceEur } = useCurrency();
   const [addedItemName, setAddedItemName] = useState<string | null>(null);
   const [wishlistedItemName, setWishlistedItemName] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
@@ -210,7 +210,7 @@ export default function ProductActions({
       <div className="p-5 bg-gradient-to-br from-[#FAF9F5] to-[#F5F2EB] border border-[#E8E4DA] rounded-2xl mb-6">
         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
           <div>
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="text-3xl sm:text-4xl font-serif font-bold text-[#0E2036] tracking-tight">
                 {formatPrice(unitPrice)}
               </span>
@@ -220,6 +220,11 @@ export default function ProductActions({
                 </span>
               )}
             </div>
+            {isConverted && (
+              <div className="text-xs text-[#8A847A] font-mono font-medium mt-1">
+                ≈ {formatReferenceEur(unitPrice)} <span className="font-sans text-[11px] text-gray-400">({locale === 'en' ? 'Base reference price in EUR' : (locale === 'de' ? 'Referenzpreis in EUR' : 'Prix de référence en EUR')})</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 mt-1.5 text-xs text-[#8C6D23] font-medium">
               <span className="font-semibold text-emerald-700">{t('spec_tax_free')}</span>
               <span>•</span>

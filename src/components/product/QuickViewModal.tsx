@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Price from '@/components/Price';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
+import { useCurrency } from '@/components/CurrencyProvider';
 import { LuxuryArrow } from '@/components/ui/LuxuryArrow';
 
 type QuickViewModalProps = {
@@ -208,6 +209,7 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
   const [activeImage, setActiveImage] = useState(0);
   const cartStore = useCartStore();
   const wishlistStore = useWishlistStore();
+  const { isConverted, formatReferenceEur } = useCurrency();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('Product');
@@ -621,10 +623,15 @@ export default function QuickViewModal({ isOpen, onClose, product }: QuickViewMo
 
             {/* Pricing Section (Warm Gold + Tax Free Stamp) */}
             <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-50/70 via-slate-50 to-amber-50/40 border border-amber-200/60 mb-4">
-              <div className="flex items-baseline gap-2.5">
+              <div className="flex items-baseline gap-2.5 flex-wrap">
                 <Price amount={rawPrice} className="text-2xl sm:text-3xl font-serif font-bold text-[#9C4E0F]" />
                 {hasDiscount && (
                   <Price amount={comparePrice!} showTax={false} className="text-slate-400 line-through text-sm font-medium" />
+                )}
+                {isConverted && (
+                  <span className="text-[11px] text-gray-500 font-mono ml-1">
+                    (≈ {formatReferenceEur(rawPrice)})
+                  </span>
                 )}
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">

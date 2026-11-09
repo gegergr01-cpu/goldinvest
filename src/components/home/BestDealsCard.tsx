@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
+import { useCurrency } from '@/components/CurrencyProvider';
 import QuickViewModal from '@/components/product/QuickViewModal';
 
 interface BestDealsCardProps {
@@ -368,6 +369,7 @@ export default function BestDealsCard({
   const locale = useLocale();
   const cartStore = useCartStore();
   const wishlistStore = useWishlistStore();
+  const { formatPrice, isConverted, formatReferenceEur } = useCurrency();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const isWishlisted = wishlistStore.hasItem(String(product.id));
 
@@ -403,9 +405,13 @@ export default function BestDealsCard({
     setIsQuickViewOpen(true);
   };
 
-  // Clean formatting ensuring non-breaking space between thousands and currency symbol
-  const formattedPrice = typeof product.rawPrice === 'number'
-    ? `${product.rawPrice.toLocaleString(locale === 'en' ? 'en-US' : (locale === 'de' ? 'de-DE' : 'fr-FR'), { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\s/g, '\u00A0')}\u00A0€`
+  // Clean dynamic formatting according to active currency
+  const numPrice = typeof product.rawPrice === 'number'
+    ? product.rawPrice
+    : (typeof product.price === 'number' ? product.price : parseFloat(String(product.rawPrice || product.price || 0)));
+
+  const formattedPrice = !isNaN(numPrice) && numPrice > 0
+    ? formatPrice(numPrice)
     : (product.priceFormatted || (product.price ? `${String(product.price).replace(/\s/g, '\u00A0')}\u00A0€` : '—'));
 
   // Localized stock status label
@@ -606,6 +612,11 @@ export default function BestDealsCard({
             <span className="text-[17px] sm:text-[19px] font-serif font-bold text-[#b8860b] tracking-tight leading-tight whitespace-nowrap">
               {formattedPrice}
             </span>
+            {isConverted && !isNaN(numPrice) && numPrice > 0 && (
+              <span className="text-[10px] text-gray-400 font-mono tracking-tight mt-0.5 whitespace-nowrap">
+                ≈ {formatReferenceEur(numPrice)}
+              </span>
+            )}
             <span className="text-[10px] sm:text-[10.5px] text-gray-400 font-sans tracking-wide mt-0.5 whitespace-nowrap select-none">
               {spotDisclaimer}
             </span>
