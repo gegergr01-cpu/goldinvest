@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settingsDb = await prisma.setting.findMany({
     where: { key: { in: ['FAVICON_IMAGE', 'HOME_META_TITLE', 'HOME_META_DESCRIPTION', 'HEADER_LOGO_IMAGE', 'OG_IMAGE', 'GOOGLE_SITE_VERIFICATION'] } }
   });
-  
+
   const settingsMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
   const faviconUrl = settingsMap['FAVICON_IMAGE'];
   const title = settingsMap['HOME_META_TITLE'] || `${storeName} | E-commerce`;
@@ -82,11 +82,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const messages = await getMessages();
   const locale = await getLocale();
-  
+
   let userRole: 'ADMIN' | 'CUSTOMER' | null = null;
-  
+
   const settingsMap = await getCachedSettings();
-  
+
   const currencyOptions = {
     currencySymbol: settingsMap.currencySymbol || defaultCurrencyOptions.currencySymbol,
     currencyPosition: (settingsMap.currencyPosition as any) || defaultCurrencyOptions.currencyPosition,
@@ -111,7 +111,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   } catch (e) {
     console.error("Erreur parsing HEADER_MENU_LINKS", e);
   }
-  
+
   const defaultFooterColumns = [
     { title: 'Contact Us', links: [{ label: 'About Us', url: '#' }, { label: 'Contact Us', url: '#' }] },
     { title: 'Account', links: [{ label: 'Shop', url: '#' }, { label: 'Checkout', url: '#' }] }
@@ -121,7 +121,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     if (settingsMap.FOOTER_COLUMNS) {
       footerColumns = JSON.parse(settingsMap.FOOTER_COLUMNS);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const defaultTopBarLinks = [
     { label: 'Store Locator', icon: 'location', url: '/store-locator' },
@@ -132,7 +132,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     if (settingsMap.TOP_BAR_LINKS) {
       topBarLinks = JSON.parse(settingsMap.TOP_BAR_LINKS);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const { newCount: newProductsCount, hotCount: hotProductsCount, saleCount: saleProductsCount } = await getCachedProductCounts();
 
@@ -285,10 +285,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <StoreLayout settings={storeSettings} userRole={userRole}>
                 <Toaster position="bottom-right" />
                 {children}
-                <DeferredWidgets 
-                  chatEnabled={settingsMap.CHAT_ENABLED !== 'false'} 
-                  chatStoreName={settingsMap.CHAT_STORE_NAME || 'Support'} 
-                  chatStoreIcon={settingsMap.CHAT_STORE_ICON || ''} 
+                <DeferredWidgets
+                  chatEnabled={settingsMap.CHAT_ENABLED !== 'false'}
+                  chatStoreName={settingsMap.CHAT_STORE_NAME || 'Support'}
+                  chatStoreIcon={settingsMap.CHAT_STORE_ICON || ''}
                 />
               </StoreLayout>
             </CurrencyProvider>

@@ -20,6 +20,7 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
     case 'en':
     case 'gb':
     case 'uk':
+    case 'gbp':
       return (
         <svg viewBox="0 0 60 30" className={className} xmlns="http://www.w3.org/2000/svg">
           <rect width="60" height="30" fill="#012169" />
@@ -29,6 +30,72 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
           <path d="M30 0 v30 M0 15 h60" stroke="#C8102E" strokeWidth="6" />
         </svg>
       );
+    case 'eu':
+    case 'eur': {
+      const starPoints = '0,-14 4.1,-4.3 13.3,-4.3 5.9,1.1 8.8,10.2 0,4.6 -8.8,10.2 -5.9,1.1 -13.3,-4.3 -4.1,-4.3';
+      const starCenters: [number, number][] = [
+        [320, 95],
+        [393, 114],
+        [446, 167],
+        [465, 240],
+        [446, 313],
+        [393, 366],
+        [320, 385],
+        [247, 366],
+        [194, 313],
+        [175, 240],
+        [194, 167],
+        [247, 114],
+      ];
+      return (
+        <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
+          <rect width="640" height="480" fill="#003399" />
+          {starCenters.map(([cx, cy], i) => (
+            <polygon
+              key={i}
+              points={starPoints}
+              transform={`translate(${cx}, ${cy})`}
+              fill="#ffcc00"
+            />
+          ))}
+        </svg>
+      );
+    }
+    case 'ca':
+    case 'cad':
+      return (
+        <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="480" fill="#d80027" />
+          <rect x="160" width="320" height="480" fill="#ffffff" />
+          <rect x="480" width="160" height="480" fill="#d80027" />
+          <path
+            d="M320 85 l20 40 45-12 -10 40 55 10 -38 35 20 28 -48 3 10 40 -38 -20 -10 87 h-12 l-10 -87 -38 20 10 -40 -48 -3 20 -28 -38 -35 55 -10 -10 -40 45 12 z"
+            fill="#d80027"
+          />
+        </svg>
+      );
+    case 'us':
+    case 'usd': {
+      const usStars = [
+        ...[26, 78, 130, 182, 234].flatMap((y) => [22, 65, 108, 152, 195, 238].map((x) => ({ x, y }))),
+        ...[52, 104, 156, 208].flatMap((y) => [43, 86, 130, 173, 216].map((x) => ({ x, y }))),
+      ];
+      return (
+        <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
+          <rect width="640" height="480" fill="#b22234" />
+          <rect y="36.92" width="640" height="36.92" fill="#ffffff" />
+          <rect y="110.77" width="640" height="36.92" fill="#ffffff" />
+          <rect y="184.62" width="640" height="36.92" fill="#ffffff" />
+          <rect y="258.46" width="640" height="36.92" fill="#ffffff" />
+          <rect y="332.31" width="640" height="36.92" fill="#ffffff" />
+          <rect y="406.15" width="640" height="36.92" fill="#ffffff" />
+          <rect width="260" height="258.46" fill="#3c3b6e" />
+          {usStars.map((s, i) => (
+            <circle key={i} cx={s.x} cy={s.y} r="6" fill="#ffffff" />
+          ))}
+        </svg>
+      );
+    }
     case 'de':
       return (
         <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
@@ -73,6 +140,7 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
       );
     case 'da':
     case 'dk':
+    case 'dkk':
       return (
         <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
           <rect width="640" height="480" fill="#c60c30" />
@@ -81,6 +149,7 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
         </svg>
       );
     case 'hu':
+    case 'huf':
       return (
         <svg viewBox="0 0 640 480" className={className} xmlns="http://www.w3.org/2000/svg">
           <rect width="640" height="160" fill="#ce2939" />
@@ -92,4 +161,5 @@ export default function FlagIcon({ code, className = 'w-4 h-3' }: FlagIconProps)
       return null;
   }
 }
+
 

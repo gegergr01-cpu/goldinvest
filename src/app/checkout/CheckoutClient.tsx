@@ -28,7 +28,7 @@ interface CheckoutClientProps {
 export default function CheckoutClient({ settings, zones }: CheckoutClientProps) {
   const router = useRouter();
   const { items: cart, getTotalPrice, clearCart, coupon, setCoupon } = useCartStore();
-  
+
   const [selectedCountry, setSelectedCountry] = useState(zones.length > 0 ? zones[0].name : '');
   const [shippingCountry, setShippingCountry] = useState(zones.length > 0 ? zones[0].name : '');
   const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
@@ -48,11 +48,11 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
       setShippingMethodId('');
     }
   }, [effectiveShippingCountry, zones]);
-  
+
   const enableBankTransfer = settings.ENABLE_BANK_TRANSFER !== 'false';
   const enableStripe = settings.ENABLE_STRIPE !== 'false';
   const enablePaypal = settings.ENABLE_PAYPAL !== 'false';
-  
+
   const defaultPaymentMethod = enableBankTransfer ? 'BANK_TRANSFER' : enableStripe ? 'STRIPE' : enablePaypal ? 'PAYPAL' : '';
   const [paymentMethod, setPaymentMethod] = useState<string>(defaultPaymentMethod);
 
@@ -66,7 +66,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
   const tCountries = useTranslations('Countries');
 
   const cartTotal = getTotalPrice();
-  
+
   // Calculate Discount
   let discountAmount = 0;
   if (coupon) {
@@ -85,7 +85,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
   const handleApplyCoupon = async () => {
     setCouponError('');
     if (!couponCode) return;
-    
+
     const res = await validateCoupon(couponCode);
     if (res.error) {
       setCouponError(res.error);
@@ -110,23 +110,23 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!paymentMethod) {
       alert(t('select_payment'));
       return;
     }
-    
+
     setIsProcessing(true);
     setFallbackModal(null);
-    
+
     const formData = new FormData(e.currentTarget);
     if (coupon) {
       formData.append('couponCode', coupon.code);
     }
     formData.append('currency', currentCurrency);
-    
+
     const res = await processCheckout(formData, cart, finalTotal, paymentMethod as any);
-    
+
     if (res.error) {
       if (res.error === 'payment_unavailable' && res.fallbackPaymentMethod) {
         setFallbackModal({
@@ -149,7 +149,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
       alert('Opening PayPal (Simulation)... Order ' + res.orderId);
       router.push('/checkout/success?orderId=' + res.orderId);
     }
-    
+
     setIsProcessing(false);
   };
 
@@ -198,11 +198,11 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
             <div className="w-14 h-14 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-5 text-2xl">
               ⚠️
             </div>
-            
+
             <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
               {t('payment_unavailable_title')}
             </h3>
-            
+
             <p className="text-sm text-gray-600 text-center mb-6 leading-relaxed">
               {fallbackModal.unavailableMethod === 'STRIPE'
                 ? t('payment_unavailable_stripe')
@@ -236,22 +236,22 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
       )}
 
       <form onSubmit={handleCheckout} onBlurCapture={captureAbandonedCart} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
+
         {/* Colonne de Gauche : Formulaire de Facturation */}
         <div className="lg:col-span-7 space-y-8">
-          
+
           <div className="bg-gray-50 p-4 rounded text-sm text-gray-700">
             {t('have_coupon')} <button type="button" onClick={() => setShowCouponInput(!showCouponInput)} className="text-orange-700 hover:underline font-medium">{t('click_to_enter_code')}</button>
           </div>
-          
+
           {showCouponInput && !coupon && (
             <div className="bg-white p-4 border border-gray-200 rounded">
               <div className="flex gap-2">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder={t('coupon_placeholder')} 
+                  placeholder={t('coupon_placeholder')}
                   className="flex-grow px-4 py-2 border border-gray-200 rounded focus:ring-orange-500 focus:border-orange-500 text-sm"
                 />
                 <button type="button" onClick={handleApplyCoupon} className="bg-gray-900 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-800 transition-colors">
@@ -261,7 +261,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               {couponError && <p className="text-red-500 text-xs mt-2">{couponError}</p>}
             </div>
           )}
-          
+
           {coupon && (
             <div className="bg-green-50 text-green-800 px-4 py-3 rounded-md flex justify-between items-center">
               <div>
@@ -273,13 +273,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               </button>
             </div>
           )}
-          
+
           <div className="bg-gray-50 p-4 rounded text-sm text-gray-700">
             {t('already_customer')} <Link href="/login" className="text-orange-700 hover:underline font-medium">{t('click_to_login')}</Link>
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('billing_details')}</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('first_name')} <span className="text-red-500">*</span></label>
@@ -293,9 +293,9 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('country_region')} <span className="text-red-500">*</span></label>
-            <select 
-              name="country" 
-              required 
+            <select
+              name="country"
+              required
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded focus:ring-orange-500 focus:border-orange-500"
@@ -343,13 +343,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
           </div>
 
           <div className="flex items-center gap-2 pt-4">
-            <input 
-              type="checkbox" 
-              id="shipToDifferentAddress" 
-              name="shipToDifferentAddress" 
+            <input
+              type="checkbox"
+              id="shipToDifferentAddress"
+              name="shipToDifferentAddress"
               checked={shipToDifferentAddress}
               onChange={(e) => setShipToDifferentAddress(e.target.checked)}
-              className="w-5 h-5 text-orange-700 rounded border-gray-300 focus:ring-orange-500" 
+              className="w-5 h-5 text-orange-700 rounded border-gray-300 focus:ring-orange-500"
             />
             <label htmlFor="shipToDifferentAddress" className="text-lg font-bold text-gray-900 cursor-pointer">{t('ship_different_address')}</label>
           </div>
@@ -374,9 +374,9 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('country_region')} <span className="text-red-500">*</span></label>
-                <select 
-                  name="shippingCountry" 
-                  required 
+                <select
+                  name="shippingCountry"
+                  required
                   value={shippingCountry}
                   onChange={(e) => setShippingCountry(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded focus:ring-orange-500 focus:border-orange-500"
@@ -417,9 +417,9 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('order_notes')}</label>
-            <textarea 
-              name="orderNotes" 
-              rows={3} 
+            <textarea
+              name="orderNotes"
+              rows={3}
               placeholder={t('order_notes_placeholder')}
               className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded focus:ring-orange-500 focus:border-orange-500"
             ></textarea>
@@ -431,13 +431,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
         <div className="lg:col-span-5">
           <div className="bg-gray-50 p-6 sm:p-8 rounded-lg border border-gray-100 sticky top-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('your_order')}</h2>
-            
+
             <div className="border-b border-gray-200 pb-4 mb-4">
               <div className="flex justify-between font-bold text-sm text-gray-900 mb-4">
                 <span>{t('product')}</span>
                 <span>{t('subtotal')}</span>
               </div>
-              
+
               {cart.map((item, index) => (
                 <div key={index} className="flex justify-between text-sm text-gray-600 mb-4">
                   <div className="pr-4">
@@ -471,13 +471,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
                   activeMethods.map((method) => (
                     <label key={method.id} className="flex items-center justify-end gap-2 cursor-pointer">
                       <span className="text-gray-600">{method.type}: {formatPrice(method.rate)}</span>
-                      <input 
-                        type="radio" 
-                        name="shippingMethod" 
-                        value={method.id} 
-                        checked={shippingMethodId === method.id} 
-                        onChange={() => setShippingMethodId(method.id)} 
-                        className="text-orange-700 focus:ring-orange-500" 
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value={method.id}
+                        checked={shippingMethodId === method.id}
+                        onChange={() => setShippingMethodId(method.id)}
+                        className="text-orange-700 focus:ring-orange-500"
                       />
                     </label>
                   ))
@@ -509,13 +509,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               {enableBankTransfer && (
                 <div className="border border-gray-200 rounded overflow-hidden">
                   <label className="flex items-center p-4 bg-gray-100 cursor-pointer border-b border-gray-200">
-                    <input 
-                      type="radio" 
-                      name="payment" 
+                    <input
+                      type="radio"
+                      name="payment"
                       value="BANK_TRANSFER"
-                      checked={paymentMethod === 'BANK_TRANSFER'} 
+                      checked={paymentMethod === 'BANK_TRANSFER'}
                       onChange={() => setPaymentMethod('BANK_TRANSFER')}
-                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500" 
+                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500"
                     />
                     <span className="font-medium text-gray-900">{t('direct_bank_transfer')}</span>
                   </label>
@@ -533,13 +533,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               {enableStripe && (
                 <div className="border border-gray-200 rounded overflow-hidden">
                   <label className="flex items-center p-4 bg-gray-100 cursor-pointer border-b border-gray-200">
-                    <input 
-                      type="radio" 
-                      name="payment" 
+                    <input
+                      type="radio"
+                      name="payment"
                       value="STRIPE"
-                      checked={paymentMethod === 'STRIPE'} 
+                      checked={paymentMethod === 'STRIPE'}
                       onChange={() => setPaymentMethod('STRIPE')}
-                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500" 
+                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500"
                     />
                     <span className="font-medium text-gray-900">{t('credit_card_stripe')}</span>
                   </label>
@@ -557,13 +557,13 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               {enablePaypal && (
                 <div className="border border-gray-200 rounded overflow-hidden">
                   <label className="flex items-center p-4 bg-gray-100 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="payment" 
+                    <input
+                      type="radio"
+                      name="payment"
                       value="PAYPAL"
-                      checked={paymentMethod === 'PAYPAL'} 
+                      checked={paymentMethod === 'PAYPAL'}
                       onChange={() => setPaymentMethod('PAYPAL')}
-                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500" 
+                      className="w-4 h-4 text-orange-700 mr-3 focus:ring-orange-500"
                     />
                     <span className="font-medium text-gray-900">{t('paypal')}</span>
                   </label>
@@ -582,8 +582,8 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               {t('privacy_policy_msg_1')}<Link href="/privacy" className="text-orange-700 hover:underline">{t('privacy_policy_link')}</Link>{t('privacy_policy_msg_2')}
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isProcessing || cart.length === 0 || !paymentMethod}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded transition-colors flex justify-center items-center disabled:opacity-50"
             >

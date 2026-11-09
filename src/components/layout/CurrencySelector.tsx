@@ -2,8 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useCurrency } from '@/components/CurrencyProvider';
-import { CurrencyCode, CurrencyConfig } from '@/lib/currencies';
+import { CurrencyCode } from '@/lib/currencies';
 import { useLocale } from 'next-intl';
+import FlagIcon from '@/components/ui/FlagIcon';
 
 interface CurrencySelectorProps {
   variant?: 'header' | 'footer' | 'mobile';
@@ -48,8 +49,8 @@ export default function CurrencySelector({
           aria-haspopup="true"
           title={isFrench ? "Changer de devise" : "Change currency"}
         >
-          <span className="text-base leading-none" role="img" aria-label={currencyConfig.nameEn}>
-            {currencyConfig.flag}
+          <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/20">
+            <FlagIcon code={currencyConfig.flagCode} className="w-full h-full object-cover" />
           </span>
           <span className="font-mono tracking-wide text-xs">{currencyConfig.code}</span>
           <span className="text-white/60 text-[11px] font-sans">({currencyConfig.symbol})</span>
@@ -84,7 +85,9 @@ export default function CurrencySelector({
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="text-base leading-none shrink-0">{curr.flag}</span>
+                      <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-sm shrink-0 flex items-center justify-center border border-white/15">
+                        <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                      </span>
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono font-bold tracking-wider">{curr.code}</span>
@@ -129,7 +132,9 @@ export default function CurrencySelector({
                     : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                <span className="text-base leading-none">{curr.flag}</span>
+                <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-gray-300">
+                  <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                </span>
                 <span className="font-mono">{curr.code}</span>
                 <span className="text-gray-400 text-[11px]">({curr.symbol})</span>
               </button>
@@ -148,7 +153,9 @@ export default function CurrencySelector({
         onClick={() => setIsOpen(!isOpen)}
         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 text-xs font-medium transition-all"
       >
-        <span>{currencyConfig.flag}</span>
+        <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-white/20">
+          <FlagIcon code={currencyConfig.flagCode} className="w-full h-full object-cover" />
+        </span>
         <span className="font-mono font-bold">{currencyConfig.code}</span>
         <span>({currencyConfig.symbol})</span>
       </button>
@@ -167,7 +174,9 @@ export default function CurrencySelector({
               }`}
             >
               <span className="flex items-center gap-2">
-                <span>{curr.flag}</span>
+                <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-white/15">
+                  <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                </span>
                 <span className="font-mono font-bold">{curr.code}</span>
                 <span className="text-white/50">({curr.symbol})</span>
               </span>
@@ -178,3 +187,4 @@ export default function CurrencySelector({
     </div>
   );
 }
+

@@ -7,6 +7,7 @@ export interface CurrencyConfig {
   nameEn: string;
   nameNative: string;
   flag: string;
+  flagCode: string;
   decimals: number;
   symbolPosition: 'left' | 'right' | 'left-space' | 'right-space';
   thousandSeparator: string;
@@ -21,6 +22,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'Euro',
     nameNative: 'Euro',
     flag: '🇪🇺',
+    flagCode: 'eu',
     decimals: 2,
     symbolPosition: 'right-space',
     thousandSeparator: '\u00A0',
@@ -33,6 +35,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'Danish Krone',
     nameNative: 'Danske kroner',
     flag: '🇩🇰',
+    flagCode: 'dk',
     decimals: 2,
     symbolPosition: 'right-space',
     thousandSeparator: '.',
@@ -45,6 +48,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'Hungarian Forint',
     nameNative: 'Magyar forint',
     flag: '🇭🇺',
+    flagCode: 'hu',
     decimals: 0, // Hungarian Forints do not use fractional cents in retail
     symbolPosition: 'right-space',
     thousandSeparator: '\u00A0',
@@ -57,6 +61,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'British Pound',
     nameNative: 'British Pound',
     flag: '🇬🇧',
+    flagCode: 'gb',
     decimals: 2,
     symbolPosition: 'left',
     thousandSeparator: ',',
@@ -69,6 +74,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'Canadian Dollar',
     nameNative: 'Dollar Canadien',
     flag: '🇨🇦',
+    flagCode: 'ca',
     decimals: 2,
     symbolPosition: 'right-space',
     thousandSeparator: '\u00A0',
@@ -81,6 +87,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     nameEn: 'US Dollar',
     nameNative: 'US Dollar',
     flag: '🇺🇸',
+    flagCode: 'us',
     decimals: 2,
     symbolPosition: 'left',
     thousandSeparator: ',',
@@ -210,3 +217,4 @@ export function detectInitialCurrency(
 
   return DEFAULT_CURRENCY;
 }
+
