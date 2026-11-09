@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import CurrencySelector from './CurrencySelector';
 
 interface MetalPrices {
   goldEur: number;
@@ -133,8 +134,15 @@ export default function TopBarTicker() {
   };
 
   return (
-    <div className="w-full bg-[#0B1A2C] text-gray-200 border-b border-white/10 overflow-hidden py-2 select-none relative z-50">
-      <div className="w-full overflow-hidden">
+    <div className="w-full bg-[#0B1A2C] text-gray-200 border-b border-white/10 overflow-visible py-1.5 sm:py-2 select-none relative z-50">
+      
+      {/* 1. FOREGROUND PINNED CURRENCY SELECTOR (Positioned in front, with smooth luxury fade gradient) */}
+      <div className="absolute left-0 top-0 bottom-0 z-20 flex items-center pl-3 sm:pl-6 pr-6 sm:pr-10 bg-gradient-to-r from-[#0B1A2C] via-[#0B1A2C] via-75% to-transparent pointer-events-auto">
+        <CurrencySelector variant="topbar" />
+      </div>
+
+      {/* 2. BACKGROUND MARQUEE TICKER (Passes smoothly behind the currency selector) */}
+      <div className="w-full overflow-hidden pl-28 sm:pl-36">
         <div className="animate-marquee whitespace-nowrap flex items-center">
           {/* First loop copy */}
           <div className="flex items-center">
@@ -146,6 +154,10 @@ export default function TopBarTicker() {
           </div>
         </div>
       </div>
+
+      {/* 3. Subtle right fade edge */}
+      <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#0B1A2C] to-transparent pointer-events-none z-10" />
+
     </div>
   );
 }

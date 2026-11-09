@@ -170,7 +170,7 @@ export default function Header({
           <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
             {/* Logo Line (Left) */}
-            <Link href={`${localePrefix || '/'}`} className="flex items-center flex-none select-none group">
+            <Link href={`${localePrefix || '/'}`} className="flex items-center min-w-0 shrink select-none group">
               {logoImage ? (
                 <div className="relative flex items-center py-1">
                   <Image
@@ -294,21 +294,20 @@ export default function Header({
                   )}
                 </button>
 
-                {/* Currency & Multilingual Selectors */}
-                <CurrencySelector variant="header" />
+                {/* Currency (when scrolled, sticky) & Multilingual Selectors */}
+                {isScrolled && <CurrencySelector variant="header" />}
                 <LanguageSelector variant="header" />
 
               </div>
             </div>
 
-            {/* Mobile Right Controls: Currency + Language + 4-Squares Contact + Hamburger */}
-            <div className="flex lg:hidden items-center gap-2 sm:gap-2.5">
-              <CurrencySelector variant="header" />
+            {/* Mobile Right Controls: Language + 4-Squares Contact + Hamburger (Spacious & never pushed off) */}
+            <div className="flex lg:hidden items-center gap-2 sm:gap-2.5 shrink-0">
               <LanguageSelector variant="header" />
               <button
                 type="button"
                 onClick={() => setIsContactDrawerOpen(true)}
-                className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center cursor-pointer hover:bg-[#152438] transition-colors shadow-2xs"
+                className="w-9 h-9 rounded-full bg-[#0a1420] text-white flex items-center justify-center cursor-pointer hover:bg-[#152438] transition-colors shadow-2xs shrink-0"
                 aria-label={t('quick_contact')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4">
@@ -320,8 +319,9 @@ export default function Header({
               </button>
 
               <button
+                type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="text-white text-2xl p-1 focus:outline-none cursor-pointer hover:text-[#E8A63D] transition-colors"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-2xl p-1 focus:outline-none cursor-pointer hover:text-[#E8A63D] transition-colors shrink-0"
                 aria-label={t('open_menu')}
               >
                 ☰
