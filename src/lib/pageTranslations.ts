@@ -3,6 +3,8 @@
  * Covering 9 European markets: FR, EN, DE, ES, IT, NL, PT, DA, HU
  */
 
+import { getPageContentHtml } from './pageContentHtml';
+
 export interface LocalizedPageData {
   title: string;
   metaTitle: string;
@@ -554,5 +556,13 @@ export function getLocalizedPageData(slug: string, locale: string = 'fr'): Local
   const pageEntries = PAGE_TRANSLATIONS[slug];
   if (!pageEntries) return null;
 
-  return pageEntries[locale] || pageEntries['en'] || pageEntries['fr'] || null;
+  const loc = pageEntries[locale] || pageEntries['en'] || pageEntries['fr'];
+  if (!loc) return null;
+
+  const dynamicContentHtml = getPageContentHtml(slug, locale);
+
+  return {
+    ...loc,
+    contentHtml: dynamicContentHtml || loc.contentHtml,
+  };
 }

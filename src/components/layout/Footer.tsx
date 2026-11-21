@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import GoldInvestLogo from '@/components/common/GoldInvestLogo';
 import LanguageSelector from './LanguageSelector';
 
@@ -48,6 +50,12 @@ export default function Footer({
   footerSocialInstagram = 'https://instagram.com',
   footerSocialLinkedin = 'https://linkedin.com',
 }: FooterProps) {
+  const t = useTranslations('Footer');
+  const pathname = usePathname();
+  const pathMatch = pathname?.match(/^\/([a-z]{2})(?:\/|$)/);
+  const activeLocale = pathMatch ? pathMatch[1] : 'fr';
+  const localePrefix = activeLocale && activeLocale !== 'fr' ? `/${activeLocale}` : '';
+
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,7 +83,7 @@ export default function Footer({
           {/* Centered Logo badge */}
           <div className="px-6 sm:px-8 bg-[#161719] flex items-center justify-center shrink-0">
             {footerLogoImage && !footerLogoImage.includes('pjeqv4nescp3bc1h2rxv') ? (
-              <Link href="/" className="inline-block transition-opacity hover:opacity-90">
+              <Link href={`${localePrefix || '/'}`} className="inline-block transition-opacity hover:opacity-90">
                 <Image
                   src={footerLogoImage}
                   alt="GOLAY INVEST"
@@ -86,7 +94,7 @@ export default function Footer({
                 />
               </Link>
             ) : (
-              <Link href="/" className="inline-flex items-center gap-2.5 group">
+              <Link href={`${localePrefix || '/'}`} className="inline-flex items-center gap-2.5 group">
                 <GoldInvestLogo variant="light" size="lg" />
               </Link>
             )}
@@ -104,37 +112,37 @@ export default function Footer({
           {/* Column 1: About us */}
           <div>
             <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
-              About us
+              {t('col_about_title')}
             </h3>
             <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/about" className="hover:text-[#E8A63D] transition-colors">
-                  Who we are
+                <Link href={`${localePrefix}/about`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_who_we_are')}
                 </Link>
               </li>
               <li>
-                <Link href="/#testimonials" className="hover:text-[#E8A63D] transition-colors">
-                  Customer reviews
+                <Link href={`${localePrefix || ''}/#testimonials`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_customer_reviews')}
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
-                  Press releases
+                <Link href={`${localePrefix}/blog`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_press_releases')}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#E8A63D] transition-colors">
-                  Wealth management partnerships
+                <Link href={`${localePrefix}/contact`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_partnerships')}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#E8A63D] transition-colors">
-                  Affiliate program
+                <Link href={`${localePrefix}/contact`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_affiliate')}
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-[#E8A63D] transition-colors">
-                  FAQ
+                <Link href={`${localePrefix}/faq`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_faq')}
                 </Link>
               </li>
             </ul>
@@ -143,47 +151,47 @@ export default function Footer({
           {/* Column 2: Buy */}
           <div>
             <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
-              Buy
+              {t('col_buy_title')}
             </h3>
             <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/shop?category=lingots-dor" className="hover:text-[#E8A63D] transition-colors">
-                  Buy gold bullion
+                <Link href={`${localePrefix}/shop?category=lingots-dor`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_buy_gold')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=lingots-dor" className="hover:text-[#E8A63D] transition-colors">
-                  Gold bars
+                <Link href={`${localePrefix}/shop?category=lingots-dor`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_gold_bars')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=pieces-dor" className="hover:text-[#E8A63D] transition-colors">
-                  Gold coins
+                <Link href={`${localePrefix}/shop?category=pieces-dor`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_gold_coins')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=lingots-dargent" className="hover:text-[#E8A63D] transition-colors">
-                  Buy silver bullion
+                <Link href={`${localePrefix}/shop?category=lingots-dargent`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_buy_silver')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=lingots-dargent" className="hover:text-[#E8A63D] transition-colors">
-                  Silver bars
+                <Link href={`${localePrefix}/shop?category=lingots-dargent`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_silver_bars')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=pieces-dargent" className="hover:text-[#E8A63D] transition-colors">
-                  Silver coins
+                <Link href={`${localePrefix}/shop?category=pieces-dargent`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_silver_coins')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
-                  Buy platinum bullion
+                <Link href={`${localePrefix}/shop`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_buy_platinum')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
-                  Buy palladium bullion
+                <Link href={`${localePrefix}/shop`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_buy_palladium')}
                 </Link>
               </li>
             </ul>
@@ -192,42 +200,42 @@ export default function Footer({
           {/* Column 3: Services */}
           <div>
             <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
-              Services
+              {t('col_services_title')}
             </h3>
             <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/services" className="hover:text-[#E8A63D] transition-colors">
-                  All our services
+                <Link href={`${localePrefix}/services`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_all_services')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#storage" className="hover:text-[#E8A63D] transition-colors">
-                  Gold and silver storage
+                <Link href={`${localePrefix}/services#storage`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_storage')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#delivery" className="hover:text-[#E8A63D] transition-colors">
-                  Gold and silver delivery
+                <Link href={`${localePrefix}/services#delivery`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_delivery')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#buyback" className="hover:text-[#E8A63D] transition-colors">
-                  Buyback &amp; resale
+                <Link href={`${localePrefix}/services#buyback`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_buyback')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#pickup" className="hover:text-[#E8A63D] transition-colors">
-                  Agency pickup &amp; withdrawal
+                <Link href={`${localePrefix}/services#pickup`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_pickup')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#storage" className="hover:text-[#E8A63D] transition-colors">
-                  Precious metals insurance
+                <Link href={`${localePrefix}/services#storage`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_insurance')}
                 </Link>
               </li>
               <li>
-                <Link href="/services#purchase" className="hover:text-[#E8A63D] transition-colors">
-                  Our investment solution
+                <Link href={`${localePrefix}/services#purchase`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_investment_solution')}
                 </Link>
               </li>
             </ul>
@@ -236,52 +244,52 @@ export default function Footer({
           {/* Column 4: Prices & market */}
           <div>
             <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
-              Prices &amp; market
+              {t('col_market_title')}
             </h3>
             <ul className="space-y-1.5 text-[13px] leading-[1.9]">
               <li>
-                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
-                  News &amp; analysis
+                <Link href={`${localePrefix}/blog`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_news_analysis')}
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-[#E8A63D] transition-colors">
-                  Archive
+                <Link href={`${localePrefix}/blog`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_archive')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?metal=gold" className="hover:text-[#E8A63D] transition-colors">
-                  Gold price
+                <Link href={`${localePrefix}/shop?metal=gold`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_gold_price')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop?metal=silver" className="hover:text-[#E8A63D] transition-colors">
-                  Silver price
+                <Link href={`${localePrefix}/shop?metal=silver`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_silver_price')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
-                  Platinum price
+                <Link href={`${localePrefix}/shop`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_platinum_price')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
-                  Palladium price
+                <Link href={`${localePrefix}/shop`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_palladium_price')}
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-[#E8A63D] transition-colors">
-                  Gold/silver ratio
+                <Link href={`${localePrefix}/shop`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_ratio')}
                 </Link>
               </li>
               <li>
-                <Link href="/widgets" className="hover:text-[#E8A63D] transition-colors">
-                  Widgets
+                <Link href={`${localePrefix}/widgets`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_widgets')}
                 </Link>
               </li>
               <li>
-                <Link href="/#app" className="hover:text-[#E8A63D] transition-colors">
-                  Mobile app
+                <Link href={`${localePrefix || ''}/#app`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_mobile_app')}
                 </Link>
               </li>
             </ul>
@@ -290,27 +298,27 @@ export default function Footer({
           {/* Column 5: Guide & Newsletter */}
           <div className="col-span-2 sm:col-span-1">
             <h3 className="font-serif font-semibold text-[17px] text-white mb-4 tracking-normal">
-              Guide
+              {t('col_guide_title')}
             </h3>
             <ul className="space-y-1.5 text-[13px] leading-[1.9] mb-5">
               <li>
-                <Link href="/guide" className="hover:text-[#E8A63D] transition-colors">
-                  Investor&apos;s guide
+                <Link href={`${localePrefix}/guide`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_investor_guide')}
                 </Link>
               </li>
               <li>
-                <Link href="/how-to-order" className="hover:text-[#E8A63D] transition-colors">
-                  How to order
+                <Link href={`${localePrefix}/how-to-order`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_how_to_order')}
                 </Link>
               </li>
               <li>
-                <Link href="/taxation" className="hover:text-[#E8A63D] transition-colors">
-                  Gold and silver taxation
+                <Link href={`${localePrefix}/taxation`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_taxation')}
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-[#E8A63D] transition-colors">
-                  Why choose GOLAY INVEST
+                <Link href={`${localePrefix}/about`} className="hover:text-[#E8A63D] transition-colors">
+                  {t('link_why_choose_us')}
                 </Link>
               </li>
             </ul>
@@ -322,7 +330,7 @@ export default function Footer({
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-[#E8A63D]">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Thank you for subscribing!</span>
+                  <span>{t('newsletter_thank_you')}</span>
                 </div>
               ) : (
                 <form onSubmit={handleNewsletter} className="flex items-center gap-2">
@@ -331,7 +339,7 @@ export default function Footer({
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Subscribe to our newsletter"
+                      placeholder={t('newsletter_subscribe_placeholder')}
                       required
                       className="w-full bg-[#1F2023] border border-white/20 hover:border-white/35 focus:border-[#E8A63D] rounded px-3 py-2 text-[12px] text-white placeholder-white/40 outline-none transition-colors"
                     />
@@ -340,8 +348,8 @@ export default function Footer({
                     type="submit"
                     disabled={loading}
                     className="w-9 h-9 rounded bg-[#1F2023] border border-[#C96A2B]/70 hover:border-[#E8A63D] hover:bg-[#C96A2B]/20 text-[#FFE599] hover:text-white flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-sm group"
-                    title="Subscribe"
-                    aria-label="Subscribe"
+                    title={t('newsletter_subscribe_btn')}
+                    aria-label={t('newsletter_subscribe_btn')}
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -367,7 +375,7 @@ export default function Footer({
       <div className="w-full border-t border-white/[0.08] py-4 px-4 sm:px-6 lg:px-8 bg-[#121315]">
         <div className="max-w-[1280px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <span className="text-white/50 font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-            <span>🌐</span> Langues / International :
+            <span>🌐</span> {t('languages_label')}
           </span>
           <LanguageSelector variant="footer" />
         </div>
@@ -512,24 +520,24 @@ export default function Footer({
 
           {/* Right: Legal Links & Copyright */}
           <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-2.5 gap-y-1 text-white/50 text-[11.5px]">
-            <Link href="/politique-de-confidentialite" className="hover:text-white transition-colors">
-              Privacy
+            <Link href={`${localePrefix}/politique-de-confidentialite`} className="hover:text-white transition-colors">
+              {t('legal_privacy')}
             </Link>
             <span>|</span>
-            <Link href="/security" className="hover:text-white transition-colors">
-              Security
+            <Link href={`${localePrefix}/security`} className="hover:text-white transition-colors">
+              {t('legal_security')}
             </Link>
             <span>|</span>
             <Link href="/sitemap.xml" className="hover:text-white transition-colors">
-              Sitemap
+              {t('legal_sitemap')}
             </Link>
             <span>|</span>
-            <Link href="/mentions-legales" className="hover:text-white transition-colors">
-              Terms of use
+            <Link href={`${localePrefix}/mentions-legales`} className="hover:text-white transition-colors">
+              {t('legal_terms_of_use')}
             </Link>
             <span>|</span>
-            <Link href="/conditions-generales-de-vente" className="hover:text-white transition-colors">
-              Terms of sale
+            <Link href={`${localePrefix}/conditions-generales-de-vente`} className="hover:text-white transition-colors">
+              {t('legal_terms_of_sale')}
             </Link>
             <span>|</span>
             <button
@@ -541,11 +549,11 @@ export default function Footer({
               }}
               className="hover:text-white transition-colors cursor-pointer"
             >
-              Manage my cookies
+              {t('legal_cookies')}
             </button>
             <span>|</span>
             <span className="text-white/70 font-medium">
-              {footerCopyright}
+              {t('copyright') || footerCopyright}
             </span>
           </div>
 
