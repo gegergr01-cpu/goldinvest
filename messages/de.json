@@ -1,6 +1,6 @@
 {
   "Frontend": {
-    "welcome": "Willkommen bei Gold Silver Invest",
+    "welcome": "Willkommen bei GOLAY INVEST",
     "shop": "Jetzt einkaufen",
     "cart": "Ihr Warenkorb"
   },
@@ -592,7 +592,7 @@
     "newsletter_placeholder": "Geben Sie Ihre E-Mail-Adresse ein...",
     "call_us": "Rufen Sie uns jetzt an",
     "email": "E-Mail",
-    "copyright": "© 2026 Gold Silver Invest Alle Rechte vorbehalten."
+    "copyright": "© 2026 GOLAY INVEST Alle Rechte vorbehalten."
   },
   "Messages": {
     "success": "Aktion erfolgreich",
@@ -731,7 +731,7 @@
     "logging_in": "Einloggen..."
   },
   "AdminLayout": {
-    "title": "Gold Silver Invest Admin",
+    "title": "GOLAY INVEST Admin",
     "dashboard": "Dashboard",
     "products": "Produkte",
     "categories": "Kategorien",
@@ -2030,7 +2030,7 @@
     "admin": "Admin"
   },
   "Services": {
-    "meta_title": "Unsere Anlagedienstleistungen | Gold Silver Invest",
+    "meta_title": "Unsere Anlagedienstleistungen | GOLAY INVEST",
     "meta_desc": "Entdecken Sie unser ganzheitliches Ökosystem: LBMA-zertifizierter Erwerb, Hochsicherheits-Schließfächer in Zürich und Singapur, versicherter diskreter Versand und garantierter Rückkauf.",
     "hero_eyebrow": "GANZHEITLICHES ANLAGE-ÖKOSYSTEM",
     "hero_title": "Unsere Anlage",

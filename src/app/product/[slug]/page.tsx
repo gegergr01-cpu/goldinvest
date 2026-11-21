@@ -9,6 +9,8 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { safeJsonLd } from '@/lib/security';
 import { Metadata } from 'next';
 import { getCachedProductBySlug, getCachedSettings, getCachedRelatedProducts } from '@/lib/cache';
+import { buildInternationalAlternates, getLocaleTargetCurrency } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -26,9 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: product.metaTitle ? product.metaTitle : `${product.title} | ${storeName}`,
     description: product.metaDescription || (product.shortDescription ? product.shortDescription.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').substring(0, 160) : '') || (product.description ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').substring(0, 160) : ''),
-    alternates: {
-      canonical: `/product/${slug}`,
-    }
+    alternates: buildInternationalAlternates(`/product/${slug}`, locale),
   };
 }
 
@@ -83,10 +83,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     image: product.images || [],
     description: (product.description ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ') : undefined) || (product.shortDescription ? product.shortDescription.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ') : undefined),
     sku: product.id.split('-')[0].toUpperCase(),
+    brand: {
+      '@type': 'Brand',
+      name: 'GOLAY INVEST',
+    },
     offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://golayinvest.com'}/product/${product.slug}`,
-      priceCurrency: 'EUR',
+      url: `${SITE_URL}/${locale}/product/${product.slug}`,
+      priceCurrency: getLocaleTargetCurrency(locale),
       price: product.price,
       itemCondition: 'https://schema.org/NewCondition',
       availability: product.stock && product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
@@ -96,11 +100,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       },
       hasMerchantReturnPolicy: {
         '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'FR',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 14,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn'
+        applicableCountry: ['CH', 'FR', 'DE', 'BE', 'LU', 'ES', 'IT', 'NL', 'DK', 'HU', 'GB'],
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+        merchantReturnDays: 0,
       },
       shippingDetails: {
         '@type': 'OfferShippingDetails',

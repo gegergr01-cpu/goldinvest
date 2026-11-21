@@ -1,11 +1,24 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import BlogSidebar from '@/components/blog/BlogSidebar';
 import { getRecentComments } from '@/actions/blog';
 import { getTranslations, getLocale } from 'next-intl/server';
 import Image from "next/image";
+import { buildInternationalAlternates } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Blog');
+  const locale = await getLocale();
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
+  return {
+    title: `${t('title')} | ${storeName}`,
+    description: "Analyses des cours de l'or et de l'argent physique, actualités des banques centrales, guides sur la fiscalité et investissement dans les métaux précieux.",
+    alternates: buildInternationalAlternates('/blog', locale),
+  };
+}
 
 export default async function BlogIndexPage({
   searchParams,

@@ -5,6 +5,9 @@ import ShopSort from '@/components/shop/ShopSort';
 import ShopPagination from '@/components/shop/ShopPagination';
 import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { buildInternationalAlternates } from '@/lib/seo';
+import { safeJsonLd } from '@/lib/security';
+import { SITE_URL } from '@/lib/site';
 
 const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
@@ -44,23 +47,21 @@ export async function generateMetadata({
       const catName = ctr?.name || category.name;
       const catSlug = ctr?.slug || category.slug;
       const metaTitle = ctr?.metaTitle || category.metaTitle || `${catName} | ${storeName}`;
-      const metaDescription = ctr?.metaDescription || category.metaDescription || `Kaufen Sie ${catName} online bei ${storeName}.`;
+      const defaultDesc = `Achetez des métaux précieux certifiés LBMA (${catName}) chez ${storeName}. Cours de l'or en temps réel, livraison scellée et assurée.`;
+      const metaDescription = ctr?.metaDescription || category.metaDescription || defaultDesc;
       return {
         title: metaTitle,
         description: metaDescription,
-        alternates: {
-          canonical: `/shop?category=${catSlug}`,
-        },
+        alternates: buildInternationalAlternates(`/shop?category=${catSlug}`, locale),
       };
     }
   }
 
+  const t = await getTranslations('Shop');
   return {
-    title: `Shop | ${storeName}`,
-    description: 'Entdecken Sie unser großes Sortiment an Kaminöfen, Pelletöfen, Brennholz und Holzbriketts.',
-    alternates: {
-      canonical: '/shop',
-    },
+    title: `${t('title')} | ${storeName}`,
+    description: "Achetez de l'or et de l'argent d'investissement au meilleur cours : lingots certifiés LBMA, pièces d'or d'investissement (Krugerrand, Souverain, Philharmonique) et gardiennage en coffres sécurisés.",
+    alternates: buildInternationalAlternates('/shop', locale),
   };
 }
 
@@ -277,8 +278,44 @@ export default async function ShopPage({
     }
   }
 
+  const baseUrl = SITE_URL.replace(/\/$/, '');
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: t('home'),
+        item: `${baseUrl}/${locale}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: pageTitle,
+        item: `${baseUrl}/${locale}/shop`,
+      },
+    ],
+  };
+
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${pageTitle} | ${storeName}`,
+    description: `Catalogue des métaux précieux physiques d'investissement certifiés LBMA chez ${storeName}. Lingots et pièces d'or et d'argent avec cours spot en temps réel.`,
+    url: `${baseUrl}/${locale}/shop`,
+  };
+
   return (
     <div className="bg-white min-h-screen font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }}
+      />
       {/* Breadcrumb */}
       <div className="bg-gray-50 py-4 px-4 sm:px-8 border-b border-gray-200">
         <div className="max-w-7xl mx-auto text-sm text-gray-500">

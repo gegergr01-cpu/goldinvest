@@ -7,8 +7,6 @@ const DEFAULT_DISALLOW_PATHS = [
   '/account/', 
   '/checkout/', 
   '/api/', 
-  '/categorie-produit/', 
-  '/produit/',
   '/*?filter_cat=',
   '/*?column=',
   '/*?per_page=',

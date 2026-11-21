@@ -10,12 +10,14 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { Metadata } from 'next';
 import { safeJsonLd } from '@/lib/security';
 import { SITE_URL } from '@/lib/site';
+import { buildInternationalAlternates } from '@/lib/seo';
 import Image from "next/image";
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
   const article = await getArticleBySlug(slug);
   
   if (!article || !article.isPublished) {
@@ -29,9 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.metaTitle || article.title,
     description: description,
     keywords: article.metaKeywords || undefined,
-    alternates: {
-      canonical: `/blog/${slug}`,
-    },
+    alternates: buildInternationalAlternates(`/blog/${slug}`, locale),
     openGraph: {
       title: article.metaTitle || article.title,
       description: description,

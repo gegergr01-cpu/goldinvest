@@ -1,6 +1,6 @@
 {
   "Frontend": {
-    "welcome": "Üdvözöljük a Gold Silver Investnél",
+    "welcome": "Üdvözöljük a GOLAY INVESTnél",
     "shop": "Vásárlás most",
     "cart": "Kosár"
   },
@@ -602,7 +602,7 @@
     "newsletter_placeholder": "Adja meg e-mail címét...",
     "call_us": "Hívjon minket",
     "email": "E-mail",
-    "copyright": "© 2026 Gold Silver Invest. Minden jog fenntartva."
+    "copyright": "© 2026 GOLAY INVEST. Minden jog fenntartva."
   },
   "Messages": {
     "success": "Action successful",
@@ -741,7 +741,7 @@
     "logging_in": "Logging in..."
   },
   "AdminLayout": {
-    "title": "Gold Silver Invest Admin",
+    "title": "GOLAY INVEST Admin",
     "dashboard": "Dashboard",
     "products": "Products",
     "categories": "Categories",
@@ -2040,7 +2040,7 @@
     "admin": "Admin"
   },
   "Services": {
-    "meta_title": "Befektetési Szolgáltatásaink | Gold Silver Invest",
+    "meta_title": "Befektetési Szolgáltatásaink | GOLAY INVEST",
     "meta_desc": "Fedezze fel teljes befektetési ökoszisztémánkat: LBMA-tanúsított vásárlás, bankfüggetlen magánszéfek Zürichben és Szingapúrban, 100%-ban biztosított kiszállítás és garantált visszavásárlás.",
     "hero_eyebrow": "TELJES BEFEKTETÉSI ÖKOSZISZTÉMA",
     "hero_title": "Befektetési",

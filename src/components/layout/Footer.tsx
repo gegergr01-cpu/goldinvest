@@ -512,11 +512,11 @@ export default function Footer({
 
           {/* Right: Legal Links & Copyright */}
           <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-2.5 gap-y-1 text-white/50 text-[11.5px]">
-            <Link href="/pages/politique-de-confidentialite" className="hover:text-white transition-colors">
+            <Link href="/politique-de-confidentialite" className="hover:text-white transition-colors">
               Privacy
             </Link>
             <span>|</span>
-            <Link href="/pages/security" className="hover:text-white transition-colors">
+            <Link href="/security" className="hover:text-white transition-colors">
               Security
             </Link>
             <span>|</span>
@@ -524,11 +524,11 @@ export default function Footer({
               Sitemap
             </Link>
             <span>|</span>
-            <Link href="/pages/mentions-legales" className="hover:text-white transition-colors">
+            <Link href="/mentions-legales" className="hover:text-white transition-colors">
               Terms of use
             </Link>
             <span>|</span>
-            <Link href="/pages/conditions-generales-de-vente" className="hover:text-white transition-colors">
+            <Link href="/conditions-generales-de-vente" className="hover:text-white transition-colors">
               Terms of sale
             </Link>
             <span>|</span>

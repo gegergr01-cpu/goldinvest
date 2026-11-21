@@ -220,17 +220,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <link rel="alternate" type="application/rss+xml" title={`${storeName} - Blog RSS`} href="/rss.xml" />
-        {/* International SEO Hreflang Tags */}
-        <link rel="alternate" hrefLang="x-default" href={`${SITE_URL}/fr`} />
-        <link rel="alternate" hrefLang="fr" href={`${SITE_URL}/fr`} />
-        <link rel="alternate" hrefLang="en" href={`${SITE_URL}/en`} />
-        <link rel="alternate" hrefLang="de" href={`${SITE_URL}/de`} />
-        <link rel="alternate" hrefLang="es" href={`${SITE_URL}/es`} />
-        <link rel="alternate" hrefLang="it" href={`${SITE_URL}/it`} />
-        <link rel="alternate" hrefLang="nl" href={`${SITE_URL}/nl`} />
-        <link rel="alternate" hrefLang="pt" href={`${SITE_URL}/pt`} />
-        <link rel="alternate" hrefLang="da" href={`${SITE_URL}/da`} />
-        <link rel="alternate" hrefLang="hu" href={`${SITE_URL}/hu`} />
         {settingsMap.FAVICON_IMAGE && (
           <>
             <link rel="icon" href={settingsMap.FAVICON_IMAGE} />
@@ -260,19 +249,38 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({
               "@context": "https://schema.org",
-              "@type": "LocalBusiness",
+              "@type": "FinancialService",
               "name": storeName,
-              "image": settingsMap.HEADER_LOGO_IMAGE || '/logo.jpg',
+              "legalName": "GOLAY Invest",
+              "image": settingsMap.HEADER_LOGO_IMAGE || `${SITE_URL}/logo.png`,
               "url": SITE_URL,
-              "telephone": settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE,
-              "email": settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL,
+              "telephone": settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE ?? "+32 81 84 92 84",
+              "email": settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL ?? "info@golayinvest.com",
               "address": {
                 "@type": "PostalAddress",
-                "streetAddress": settingsMap.FOOTER_ADDRESS_1 || '',
-                "addressCountry": settingsMap.STORE_COUNTRY || "DE",
-                "addressLocality": "Langenhagen"
+                "streetAddress": settingsMap.FOOTER_ADDRESS_1 || "Chemin du Grand Roe 11",
+                "addressLocality": "Savièse",
+                "postalCode": "1965",
+                "addressCountry": "CH"
               },
-              "description": "Ihr zuverlässiger Partner für Kaminholz, Holzpellets und Holzbriketts."
+              "description": "Maison de négoce suisse en métaux précieux d'investissement. Achat et vente de lingots et pièces d'or certifiés LBMA, exonérés de TVA (0% TVA), garde en coffres sécurisés en Suisse et livraison assurée.",
+              "priceRange": "$$$$"
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": storeName,
+              "url": SITE_URL,
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${SITE_URL}/shop?q={search_term_string}`,
+                "query-input": "required name=search_term_string"
+              }
             })
           }}
         />

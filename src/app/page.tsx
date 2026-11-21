@@ -21,8 +21,23 @@ import { getHeroDailyCards } from '@/lib/heroDailyProducts';
 import { SectionConfig, DEFAULT_SECTIONS } from '@/types/landing';
 import prisma from '@/lib/prisma';
 import { getLocale } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildInternationalAlternates } from '@/lib/seo';
 
 export const revalidate = 60; // Revalidate every 60 seconds
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const settings = await getCachedSettings();
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
+  const title = settings.HOME_META_TITLE || `${storeName} | Achat d'Or & Argent d'Investissement Certifié LBMA`;
+  const description = settings.HOME_META_DESCRIPTION || "Maison de négoce en métaux précieux d'investissement. Achat de lingots d'or certifiés LBMA, pièces d'or d'investissement, garde sécurisée en coffres-forts haute sécurité en Suisse et livraison assurée.";
+  return {
+    title,
+    description,
+    alternates: buildInternationalAlternates('', locale),
+  };
+}
 
 export default async function Home() {
   const locale = await getLocale();

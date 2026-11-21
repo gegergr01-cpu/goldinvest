@@ -1,6 +1,6 @@
 {
   "Frontend": {
-    "welcome": "Velkommen til Gold Silver Invest",
+    "welcome": "Velkommen til GOLAY INVEST",
     "shop": "Shop nu",
     "cart": "Din indkøbskurv"
   },
@@ -592,7 +592,7 @@
     "newsletter_placeholder": "Indtast din e-mail...",
     "call_us": "Ring til os",
     "email": "E-mail",
-    "copyright": "© 2026 Gold Silver Invest. Alle rettigheder forbeholdes."
+    "copyright": "© 2026 GOLAY INVEST. Alle rettigheder forbeholdes."
   },
   "Messages": {
     "success": "Action successful",
@@ -731,7 +731,7 @@
     "logging_in": "Logging in..."
   },
   "AdminLayout": {
-    "title": "Gold Silver Invest Admin",
+    "title": "GOLAY INVEST Admin",
     "dashboard": "Dashboard",
     "products": "Products",
     "categories": "Categories",
@@ -2030,7 +2030,7 @@
     "admin": "Admin"
   },
   "Services": {
-    "meta_title": "Vores Investeringstjenester | Gold Silver Invest",
+    "meta_title": "Vores Investeringstjenester | GOLAY INVEST",
     "meta_desc": "Oplev vores komplette økosystem: LBMA-certificeret køb, opbevaring i private højsikkerhedsbokse i Zürich og Singapore, 100% forsikret diskret levering og garanteret tilbagekøb.",
     "hero_eyebrow": "KOMPLET INVESTERINGSØKOSYSTEM",
     "hero_title": "Vores Investerings",
