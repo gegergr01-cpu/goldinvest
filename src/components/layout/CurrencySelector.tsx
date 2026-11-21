@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useCurrency } from '@/components/CurrencyProvider';
 import { CurrencyCode } from '@/lib/currencies';
 import { useLocale } from 'next-intl';
-import FlagIcon from '@/components/ui/FlagIcon';
 
 interface CurrencySelectorProps {
   variant?: 'header' | 'footer' | 'mobile' | 'topbar';
@@ -37,23 +36,20 @@ export default function CurrencySelector({
     setIsOpen(false);
   };
 
-  // TopBar Variant (Left-anchored luxury glass pill in the ticker bar)
+  // 1. TopBar Variant (Left-anchored luxury glass pill in the ticker bar)
   if (variant === 'topbar') {
     return (
       <div className={`relative inline-block text-left ${className}`} ref={containerRef}>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/20 text-white text-[12px] sm:text-[12.5px] font-semibold transition-all duration-150 cursor-pointer shadow-xs select-none backdrop-blur-md"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/20 text-white text-[12px] sm:text-[12.5px] font-semibold transition-all duration-150 cursor-pointer shadow-xs select-none backdrop-blur-md"
           aria-expanded={isOpen}
           aria-haspopup="true"
           title={isFrench ? "Changer de devise" : "Change currency"}
         >
-          <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-xs flex items-center justify-center shrink-0 border border-white/25">
-            <FlagIcon code={currencyConfig.flagCode} className="w-full h-full object-cover" />
-          </span>
-          <span className="font-mono tracking-wide text-xs font-bold text-white/95">{currencyConfig.code}</span>
-          <span className="text-[#E8A63D] text-[11px] font-sans font-medium">({currencyConfig.symbol})</span>
+          <span className="font-mono tracking-wider text-xs font-bold text-white/95">{currencyConfig.code}</span>
+          <span className="text-[#E8A63D] text-[11.5px] font-mono font-bold">({currencyConfig.symbol})</span>
           <svg
             className={`w-2.5 h-2.5 text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
@@ -66,7 +62,7 @@ export default function CurrencySelector({
 
         {isOpen && (
           <div className="absolute left-0 mt-2 w-64 rounded-xl bg-[#0E2036]/98 backdrop-blur-md border border-white/20 shadow-[0_16px_50px_rgba(0,0,0,0.8)] z-[9999] py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-3 py-1.5 border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+            <div className="px-3.5 py-1.5 border-b border-white/10 text-[10.5px] font-semibold uppercase tracking-wider text-white/50">
               {isFrench ? 'Sélectionner la devise' : 'Select currency'}
             </div>
             <div className="max-h-72 overflow-y-auto py-1">
@@ -78,15 +74,14 @@ export default function CurrencySelector({
                     key={curr.code}
                     type="button"
                     onClick={() => handleSelectCurrency(curr.code)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                      isSelected
+                    className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${isSelected
                         ? 'bg-[#C8732A]/25 text-[#E8A63D] font-bold'
                         : 'text-white/90 hover:bg-white/10 hover:text-white'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-sm shrink-0 flex items-center justify-center border border-white/15">
-                        <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                      <span className="w-6 h-6 rounded-md bg-white/[0.08] border border-white/15 flex items-center justify-center text-[#E8A63D] font-mono text-xs font-bold shrink-0">
+                        {curr.symbol}
                       </span>
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -111,23 +106,20 @@ export default function CurrencySelector({
     );
   }
 
-  // Header Variant (Compact luxury glass pill matching LanguageSelector)
+  // 2. Header Variant (Compact luxury glass pill matching LanguageSelector)
   if (variant === 'header') {
     return (
       <div className={`relative inline-block text-left ${className}`} ref={containerRef}>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/15 text-white text-[13px] font-semibold transition-all duration-150 cursor-pointer shadow-sm select-none"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/15 text-white text-[13px] font-semibold transition-all duration-150 cursor-pointer shadow-sm select-none"
           aria-expanded={isOpen}
           aria-haspopup="true"
           title={isFrench ? "Changer de devise" : "Change currency"}
         >
-          <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/20">
-            <FlagIcon code={currencyConfig.flagCode} className="w-full h-full object-cover" />
-          </span>
-          <span className="font-mono tracking-wide text-xs">{currencyConfig.code}</span>
-          <span className="text-white/60 text-[11px] font-sans">({currencyConfig.symbol})</span>
+          <span className="font-mono tracking-wide text-xs font-bold">{currencyConfig.code}</span>
+          <span className="text-[#E8A63D] text-[11px] font-mono font-medium">({currencyConfig.symbol})</span>
           <svg
             className={`w-3 h-3 text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
@@ -140,7 +132,7 @@ export default function CurrencySelector({
 
         {isOpen && (
           <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[#0E2036]/95 backdrop-blur-md border border-white/15 shadow-2xl z-[9999] py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-3 py-1.5 border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+            <div className="px-3.5 py-1.5 border-b border-white/10 text-[10.5px] font-semibold uppercase tracking-wider text-white/50">
               {isFrench ? 'Sélectionner la devise' : 'Select currency'}
             </div>
             <div className="max-h-72 overflow-y-auto py-1">
@@ -152,15 +144,14 @@ export default function CurrencySelector({
                     key={curr.code}
                     type="button"
                     onClick={() => handleSelectCurrency(curr.code)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                      isSelected
+                    className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${isSelected
                         ? 'bg-[#C8732A]/25 text-[#E8A63D] font-bold'
                         : 'text-white/90 hover:bg-white/10 hover:text-white'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-sm shrink-0 flex items-center justify-center border border-white/15">
-                        <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                      <span className="w-6 h-6 rounded-md bg-white/[0.08] border border-white/15 flex items-center justify-center text-[#E8A63D] font-mono text-xs font-bold shrink-0">
+                        {curr.symbol}
                       </span>
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -185,11 +176,11 @@ export default function CurrencySelector({
     );
   }
 
-  // Mobile Drawer Variant
+  // 3. Mobile Drawer Variant
   if (variant === 'mobile') {
     return (
       <div className={`space-y-2 ${className}`}>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400">
           {isFrench ? 'Devise' : 'Currency'}
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -200,17 +191,15 @@ export default function CurrencySelector({
                 key={curr.code}
                 type="button"
                 onClick={() => handleSelectCurrency(curr.code)}
-                className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition-all ${
-                  isSelected
-                    ? 'bg-[#C8732A]/10 border-[#C8732A] text-[#9C4E0F] font-bold'
-                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${isSelected
+                    ? 'bg-[#C8732A]/20 border-[#C8732A] text-[#E8A63D] font-bold'
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                  }`}
               >
-                <span className="w-[20px] h-[14px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-gray-300">
-                  <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
+                <span className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-[#E8A63D] font-mono font-bold text-xs shrink-0">
+                  {curr.symbol}
                 </span>
-                <span className="font-mono">{curr.code}</span>
-                <span className="text-gray-400 text-[11px]">({curr.symbol})</span>
+                <span className="font-mono font-semibold">{curr.code}</span>
               </button>
             );
           })}
@@ -219,19 +208,16 @@ export default function CurrencySelector({
     );
   }
 
-  // Footer Variant
+  // 4. Footer Variant
   return (
     <div className={`relative inline-block text-left ${className}`} ref={containerRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 text-xs font-medium transition-all"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/90 text-xs font-medium transition-all"
       >
-        <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-white/20">
-          <FlagIcon code={currencyConfig.flagCode} className="w-full h-full object-cover" />
-        </span>
+        <span className="text-[#E8A63D] font-mono font-bold">{currencyConfig.symbol}</span>
         <span className="font-mono font-bold">{currencyConfig.code}</span>
-        <span>({currencyConfig.symbol})</span>
       </button>
 
       {isOpen && (
@@ -241,18 +227,15 @@ export default function CurrencySelector({
               key={curr.code}
               type="button"
               onClick={() => handleSelectCurrency(curr.code)}
-              className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors ${
-                curr.code === currentCurrency
+              className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors ${curr.code === currentCurrency
                   ? 'bg-[#C8732A]/20 text-[#E8A63D] font-bold'
                   : 'text-white/80 hover:bg-white/10'
-              }`}
+                }`}
             >
               <span className="flex items-center gap-2">
-                <span className="w-[18px] h-[13px] rounded-[2px] overflow-hidden shadow-xs shrink-0 flex items-center justify-center border border-white/15">
-                  <FlagIcon code={curr.flagCode} className="w-full h-full object-cover" />
-                </span>
+                <span className="text-[#E8A63D] font-mono font-bold w-4 text-center">{curr.symbol}</span>
                 <span className="font-mono font-bold">{curr.code}</span>
-                <span className="text-white/50">({curr.symbol})</span>
+                <span className="text-white/50">({curr.nameEn})</span>
               </span>
             </button>
           ))}
@@ -261,4 +244,3 @@ export default function CurrencySelector({
     </div>
   );
 }
-

@@ -119,17 +119,13 @@ export default function Header({
     });
   }, []);
 
-  // Nav links inspired by user reference & AZ Solutions
-  const defaultNavLinks = [
+  // Main Nav links requested: Accueil | Nos Offres | Services | Contact
+  const activeNavLinks = [
     { label: t('nav_home'), url: `${localePrefix || ''}/` },
-    { label: t('nav_coins'), url: `${localePrefix}/shop?category=pieces-dor` },
-    { label: t('nav_bars'), url: `${localePrefix}/shop?category=lingots-dor` },
-    { label: t('nav_silver'), url: `${localePrefix}/shop?category=lingots-dargent` },
+    { label: t('nav_offers'), url: `${localePrefix}/shop` },
     { label: t('nav_services'), url: `${localePrefix}/services` },
     { label: t('nav_contact'), url: `${localePrefix}/contact` },
   ];
-
-  const activeNavLinks = (menuLinks && menuLinks.length > 0 && !menuLinks.some(l => l.label === 'Home' || l.label === 'Pages' || l.label === 'Blogs')) ? menuLinks : defaultNavLinks;
 
   const handleAccountClick = () => {
     if (actualUserRole) {

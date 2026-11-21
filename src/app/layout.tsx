@@ -97,10 +97,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
   const contactSlug = settingsMap.CONTACT_SLUG || 'contact';
   const defaultMenuLinks = [
-    { label: 'Home', url: '/' },
-    { label: 'Shop', url: '/shop' },
-    { label: 'Blog', url: '/blog' },
-    { label: 'Contact Us', url: `/${contactSlug}` },
+    { label: 'Accueil', url: '/' },
+    { label: 'Nos Offres', url: '/shop' },
+    { label: 'Services', url: '/services' },
+    { label: 'Contact', url: `/${contactSlug}` },
   ];
 
   let menuLinks = defaultMenuLinks;
