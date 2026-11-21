@@ -126,10 +126,10 @@ export default async function CustomPage({ params }: { params: Promise<{ slug: s
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
       {/* 1. Luxury Navy Header Banner with Breadcrumbs & Swiss Registry Badge */}
-      <section className="bg-gradient-to-b from-[#0B1A2C] via-[#0E2036] to-[#0E2036] text-white border-b border-white/10 pt-10 pb-12 sm:pb-14">
+      <section className="bg-gradient-to-b from-[#0B1A2C] via-[#0E2036] to-[#0E2036] text-white border-b border-white/10 pt-7 pb-7 sm:pt-9 sm:pb-9">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-white/60 mb-5">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-white/60 mb-3.5">
             <Link href={`${localePrefix || '/'}`} className="hover:text-[#E8A63D] transition-colors">
               {homeLabels[locale] || 'Accueil'}
             </Link>
@@ -142,36 +142,36 @@ export default async function CustomPage({ params }: { params: Promise<{ slug: s
           </nav>
 
           {/* Official Swiss Company Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.08] border border-white/15 text-[#E8A63D] text-xs font-mono tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/[0.08] border border-white/15 text-[#E8A63D] text-[11.5px] font-mono tracking-wider mb-2.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C8732A] animate-pulse" />
             <span>{displayBadge}</span>
           </div>
 
           {/* Page Title */}
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-white tracking-tight">
             {displayTitle}
           </h1>
 
           {/* Subtitle / Last Updated */}
-          <p className="text-sm text-white/60 mt-2">
+          <p className="text-xs sm:text-sm text-white/65 mt-2 max-w-3xl leading-relaxed">
             {displaySubtitle}
           </p>
         </div>
       </section>
 
       {/* 2. Page Content Container */}
-      <main className="flex-grow w-full max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 sm:p-10">
+      <main className="flex-grow w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-12 sm:pt-8 sm:pb-16">
+        <div className="w-full">
           {/* Desktop Content */}
           <SafeHTML
-            html={locData?.contentHtml || page.desktopContent || ''}
-            className="hidden md:block w-full prose max-w-none prose-headings:font-serif prose-headings:text-[#0E2036] prose-a:text-[#C8732A] prose-a:underline hover:prose-a:text-[#B8641C]"
+            html={(locData?.contentHtml || page.desktopContent || '').replace(/<!-- Hero Header Card -->[\s\S]*?<\/div>\s*(?=(?:<!--|<div))/i, '')}
+            className="hidden md:block w-full"
           />
 
           {/* Mobile Content */}
           <SafeHTML
-            html={locData?.contentHtml || page.mobileContent || (page.desktopContent || '')}
-            className="block md:hidden w-full prose max-w-none prose-headings:font-serif prose-headings:text-[#0E2036] prose-a:text-[#C8732A] prose-a:underline hover:prose-a:text-[#B8641C]"
+            html={(locData?.contentHtml || page.mobileContent || (page.desktopContent || '')).replace(/<!-- Hero Header Card -->[\s\S]*?<\/div>\s*(?=(?:<!--|<div))/i, '')}
+            className="block md:hidden w-full"
           />
         </div>
 
