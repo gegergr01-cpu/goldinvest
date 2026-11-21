@@ -46,10 +46,10 @@ const formatPaymentMethod = (method: string) => {
 
 async function getStoreLogoAndInfo() {
   let logoBuffer: Buffer | null = null;
-  let storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold & Silver Invest';
-  let storeEmail = 'contact@goldsilversinvest.com';
-  let storePhone = '+33 (0)1 89 71 22 00';
-  let storeAddress = '10 Place Vendôme, 75001 Paris, France';
+  let storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'GOLAY INVEST';
+  let storeEmail = 'info@golayinvest.com';
+  let storePhone = '+32 81 84 92 84';
+  let storeAddress = 'Chaussée de Tirlemont 110, 5030 Gembloux, Belgique • 100 Pall Mall, London SW1Y 5NQ, UK';
 
   try {
     const settingsDb = await prisma.setting.findMany({
@@ -101,7 +101,7 @@ async function getStoreLogoAndInfo() {
 // ─────────────────────────────────────────────────────────────
 // 1. GENERATE INVOICE PDF (FACTURE)
 // ─────────────────────────────────────────────────────────────
-export async function generateInvoicePDF(order: any): Promise<Buffer> {
+export async function generateInvoicePDF(order: any, locale: string = 'fr'): Promise<Buffer> {
   const { logoBuffer, storeName, storeEmail, storePhone, storeAddress } = await getStoreLogoAndInfo();
 
   return new Promise((resolve, reject) => {

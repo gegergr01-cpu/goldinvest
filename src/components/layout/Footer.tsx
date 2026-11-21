@@ -42,7 +42,7 @@ type FooterProps = {
 
 export default function Footer({
   footerLogoImage,
-  footerCopyright = 'Gold Silver Invest © 2011-2026',
+  footerCopyright = 'GOLAY INVEST © 2011-2026',
   footerSocialFacebook = 'https://facebook.com',
   footerSocialTwitter = 'https://x.com',
   footerSocialInstagram = 'https://instagram.com',
@@ -74,11 +74,11 @@ export default function Footer({
 
           {/* Centered Logo badge */}
           <div className="px-6 sm:px-8 bg-[#161719] flex items-center justify-center shrink-0">
-            {footerLogoImage ? (
+            {footerLogoImage && !footerLogoImage.includes('pjeqv4nescp3bc1h2rxv') ? (
               <Link href="/" className="inline-block transition-opacity hover:opacity-90">
                 <Image
                   src={footerLogoImage}
-                  alt="Gold Silver Invest"
+                  alt="GOLAY INVEST"
                   width={220}
                   height={50}
                   unoptimized
@@ -310,7 +310,7 @@ export default function Footer({
               </li>
               <li>
                 <Link href="/about" className="hover:text-[#E8A63D] transition-colors">
-                  Why choose Gold Silver Invest
+                  Why choose GOLAY INVEST
                 </Link>
               </li>
             </ul>

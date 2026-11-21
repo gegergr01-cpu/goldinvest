@@ -129,7 +129,7 @@ interface ProductPageClientProps {
 export default function ProductPageClient({ 
   product, 
   enableBuyNow = false, 
-  storeName = 'Gold Silver Invest', 
+  storeName = 'GOLAY INVEST', 
   translations, 
   shippingInfo, 
   contactSlug = 'contact' 

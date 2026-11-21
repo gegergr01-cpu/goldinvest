@@ -23,7 +23,7 @@ function FontSizeControl({
   defaultVal,
   presets = [13, 14, 16, 18, 20, 24, 28, 32, 40, 48],
   helpText,
-  previewText = 'Aperçu de la typographie Gold Silver Invest',
+  previewText = 'Aperçu de la typographie GOLAY INVEST',
 }: FontSizeControlProps) {
   const currentVal = value || defaultVal;
   const numericVal = parseInt(currentVal, 10) || parseInt(defaultVal, 10) || 16;

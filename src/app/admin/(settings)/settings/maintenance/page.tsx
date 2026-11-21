@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import MaintenanceForm from '@/components/admin/settings/MaintenanceForm';
 
 export const metadata = {
-  title: 'Maintenance mode Settings | Gold Silver Invest Admin',
+  title: 'Maintenance mode Settings | GOLAY INVEST Admin',
 };
 
 export default async function MaintenanceSettingsPage() {

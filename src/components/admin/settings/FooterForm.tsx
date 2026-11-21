@@ -9,7 +9,7 @@ import Image from "next/image";
 export default function FooterForm({ initialSettings }: { initialSettings: Record<string, string> }) {
   const tSettings = useTranslations('AdminSettings');
   const router = useRouter();
-  
+
   const [footerBgColor, setFooterBgColor] = useState(initialSettings.FOOTER_BG_COLOR || '#0B162C');
   const [footerTextColor, setFooterTextColor] = useState(initialSettings.FOOTER_TEXT_COLOR || '#d1d5db');
   const [footerHeadingColor, setFooterHeadingColor] = useState(initialSettings.FOOTER_HEADING_COLOR || '#ffffff');
@@ -17,21 +17,21 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
   const [footerShowAddress, setFooterShowAddress] = useState(initialSettings.FOOTER_SHOW_ADDRESS !== 'false');
   const [footerShowEmail, setFooterShowEmail] = useState(initialSettings.FOOTER_SHOW_EMAIL !== 'false');
   const [footerShowPhone, setFooterShowPhone] = useState(initialSettings.FOOTER_SHOW_PHONE !== 'false');
-  
+
   const [footerAddress, setFooterAddress] = useState(initialSettings.FOOTER_ADDRESS_1 ?? '2972 Westheimer Rd. Illinois 85486');
-  const [footerSupportEmail, setFooterSupportEmail] = useState(initialSettings.FOOTER_SUPPORT_EMAIL ?? initialSettings.HEADER_SUPPORT_EMAIL ?? 'info@goldsilversinvest.com');
+  const [footerSupportEmail, setFooterSupportEmail] = useState(initialSettings.FOOTER_SUPPORT_EMAIL ?? initialSettings.HEADER_SUPPORT_EMAIL ?? 'info@golayinvest.com');
   const [footerSupportPhone, setFooterSupportPhone] = useState(initialSettings.FOOTER_SUPPORT_PHONE ?? initialSettings.HEADER_SUPPORT_PHONE ?? '+08 9229 8228');
 
-  const [footerCopyright, setFooterCopyright] = useState(initialSettings.FOOTER_COPYRIGHT || '© 2026 Gold Silver Invest. All rights reserved.');
-  
+  const [footerCopyright, setFooterCopyright] = useState(initialSettings.FOOTER_COPYRIGHT || '© 2026 GOLAY INVEST. All rights reserved.');
+
   const [footerLogoImage, setFooterLogoImage] = useState(initialSettings.FOOTER_LOGO_IMAGE || '');
   const [footerNewsletterTitle, setFooterNewsletterTitle] = useState(initialSettings.FOOTER_NEWSLETTER_TITLE || 'Newsletter');
   const [footerNewsletterText, setFooterNewsletterText] = useState(initialSettings.FOOTER_NEWSLETTER_TEXT || 'Subscribe to our newsletter!');
   const [footerNewsletterPlaceholder, setFooterNewsletterPlaceholder] = useState(initialSettings.FOOTER_NEWSLETTER_PLACEHOLDER || 'Enter your email');
-  
+
   const [showMediaModal, setShowMediaModal] = useState(false);
-  
-  const [footerColumns, setFooterColumns] = useState<{title: string, links: {label: string, url: string}[]}[]>(() => {
+
+  const [footerColumns, setFooterColumns] = useState<{ title: string, links: { label: string, url: string }[] }[]>(() => {
     try {
       return initialSettings.FOOTER_COLUMNS ? JSON.parse(initialSettings.FOOTER_COLUMNS) : [
         { title: 'Contact Us', links: [{ label: 'About Us', url: '/about' }, { label: 'Contact Us', url: '/contact' }] },
@@ -41,14 +41,14 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
       return [];
     }
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     await updateSettingsBatch({
       FOOTER_BG_COLOR: footerBgColor,
       FOOTER_TEXT_COLOR: footerTextColor,
@@ -113,7 +113,7 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
             </div>
           </div>
         </div>
-        
+
         <div className="pt-6 border-t border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{tSettings('col_1_logo_info') || 'Column 1: Logo & Info'}</h3>
           <div className="space-y-4">
@@ -197,7 +197,7 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
                   }} className="font-semibold px-3 py-1.5 border border-gray-300 rounded-md focus:ring-blue-500 text-sm" />
                   <button type="button" onClick={() => setFooterColumns(footerColumns.filter((_, i) => i !== colIndex))} className="text-red-500 hover:bg-red-50 p-1.5 rounded-md text-sm font-medium">{tSettings('remove_column') || 'Remove Column'}</button>
                 </div>
-                
+
                 <div className="space-y-2 pl-4 border-l-2 border-gray-100">
                   {col.links.map((link, linkIndex) => (
                     <div key={linkIndex} className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
                   ))}
                   <button type="button" onClick={() => {
                     const newCols = [...footerColumns];
-                    newCols[colIndex].links.push({label: '', url: ''});
+                    newCols[colIndex].links.push({ label: '', url: '' });
                     setFooterColumns(newCols);
                   }} className="text-xs text-blue-600 font-medium hover:underline mt-2 inline-block">
                     + {tSettings('add_link_to') || 'Add Link to'} {col.title || 'Column'}
@@ -230,8 +230,8 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
                 </div>
               </div>
             ))}
-            
-            <button type="button" onClick={() => setFooterColumns([...footerColumns, {title: '', links: []}])} className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
+
+            <button type="button" onClick={() => setFooterColumns([...footerColumns, { title: '', links: [] }])} className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
               {tSettings('add_new_column') || 'Add New Column'}
             </button>
@@ -244,9 +244,9 @@ export default function FooterForm({ initialSettings }: { initialSettings: Recor
           {isLoading ? tSettings('saving') : (tSettings('save_changes') || 'Save changes')}
         </button>
       </div>
-      
+
       {showMediaModal && (
-        <MediaPickerModal 
+        <MediaPickerModal
           onClose={() => setShowMediaModal(false)}
           onSelect={(url) => {
             setFooterLogoImage(url);

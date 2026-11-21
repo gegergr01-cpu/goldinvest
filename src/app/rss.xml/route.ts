@@ -3,10 +3,10 @@ import prisma from '@/lib/prisma';
 import { getCachedSettings } from '@/lib/cache';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com';
-  
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://golayinvest.com';
+
   const settingsMap = await getCachedSettings();
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
   const rssBeforeContent = settingsMap.RSS_BEFORE_CONTENT || '';
   const rssAfterContent = settingsMap.RSS_AFTER_CONTENT || 'Der Artikel {post_link} erschien zuerst auf {blog_link}.';
 
@@ -18,19 +18,19 @@ export async function GET() {
 
   const generateRssContent = (article: any) => {
     let content = article.content || article.excerpt || '';
-    
+
     const postLink = `<a href="${baseUrl}/blog/${article.slug}">${article.title}</a>`;
     const blogLink = `<a href="${baseUrl}/blog">${storeName} Blog</a>`;
     const authorName = article.authorName || storeName;
     const featuredImage = article.image ? `<img src="${article.image}" alt="${article.title}" style="max-width: 100%; height: auto;" />` : '';
-    
+
     let before = rssBeforeContent
       .replace(/{post_link}/g, postLink)
       .replace(/{blog_link}/g, blogLink)
       .replace(/{author}/g, authorName)
       .replace(/{featuredimage}/g, featuredImage)
       .replace(/{featured_image}/g, featuredImage);
-      
+
     let after = rssAfterContent
       .replace(/{post_link}/g, postLink)
       .replace(/{blog_link}/g, blogLink)
@@ -41,11 +41,11 @@ export async function GET() {
     if (before) {
       content = `<p>${before}</p><hr/>` + content;
     }
-    
+
     if (after) {
       content = content + `<hr/><p>${after}</p>`;
     }
-    
+
     // HTML Encode content for RSS
     return content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
   };

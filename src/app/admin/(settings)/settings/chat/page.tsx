@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import ChatForm from '@/components/admin/settings/ChatForm';
 
 export const metadata = {
-  title: 'Customer chat Settings | Gold Silver Invest Admin',
+  title: 'Customer chat Settings | GOLAY INVEST Admin',
 };
 
 export default async function ChatSettingsPage() {

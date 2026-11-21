@@ -65,7 +65,7 @@ async function createChatMessage(sessionId: string, sender: ChatSender, content:
       content: content.trim(),
     },
   });
-  
+
   // Update session updatedAt to bring it to top
   const updatedSession = await prisma.chatSession.update({
     where: { id: sessionId },
@@ -81,9 +81,9 @@ async function createChatMessage(sessionId: string, sender: ChatSender, content:
         where: { key: { in: ['CONTACT_RECEIVER_EMAIL'] } }
       });
       const settingsMap = allSettings.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
-      const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@goldsilversinvest.com';
-      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.goldsilversinvest.com';
-      
+      const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@golayinvest.com';
+      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://golayinvest.com';
+
       const { sendAdminNewChatMessageEmail } = await import('@/lib/mailer');
       sendAdminNewChatMessageEmail(
         updatedSession.guestName || 'Visiteur',

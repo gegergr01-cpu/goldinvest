@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import ShippingInfoForm from '@/components/admin/settings/ShippingInfoForm';
 
 export const metadata = {
-  title: 'Product shipping info Settings | Gold Silver Invest Admin',
+  title: 'Product shipping info Settings | GOLAY INVEST Admin',
 };
 
 export default async function ShippingInfoSettingsPage() {

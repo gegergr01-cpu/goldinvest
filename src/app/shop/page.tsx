@@ -6,7 +6,7 @@ import ShopPagination from '@/components/shop/ShopPagination';
 import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
 
-const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
 const isUuid = (str: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
@@ -17,7 +17,7 @@ export async function generateMetadata({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams;
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
   const locale = await getLocale();
   
   // Extract category

@@ -4,19 +4,20 @@ import React from 'react';
 import Link from 'next/link';
 
 interface GoldInvestLogoProps {
-  variant?: 'light' | 'dark'; // 'light' for dark backgrounds (footer), 'dark' for light backgrounds (header)
+  variant?: 'light' | 'dark'; // 'light' for dark backgrounds (footer, header), 'dark' for light backgrounds
   className?: string;
   size?: 'sm' | 'md' | 'lg';
+  href?: string;
 }
 
-export default function GoldInvestLogo({ variant = 'dark', className = '', size = 'md' }: GoldInvestLogoProps) {
+export default function GoldInvestLogo({ variant = 'dark', className = '', size = 'md', href = '/' }: GoldInvestLogoProps) {
   const isLight = variant === 'light';
   
   // Sizing configuration
   const scale = size === 'sm' ? 'scale-75' : size === 'lg' ? 'scale-110' : 'scale-100';
 
   return (
-    <Link href="/" className={`inline-flex items-center gap-3 group select-none ${className}`}>
+    <Link href={href} className={`inline-flex items-center gap-3 group select-none ${className}`}>
       {/* Stylized Gold Pyramid / Bullion Bars Icon */}
       <div className="relative flex-shrink-0 w-10 h-10 md:w-11 md:h-11">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-sm">
@@ -61,10 +62,10 @@ export default function GoldInvestLogo({ variant = 'dark', className = '', size 
 
       {/* Typography */}
       <div className="flex flex-col justify-center">
-        <span className={`font-serif text-lg md:text-xl font-bold tracking-wider leading-tight ${isLight ? 'text-white' : 'text-gray-900'} group-hover:text-[#c59a3f] transition-colors`}>
-          GOLD INVEST
+        <span className={`font-serif text-lg md:text-xl font-bold tracking-wider leading-tight ${isLight ? 'text-white' : 'text-gray-900'} group-hover:text-[#E8A63D] transition-colors`}>
+          GOLAY <span className="text-[#E8A63D]">INVEST</span>
         </span>
-        <span className="text-[9px] md:text-[10px] font-semibold tracking-[0.28em] text-[#c59a3f] uppercase -mt-0.5">
+        <span className="text-[9px] md:text-[10px] font-semibold tracking-[0.28em] text-[#E8A63D] uppercase -mt-0.5">
           OR & ARGENT
         </span>
       </div>

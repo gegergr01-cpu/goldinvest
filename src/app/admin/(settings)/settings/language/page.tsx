@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import LanguageForm from '@/components/admin/settings/LanguageForm';
 
 export const metadata = {
-  title: 'Language Settings | Gold Silver Invest Admin',
+  title: 'Language Settings | GOLAY INVEST Admin',
 };
 
 export default async function LanguageSettingsPage() {

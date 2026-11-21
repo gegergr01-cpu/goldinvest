@@ -1,7 +1,7 @@
 import WishlistClient from './WishlistClient';
 import { getTranslations } from 'next-intl/server';
 
-const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
 export async function generateMetadata() {
   const t = await getTranslations('Wishlist');

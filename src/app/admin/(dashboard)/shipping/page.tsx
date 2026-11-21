@@ -3,7 +3,7 @@ import ShippingManager from './ShippingManager';
 import { getTranslations } from 'next-intl/server';
 
 export const metadata = {
-  title: 'Shipping Settings | Gold Silver Invest Admin',
+  title: 'Shipping Settings | GOLAY INVEST Admin',
 };
 
 export default async function ShippingPage() {

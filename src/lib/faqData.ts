@@ -131,7 +131,7 @@ export const FAQ_DATA: FaqTopic[] = [
     items: [
       {
         q: "Garantissez-vous le rachat de mes pièces et lingots ultérieurement ?",
-        a: "Oui, sans aucune restriction de durée. Nous garantissons le rachat permanent de tous les lingots et pièces acquis chez Gold Silver Invest, dès lors que les produits sont conservés dans leur scellé d'origine intact. Pour les métaux stockés dans nos coffres partenaires, le rachat est instantané en un clic car la chaîne de garde est restée 100% inviolée.",
+        a: "Oui, sans aucune restriction de durée. Nous garantissons le rachat permanent de tous les lingots et pièces acquis chez GOLAY INVEST, dès lors que les produits sont conservés dans leur scellé d'origine intact. Pour les métaux stockés dans nos coffres partenaires, le rachat est instantané en un clic car la chaîne de garde est restée 100% inviolée.",
         keywords: ['rachat garanti', 'liquidite', 'reprise', 'chaine de garde', 'revente']
       },
       {

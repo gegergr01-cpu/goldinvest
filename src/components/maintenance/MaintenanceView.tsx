@@ -55,7 +55,7 @@ export default function MaintenanceView({ title, message, image, logoImage }: Ma
       </main>
       
       <footer className="w-full text-center py-6 text-gray-500 text-sm">
-        &copy; {new Date().getFullYear()} Gold Silver Invest. All rights reserved.
+        &copy; {new Date().getFullYear()} GOLAY INVEST. All rights reserved.
       </footer>
     </div>
   );

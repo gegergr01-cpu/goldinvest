@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const locale = await getLocale();
   
   const product = await getCachedProductBySlug(slug, locale);
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
   if (!product) {
     return {
@@ -69,7 +69,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { data: { user } } = await supabase.auth.getUser();
   const isLoggedIn = !!user;
 
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold Silver Invest';
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'GOLAY INVEST';
 
   const reviews = (product as any).reviews || [];
   const avgRating = reviews.length > 0
@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     sku: product.id.split('-')[0].toUpperCase(),
     offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.goldsilversinvest.com'}/product/${product.slug}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://golayinvest.com'}/product/${product.slug}`,
       priceCurrency: 'EUR',
       price: product.price,
       itemCondition: 'https://schema.org/NewCondition',
@@ -184,19 +184,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   '@type': 'ListItem',
                   position: 1,
                   name: 'Accueil',
-                  item: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com',
+                  item: process.env.NEXT_PUBLIC_SITE_URL || 'https://golayinvest.com',
                 },
                 ...((product as any).categories && (product as any).categories.length > 0 ? [{
                   '@type': 'ListItem',
                   position: 2,
                   name: (product as any).categories[0].name,
-                  item: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com'}/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`,
+                  item: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://golayinvest.com'}/product-category/${(product as any).categories[0].slug || (product as any).categories[0].id}`,
                 }] : []),
                 {
                   '@type': 'ListItem',
                   position: (product as any).categories && (product as any).categories.length > 0 ? 3 : 2,
                   name: product.title,
-                  item: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com'}/product/${product.slug}`,
+                  item: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://golayinvest.com'}/product/${product.slug}`,
                 },
               ],
             })

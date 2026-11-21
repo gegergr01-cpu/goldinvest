@@ -1,5 +1,6 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { getSettings } from './settings';
 import { getContactSettings } from './contactSettings';
@@ -48,17 +49,17 @@ export async function submitContactMessage(formData: FormData) {
       const { sendEmail } = await import('@/lib/mailer');
       await sendEmail({
         to: receiverEmail,
-        subject: subject ? `Neue Nachricht: "${escapeHtml(subject)}"` : `Neue Nachricht von ${escapeHtml(name)}`,
+        subject: subject ? `[GOLAY INVEST] ${escapeHtml(subject)} — de ${escapeHtml(name)}` : `[GOLAY INVEST] Nouveau message de ${escapeHtml(name)}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-            <h2 style="color: #1a1a1a;">Sie haben eine neue Nachricht erhalten.</h2>
-            <p><strong>Von:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
-            ${phone ? `<p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ''}
-            ${subject ? `<p><strong>Betreff:</strong> ${escapeHtml(subject)}</p>` : ''}
+            <h2 style="color: #0E2036;">Nouveau message reçu depuis le formulaire de contact GOLAY INVEST</h2>
+            <p><strong>De :</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
+            ${phone ? `<p><strong>Téléphone :</strong> ${escapeHtml(phone)}</p>` : ''}
+            ${subject ? `<p><strong>Sujet :</strong> ${escapeHtml(subject)}</p>` : ''}
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;"/>
-            <p><strong>Nachricht:</strong><br/><br/>${escapeHtml(message).replace(/\n/g, '<br/>')}</p>
+            <p><strong>Message :</strong><br/><br/>${escapeHtml(message).replace(/\n/g, '<br/>')}</p>
             <br/>
-            <p style="color: #666; font-size: 13px;"><em>Bitte antworten Sie dem Kunden so schnell wie möglich.</em></p>
+            <p style="color: #666; font-size: 13px;"><em>Répondez directement au client à l'adresse ${escapeHtml(email)}.</em></p>
           </div>
         `,
       });
@@ -94,34 +95,36 @@ export async function submitNewsletter(formData: FormData) {
       return { error: 'Adresse e-mail invalide.' };
     }
 
+    const cookieStore = await cookies();
+    const locale = String(formData.get('locale') || '').trim() || cookieStore.get('NEXT_LOCALE')?.value || 'fr';
+
     const secret = process.env.NEWSLETTER_SECRET || process.env.NEXTAUTH_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.CRON_SECRET || process.env.DATABASE_URL || 'fallback-newsletter-key';
     const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-    const payload = `${email}|${expiry}`;
+    const payload = `${email}|${expiry}|${locale}`;
     const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
     const token = Buffer.from(`${payload}|${signature}`).toString('base64');
     const confirmUrl = `${SITE_URL}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
 
     try {
-      const { sendEmail } = await import('@/lib/mailer');
-      await sendEmail({
-        to: email,
-        subject: `Bestätigen Sie Ihre Newsletter-Anmeldung`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
-            <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Bitte bestätigen Sie Ihre Anmeldung</h1>
-            <p style="font-size: 14px; color: #333; margin-bottom: 20px;">Vielen Dank für Ihr Interesse an unserem Newsletter! Bitte klicken Sie auf den folgenden Link, um Ihre Anmeldung zu bestätigen (Double Opt-in):</p>
-            <p style="text-align: center; margin: 30px 0;">
-              <a href="${confirmUrl}" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Anmeldung bestätigen</a>
-            </p>
-            <p style="font-size: 12px; color: #666;">Falls Sie sich nicht angemeldet haben, können Sie diese E-Mail einfach ignorieren.</p>
-          </div>
-        `,
-      });
+      const { sendNewsletterDoubleOptInEmail } = await import('@/lib/mailer');
+      await sendNewsletterDoubleOptInEmail(email, confirmUrl, locale);
     } catch (emailErr) {
       console.error('[NEWSLETTER] Failed to send opt-in email:', emailErr);
     }
 
-    return { success: true, message: 'Bitte überprüfen Sie Ihren Posteingang, um Ihre Anmeldung zu bestätigen (Double Opt-in).' };
+    const successMessages: Record<string, string> = {
+      fr: 'Veuillez vérifier votre boîte de réception pour confirmer votre inscription à la newsletter (code privilège 25 € offert).',
+      en: 'Please check your inbox to confirm your newsletter subscription (and receive your €25 welcome voucher).',
+      de: 'Bitte überprüfen Sie Ihren Posteingang, um Ihre Newsletter-Anmeldung zu bestätigen (25 € Gutschein inklusive).',
+      es: 'Por favor, compruebe su bandeja de entrada para confirmar su suscripción (cupón de bienvenida de 25 € incluido).',
+      it: 'Controlla la tua casella di posta per confermare l\'iscrizione (buono di benvenuto di 25 € incluso).',
+      nl: 'Controleer uw inbox om uw aanmelding te bevestigen (inclusief welkomstvoucher van € 25).',
+      pt: 'Por favor, verifique a sua caixa de entrada para confirmar a inscrição (cupão de boas-vindas de 25 € incluído).',
+      da: 'Tjek venligst din indbakke for at bekræfte din tilmelding (inklusive 25 € velkomstkupon).',
+      hu: 'Kérjük, ellenőrizze a beérkező leveleit a feliratkozás megerősítéséhez (25 € üdvözlő kuponnal).',
+    };
+
+    return { success: true, message: successMessages[locale] || successMessages.fr };
   } catch (error) {
     console.error('Newsletter submission error:', error);
     return { error: "Une erreur est survenue lors de l'inscription." };

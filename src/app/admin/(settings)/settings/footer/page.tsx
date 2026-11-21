@@ -2,7 +2,7 @@ import { getSettings } from '@/actions/settings';
 import FooterForm from '@/components/admin/settings/FooterForm';
 
 export const metadata = {
-  title: 'Footer Settings | Gold Silver Invest Admin',
+  title: 'Footer Settings | GOLAY INVEST Admin',
 };
 
 export default async function FooterSettingsPage() {

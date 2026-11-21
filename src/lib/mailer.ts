@@ -1,8 +1,15 @@
 import nodemailer from 'nodemailer';
 import prisma from '@/lib/prisma';
+import {
+  EMAIL_TRANSLATIONS,
+  normalizeEmailLocale,
+  formatEmailPrice,
+  formatEmailDate,
+  type EmailLocale,
+} from './emailTranslations';
 
 // HTML escape utility to prevent XSS in email templates
-function escapeHtml(str: string): string {
+export function escapeHtml(str: string): string {
   if (!str) return '';
   return str
     .replace(/&/g, '&amp;')
@@ -12,14 +19,29 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-// Fetch SMTP settings from DB
+const DEFAULT_STORE_NAME = 'GOLAY INVEST';
+const DEFAULT_STORE_EMAIL = 'info@golayinvest.com';
+const DEFAULT_STORE_ADDRESS = 'Chaussée de Tirlemont 110, 5030 Gembloux, Belgique • 100 Pall Mall, London SW1Y 5NQ, UK';
+
+// Fetch SMTP settings and store brand info from DB
 async function getTransporter() {
   const settingsDb = await prisma.setting.findMany({
     where: {
       key: {
-        in: ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'SMTP_FROM', 'HEADER_LOGO_IMAGE']
-      }
-    }
+        in: [
+          'SMTP_HOST',
+          'SMTP_PORT',
+          'SMTP_USER',
+          'SMTP_PASS',
+          'SMTP_FROM',
+          'HEADER_LOGO_IMAGE',
+          'NEXT_PUBLIC_STORE_NAME',
+          'STORE_ADDRESS',
+          'CONTACT_ADDRESS',
+          'CONTACT_RECEIVER_EMAIL',
+        ],
+      },
+    },
   });
 
   const settings = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
@@ -30,23 +52,38 @@ async function getTransporter() {
 
   const transporter = nodemailer.createTransport({
     host: settings.SMTP_HOST,
-    port: parseInt(settings.SMTP_PORT || '587'),
-    secure: settings.SMTP_PORT === '465',
+    port: parseInt(settings.SMTP_PORT || '465', 10),
+    secure: settings.SMTP_PORT === '465' || settings.SMTP_PORT === undefined,
     auth: {
       user: settings.SMTP_USER,
       pass: settings.SMTP_PASS,
     },
   });
 
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
-  return { transporter, from: settings.SMTP_FROM || `"${storeName}" <${settings.SMTP_USER || 'info@goldsilversinvest.com'}>`, logo: settings.HEADER_LOGO_IMAGE };
+  const storeName = settings.NEXT_PUBLIC_STORE_NAME || process.env.NEXT_PUBLIC_STORE_NAME || DEFAULT_STORE_NAME;
+  const storeEmail = settings.CONTACT_RECEIVER_EMAIL || DEFAULT_STORE_EMAIL;
+  const from = settings.SMTP_FROM || `"${storeName}" <${storeEmail}>`;
+  const logo = settings.HEADER_LOGO_IMAGE || '';
+  const storeAddress = settings.STORE_ADDRESS || settings.CONTACT_ADDRESS || DEFAULT_STORE_ADDRESS;
+
+  return { transporter, from, logo, storeName, storeEmail, storeAddress };
 }
 
 // General email sender
-export async function sendEmail({ to, subject, html, attachments }: { to: string, subject: string, html: string, attachments?: any[] }) {
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  attachments,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: any[];
+}) {
   try {
     const { transporter, from } = await getTransporter();
-    
+
     const info = await transporter.sendMail({
       from,
       to,
@@ -55,31 +92,30 @@ export async function sendEmail({ to, subject, html, attachments }: { to: string
       attachments,
     });
 
-    // Message sent successfully
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("Error sending email: ", error);
+    console.error('Error sending email: ', error);
     return { success: false, error };
   }
 }
 
-// FORMATTER HELPERS
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(price);
-};
-
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' }).format(date);
-};
-
-// --- EMAIL TEMPLATES ---
-
-// 1. Client Order Confirmation
-export async function sendClientOrderConfirmation(order: any, userEmail: string, userName: string) {
+// ─────────────────────────────────────────────────────────────
+// 1. Client Order Confirmation (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendClientOrderConfirmation(
+  order: any,
+  userEmail: string,
+  userName?: string,
+  clientLocale?: string
+) {
   try {
-    const { logo, from } = await getTransporter().catch(() => ({ logo: '', from: '' }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : '';
+    const { logo, from, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      from: `"${DEFAULT_STORE_NAME}" <${DEFAULT_STORE_EMAIL}>`,
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
     let metadata: any = {};
     if (order.destinationAddress) {
@@ -88,29 +124,35 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
       } catch (e) {}
     }
 
-    const subTotal = metadata?.subTotal || order.orderItems?.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) || order.total;
-    const shippingCostStr = metadata?.shippingCost === 0 ? "Kostenlos!" : (metadata?.shippingCost ? formatPrice(metadata.shippingCost) : "0,00 €");
-    const shippingMethod = metadata?.shippingMethodName ? `(${metadata.shippingMethodName})` : "";
-    
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || metadata?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].orderConfirmation;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+    const currency = (metadata?.currency as string) || 'EUR';
+
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 40px;"></div>`
+      : '';
+
+    const subTotal = metadata?.subTotal || order.orderItems?.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0) || order.total;
+    const shippingCostStr = metadata?.shippingCost === 0
+      ? T.freeShipping
+      : (metadata?.shippingCost ? formatEmailPrice(metadata.shippingCost, currency, locale) : formatEmailPrice(0, currency, locale));
+    const shippingMethod = metadata?.shippingMethodName ? `(${metadata.shippingMethodName})` : '';
+
     // Addresses
     const b = metadata?.billing || {};
     const s = metadata?.shipping || b;
-    const billingName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || userName || 'Kunde');
+    const billingName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || userName || C.defaultCustomer);
     const shippingName = escapeHtml(`${s.firstName || ''} ${s.lastName || ''}`.trim()) || billingName;
     const billingAddressHtml = `${escapeHtml(b.address1 || '')}<br/>${escapeHtml(b.postalCode || '')} ${escapeHtml(b.city || '')}${b.country ? `, ${escapeHtml(b.country)}` : ''}`;
     const shippingAddressHtml = `${escapeHtml(s.address1 || '')}<br/>${escapeHtml(s.postalCode || '')} ${escapeHtml(s.city || '')}${s.country ? `, ${escapeHtml(s.country)}` : ''}`;
-    
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
-    const storeEmailMatch = from.match(/<(.+)>/);
-    const storeEmail = storeEmailMatch ? storeEmailMatch[1] : "info@goldsilversinvest.com";
-    
+
     // Payment Method mapping
-    let paymentMethodStr = order.paymentMethod;
-    if (paymentMethodStr === 'BANK_TRANSFER') paymentMethodStr = 'Direkte Banküberweisung';
-    if (paymentMethodStr === 'STRIPE') paymentMethodStr = 'Kreditkarte';
-    if (paymentMethodStr === 'PAYPAL') paymentMethodStr = 'PayPal';
+    const pmKey = (order.paymentMethod as 'BANK_TRANSFER' | 'STRIPE' | 'PAYPAL') || 'BANK_TRANSFER';
+    const paymentMethodStr = T.paymentMethods[pmKey] || order.paymentMethod;
 
     const orderId = order.id.slice(-6).toUpperCase();
+    const formattedDate = formatEmailDate(new Date(order.createdAt), locale);
 
     const itemsHtml = order.orderItems?.map((item: any) => {
       let imageUrl = '';
@@ -120,13 +162,15 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
         try {
           const imgs = JSON.parse(item.product.images);
           if (imgs.length > 0) imageUrl = imgs[0];
-        } catch(e) {}
+        } catch (e) {}
       }
 
       const safeImageUrl = imageUrl && /^https?:\/\//i.test(imageUrl) ? escapeHtml(imageUrl) : '';
-      const imgTag = safeImageUrl ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />` : '';
-      
-      let sku = item.product?.sku ? `(#${escapeHtml(item.product.sku)})` : '';
+      const imgTag = safeImageUrl
+        ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />`
+        : '';
+
+      const sku = item.product?.sku ? `(#${escapeHtml(item.product.sku)})` : '';
 
       return `
         <tr style="border-bottom: 1px dashed #eee;">
@@ -135,14 +179,14 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
               <tr>
                 <td style="width: 65px; vertical-align: middle;">${imgTag}</td>
                 <td style="vertical-align: middle;">
-                  <span style="font-size: 13px; color: #333;">${escapeHtml(item.product?.title || 'Produkt')}</span><br/>
-                  <span style="font-size: 12px; color: #666;">${sku}</span>
+                  <span style="font-size: 13px; color: #1a1a1a; font-weight: 500;">${escapeHtml(item.product?.title || T.productCol)}</span><br/>
+                  ${sku ? `<span style="font-size: 12px; color: #666;">${sku}</span>` : ''}
                 </td>
               </tr>
             </table>
           </td>
           <td style="padding: 15px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${item.quantity}</td>
-          <td style="padding: 15px 0; text-align: right; vertical-align: middle; color: #666; font-size: 13px;">${formatPrice(item.price)}</td>
+          <td style="padding: 15px 0; text-align: right; vertical-align: middle; color: #1a1a1a; font-size: 13px; font-weight: 500;">${formatEmailPrice(item.price, currency, locale)}</td>
         </tr>
       `;
     }).join('') || '';
@@ -151,40 +195,50 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
     let bankDetailsHtml = '';
     if (order.paymentMethod === 'BANK_TRANSFER') {
       const dbSettings = await prisma.setting.findMany({
-        where: { key: { in: ['BANK_TRANSFER_ACCOUNT_HOLDER', 'BANK_TRANSFER_IBAN', 'BANK_TRANSFER_BIC', 'BANK_TRANSFER_BANK_NAME', 'BANK_TRANSFER_INSTRUCTIONS'] } }
+        where: {
+          key: {
+            in: [
+              'BANK_TRANSFER_ACCOUNT_HOLDER',
+              'BANK_TRANSFER_IBAN',
+              'BANK_TRANSFER_BIC',
+              'BANK_TRANSFER_BANK_NAME',
+              'BANK_TRANSFER_INSTRUCTIONS',
+            ],
+          },
+        },
       });
       const settings = dbSettings.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
-      
+
       bankDetailsHtml = `
-        <div style="background-color: #fafafa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 20px; margin-top: 25px; margin-bottom: 25px;">
-          <h4 style="margin-top: 0; margin-bottom: 15px; color: #1a1a1a; font-size: 14px;">Ihre Banküberweisung Details</h4>
-          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Bitte überweisen Sie den Rechnungsbetrag auf folgendes Konto. Geben Sie als Verwendungszweck Ihre Bestellnummer <strong>${orderId}</strong> an.</p>
-          <table style="width: 100%; font-size: 13px; color: #333; line-height: 1.6;">
-            ${settings.BANK_TRANSFER_ACCOUNT_HOLDER ? `<tr><td style="width: 150px; color: #666;">Kontoinhaber:</td><td><strong>${settings.BANK_TRANSFER_ACCOUNT_HOLDER}</strong></td></tr>` : ''}
-            ${settings.BANK_TRANSFER_IBAN ? `<tr><td style="color: #666;">IBAN:</td><td><strong>${settings.BANK_TRANSFER_IBAN}</strong></td></tr>` : ''}
-            ${settings.BANK_TRANSFER_BIC ? `<tr><td style="color: #666;">BIC:</td><td><strong>${settings.BANK_TRANSFER_BIC}</strong></td></tr>` : ''}
-            ${settings.BANK_TRANSFER_BANK_NAME ? `<tr><td style="color: #666;">Bank:</td><td><strong>${settings.BANK_TRANSFER_BANK_NAME}</strong></td></tr>` : ''}
+        <div style="background-color: #fbf8f2; border: 1px solid #e7d8c0; border-radius: 6px; padding: 20px; margin-top: 25px; margin-bottom: 25px;">
+          <h4 style="margin-top: 0; margin-bottom: 12px; color: #78350f; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">${T.bankTransfer.title}</h4>
+          <p style="font-size: 13px; color: #451a03; margin-bottom: 15px;">${T.bankTransfer.instructions(orderId)}</p>
+          <table style="width: 100%; font-size: 13px; color: #1a1a1a; line-height: 1.8;">
+            ${settings.BANK_TRANSFER_ACCOUNT_HOLDER ? `<tr><td style="width: 160px; color: #78350f;">${T.bankTransfer.accountHolder}</td><td><strong>${escapeHtml(settings.BANK_TRANSFER_ACCOUNT_HOLDER)}</strong></td></tr>` : ''}
+            ${settings.BANK_TRANSFER_IBAN ? `<tr><td style="color: #78350f;">${T.bankTransfer.iban}</td><td><strong style="font-family: monospace; letter-spacing: 1px;">${escapeHtml(settings.BANK_TRANSFER_IBAN)}</strong></td></tr>` : ''}
+            ${settings.BANK_TRANSFER_BIC ? `<tr><td style="color: #78350f;">${T.bankTransfer.bic}</td><td><strong style="font-family: monospace;">${escapeHtml(settings.BANK_TRANSFER_BIC)}</strong></td></tr>` : ''}
+            ${settings.BANK_TRANSFER_BANK_NAME ? `<tr><td style="color: #78350f;">${T.bankTransfer.bank}</td><td><strong>${escapeHtml(settings.BANK_TRANSFER_BANK_NAME)}</strong></td></tr>` : ''}
           </table>
         </div>
       `;
     }
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Details zur Bestellung Nr. ${orderId}</h1>
-        <p style="font-size: 13px; color: #666;">Hallo ${escapeHtml(userName) || 'Kunde'},</p>
-        <p style="font-size: 13px; color: #666;">Hier sind die Einzelheiten deiner Bestellung vom ${formatDate(new Date(order.createdAt))}:</p>
+        <h1 style="font-size: 22px; color: #0E2036; margin-top: 0; margin-bottom: 12px;">${T.title(orderId)}</h1>
+        <p style="font-size: 14px; color: #475569;">${T.greeting(escapeHtml(userName || billingName))}</p>
+        <p style="font-size: 13px; color: #64748B;">${T.intro(formattedDate)}</p>
         
-        <h3 style="font-size: 16px; font-weight: bold; margin-top: 35px; margin-bottom: 5px;">Bestellübersicht</h3>
-        <p style="color: #eab308; font-size: 12px; font-weight: bold; margin-top: 0; margin-bottom: 25px;">Bestellung Nr. ${orderId} (${formatDate(new Date(order.createdAt))})</p>
+        <h3 style="font-size: 15px; font-weight: bold; margin-top: 30px; margin-bottom: 5px; color: #0E2036;">${T.summaryTitle}</h3>
+        <p style="color: #C8732A; font-size: 12px; font-weight: bold; margin-top: 0; margin-bottom: 20px;">${T.orderSubtitle(orderId, formattedDate)}</p>
         
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-          <thead style="text-align: left; border-bottom: 1px solid #eee;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <thead style="text-align: left; border-bottom: 1px solid #E2E8F0;">
             <tr>
-              <th style="padding-bottom: 10px; font-weight: bold; font-size: 12px; color: #333;">Produkt</th>
-              <th style="padding-bottom: 10px; text-align: center; font-weight: bold; font-size: 12px; color: #333;">Anzahl</th>
-              <th style="padding-bottom: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #333;">Preis</th>
+              <th style="padding-bottom: 10px; font-weight: bold; font-size: 12px; color: #475569;">${T.productCol}</th>
+              <th style="padding-bottom: 10px; text-align: center; font-weight: bold; font-size: 12px; color: #475569;">${T.qtyCol}</th>
+              <th style="padding-bottom: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #475569;">${T.priceCol}</th>
             </tr>
           </thead>
           <tbody>
@@ -192,22 +246,22 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
           </tbody>
         </table>
         
-        <div style="margin-top: 25px;">
-          <table style="width: 100%; font-size: 13px; color: #666; line-height: 2;">
+        <div style="margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+          <table style="width: 100%; font-size: 13px; color: #475569; line-height: 2;">
             <tr>
-              <td>Zwischensumme:</td>
-              <td style="text-align: right;">${formatPrice(subTotal)}</td>
+              <td>${T.subtotal}</td>
+              <td style="text-align: right; font-weight: 500;">${formatEmailPrice(subTotal, currency, locale)}</td>
             </tr>
             <tr>
-              <td>Versand: Gratis Lieferung ${shippingMethod}</td>
-              <td style="text-align: right;">${shippingCostStr}</td>
+              <td>${T.shipping} ${shippingMethod}</td>
+              <td style="text-align: right; font-weight: 500;">${shippingCostStr}</td>
             </tr>
-            <tr style="color: #1a1a1a; font-size: 14px;">
-              <td><strong>Gesamt:</strong></td>
-              <td style="text-align: right;"><strong>${formatPrice(order.total)}</strong></td>
+            <tr style="color: #0E2036; font-size: 15px; border-top: 1px solid #E2E8F0;">
+              <td><strong>${T.total}</strong></td>
+              <td style="text-align: right; color: #C8732A;"><strong style="font-size: 17px;">${formatEmailPrice(order.total, currency, locale)}</strong></td>
             </tr>
             <tr>
-              <td>Zahlungsart:</td>
+              <td>${T.paymentMethodLabel}</td>
               <td style="text-align: right;">${paymentMethodStr}</td>
             </tr>
           </table>
@@ -215,37 +269,42 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
 
         ${bankDetailsHtml}
 
-        <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-top: 30px; padding-top: 25px; padding-bottom: 25px;">
-          <table style="width: 100%; font-size: 12px; color: #333; line-height: 1.4;">
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 12px 16px; margin: 20px 0; font-size: 13px; color: #0E2036;">
+          ${T.invoiceAttached}
+        </div>
+
+        <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-top: 25px; padding-top: 20px; padding-bottom: 20px;">
+          <table style="width: 100%; font-size: 12px; color: #333; line-height: 1.5;">
             <tr>
               <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Rechnungsadresse</strong><br/>
+                <strong style="font-size: 13px; color: #0E2036;">${T.billingAddress}</strong><br/>
                 <div style="margin-top: 8px;">
                   ${billingName}<br/>
                   ${billingAddressHtml}<br/>
-                  ${b.phone ? `<span style="color: #eab308;">${escapeHtml(b.phone)}</span><br/>` : ''}
+                  ${b.phone ? `<span style="color: #C8732A;">${escapeHtml(b.phone)}</span><br/>` : ''}
                   ${b.email ? `<a href="mailto:${b.email}" style="color: #2563eb; text-decoration: underline;">${escapeHtml(b.email)}</a>` : ''}
                 </div>
               </td>
               <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Lieferadresse</strong><br/>
+                <strong style="font-size: 13px; color: #0E2036;">${T.shippingAddress}</strong><br/>
                 <div style="margin-top: 8px;">
                   ${shippingName}<br/>
                   ${shippingAddressHtml}<br/>
-                  ${s.phone ? `<span style="color: #eab308;">${escapeHtml(s.phone)}</span>` : ''}
+                  ${s.phone ? `<span style="color: #C8732A;">${escapeHtml(s.phone)}</span>` : ''}
                 </div>
               </td>
             </tr>
           </table>
         </div>
         
-        <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 13px;">
-          <p style="color: #333;">Nochmals vielen Dank! Wenn du Hilfe bei deiner Bestellung benötigst, kannst du uns jederzeit unter <a href="mailto:${storeEmail}" style="color: #2563eb; text-decoration: underline;">${storeEmail}</a> kontaktieren.</p>
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 30px; font-size: 13px; color: #475569;">
+          <p>${T.helpText(storeEmail)}</p>
         </div>
         
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
@@ -253,11 +312,11 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
     const { generateInvoicePDF } = await import('./pdfGenerator');
     let pdfAttachment: any = null;
     try {
-      const pdfBuffer = await generateInvoicePDF(order);
+      const pdfBuffer = await generateInvoicePDF(order, locale);
       pdfAttachment = {
         filename: `facture-${orderId}.pdf`,
         content: pdfBuffer,
-        contentType: 'application/pdf'
+        contentType: 'application/pdf',
       };
     } catch (pdfErr) {
       console.error('Failed to generate PDF invoice', pdfErr);
@@ -265,21 +324,29 @@ export async function sendClientOrderConfirmation(order: any, userEmail: string,
 
     return sendEmail({
       to: userEmail,
-      subject: `Confirmation de commande #${orderId} & Votre Facture`,
+      subject: T.subject(orderId, storeName),
       html,
-      attachments: pdfAttachment ? [pdfAttachment] : []
+      attachments: pdfAttachment ? [pdfAttachment] : [],
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendClientOrderConfirmation] Error:', e);
   }
 }
 
+// ─────────────────────────────────────────────────────────────
 // 2. Admin New Order Notification
+// ─────────────────────────────────────────────────────────────
 export async function sendAdminOrderNotification(order: any, adminEmail: string, customerDetails: any) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : '';
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 40px;"></div>`
+      : '';
 
     let metadata: any = {};
     if (order.destinationAddress) {
@@ -288,27 +355,27 @@ export async function sendAdminOrderNotification(order: any, adminEmail: string,
       } catch (e) {}
     }
 
-    const subTotal = metadata?.subTotal || order.orderItems?.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) || order.total;
-    const shippingCostStr = metadata?.shippingCost === 0 ? "Kostenlos!" : (metadata?.shippingCost ? formatPrice(metadata.shippingCost) : "0,00 €");
-    const shippingMethod = metadata?.shippingMethodName ? `(${metadata.shippingMethodName})` : "";
-    
-    // Addresses
+    const currency = (metadata?.currency as string) || 'EUR';
+    const subTotal = metadata?.subTotal || order.orderItems?.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0) || order.total;
+    const shippingCostStr = metadata?.shippingCost === 0
+      ? 'Gratuit'
+      : (metadata?.shippingCost ? formatEmailPrice(metadata.shippingCost, currency, 'fr') : formatEmailPrice(0, currency, 'fr'));
+    const shippingMethod = metadata?.shippingMethodName ? `(${metadata.shippingMethodName})` : '';
+
     const b = metadata?.billing || {};
     const s = metadata?.shipping || b;
-    const billingName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || customerDetails?.name || 'Kunde');
+    const billingName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || customerDetails?.name || 'Client');
     const shippingName = escapeHtml(`${s.firstName || ''} ${s.lastName || ''}`.trim()) || billingName;
     const billingAddressHtml = `${escapeHtml(b.address1 || '')}<br/>${escapeHtml(b.postalCode || '')} ${escapeHtml(b.city || '')}${b.country ? `, ${escapeHtml(b.country)}` : ''}`;
     const shippingAddressHtml = `${escapeHtml(s.address1 || '')}<br/>${escapeHtml(s.postalCode || '')} ${escapeHtml(s.city || '')}${s.country ? `, ${escapeHtml(s.country)}` : ''}`;
-    
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
-    
-    // Payment Method mapping
+
     let paymentMethodStr = order.paymentMethod;
-    if (paymentMethodStr === 'BANK_TRANSFER') paymentMethodStr = 'Direkte Banküberweisung';
-    if (paymentMethodStr === 'STRIPE') paymentMethodStr = 'Kreditkarte';
+    if (paymentMethodStr === 'BANK_TRANSFER') paymentMethodStr = 'Virement bancaire';
+    if (paymentMethodStr === 'STRIPE') paymentMethodStr = 'Carte bancaire (Stripe)';
     if (paymentMethodStr === 'PAYPAL') paymentMethodStr = 'PayPal';
 
     const orderId = order.id.slice(-6).toUpperCase();
+    const formattedDate = formatEmailDate(new Date(order.createdAt), 'fr');
 
     const itemsHtml = order.orderItems?.map((item: any) => {
       let imageUrl = '';
@@ -318,48 +385,50 @@ export async function sendAdminOrderNotification(order: any, adminEmail: string,
         try {
           const imgs = JSON.parse(item.product.images);
           if (imgs.length > 0) imageUrl = imgs[0];
-        } catch(e) {}
+        } catch (e) {}
       }
 
       const safeImageUrl = imageUrl && /^https?:\/\//i.test(imageUrl) ? escapeHtml(imageUrl) : '';
-      const imgTag = safeImageUrl ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />` : '';
-      
-      let sku = item.product?.sku ? `(#${escapeHtml(item.product.sku)})` : '';
+      const imgTag = safeImageUrl
+        ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />`
+        : '';
+      const sku = item.product?.sku ? `(#${escapeHtml(item.product.sku)})` : '';
 
       return `
         <tr style="border-bottom: 1px dashed #eee;">
-          <td style="padding: 15px 0;">
+          <td style="padding: 12px 0;">
             <table style="width: 100%; border: none;">
               <tr>
                 <td style="width: 65px; vertical-align: middle;">${imgTag}</td>
                 <td style="vertical-align: middle;">
-                  <span style="font-size: 13px; color: #333;">${escapeHtml(item.product?.title || 'Produkt')}</span><br/>
-                  <span style="font-size: 12px; color: #666;">${sku}</span>
+                  <span style="font-size: 13px; color: #1a1a1a; font-weight: 500;">${escapeHtml(item.product?.title || 'Produit')}</span><br/>
+                  ${sku ? `<span style="font-size: 12px; color: #666;">${sku}</span>` : ''}
                 </td>
               </tr>
             </table>
           </td>
-          <td style="padding: 15px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${item.quantity}</td>
-          <td style="padding: 15px 0; text-align: right; vertical-align: middle; color: #666; font-size: 13px;">${formatPrice(item.price)}</td>
+          <td style="padding: 12px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${item.quantity}</td>
+          <td style="padding: 12px 0; text-align: right; vertical-align: middle; color: #1a1a1a; font-size: 13px; font-weight: 500;">${formatEmailPrice(item.price, currency, 'fr')}</td>
         </tr>
       `;
     }).join('') || '';
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Neue Bestellung: Nr. ${orderId}</h1>
-        <p style="font-size: 13px; color: #666;">Du hast eine neue Bestellung von ${escapeHtml(customerDetails.name) || 'einem Kunden'} erhalten:</p>
+        <div style="background-color: #0E2036; color: white; padding: 14px 20px; border-radius: 6px; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 18px;">Nouvelle commande reçue : #${orderId}</h2>
+          <p style="margin: 4px 0 0 0; color: #C8732A; font-size: 13px;">Montant total : ${formatEmailPrice(order.total, currency, 'fr')}</p>
+        </div>
+
+        <p style="font-size: 14px; color: #334155;">Nouvelle commande passée par <strong>${escapeHtml(customerDetails?.name || billingName)}</strong> (${escapeHtml(customerDetails?.email || order.user?.email)}) le ${formattedDate}.</p>
         
-        <h3 style="font-size: 16px; font-weight: bold; margin-top: 35px; margin-bottom: 5px;">Bestellübersicht</h3>
-        <p style="color: #eab308; font-size: 12px; font-weight: bold; margin-top: 0; margin-bottom: 25px;">Bestellung Nr. ${orderId} (${formatDate(new Date(order.createdAt))})</p>
-        
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-          <thead style="text-align: left; border-bottom: 1px solid #eee;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <thead style="text-align: left; border-bottom: 1px solid #E2E8F0;">
             <tr>
-              <th style="padding-bottom: 10px; font-weight: bold; font-size: 12px; color: #333;">Produkt</th>
-              <th style="padding-bottom: 10px; text-align: center; font-weight: bold; font-size: 12px; color: #333;">Anzahl</th>
-              <th style="padding-bottom: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #333;">Preis</th>
+              <th style="padding-bottom: 10px; font-size: 12px; color: #64748B;">Article</th>
+              <th style="padding-bottom: 10px; text-align: center; font-size: 12px; color: #64748B;">Qté</th>
+              <th style="padding-bottom: 10px; text-align: right; font-size: 12px; color: #64748B;">Prix</th>
             </tr>
           </thead>
           <tbody>
@@ -367,97 +436,84 @@ export async function sendAdminOrderNotification(order: any, adminEmail: string,
           </tbody>
         </table>
         
-        <div style="margin-top: 25px;">
-          <table style="width: 100%; font-size: 13px; color: #666; line-height: 2;">
+        <div style="margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+          <table style="width: 100%; font-size: 13px; color: #475569; line-height: 2;">
             <tr>
-              <td>Zwischensumme:</td>
-              <td style="text-align: right;">${formatPrice(subTotal)}</td>
+              <td>Sous-total :</td>
+              <td style="text-align: right;">${formatEmailPrice(subTotal, currency, 'fr')}</td>
             </tr>
             <tr>
-              <td>Versand: Gratis Lieferung ${shippingMethod}</td>
+              <td>Livraison : ${shippingMethod}</td>
               <td style="text-align: right;">${shippingCostStr}</td>
             </tr>
-            <tr style="color: #1a1a1a; font-size: 14px;">
-              <td><strong>Gesamt:</strong></td>
-              <td style="text-align: right;"><strong>${formatPrice(order.total)}</strong></td>
+            <tr style="color: #0E2036; font-size: 15px; border-top: 1px solid #E2E8F0;">
+              <td><strong>Total :</strong></td>
+              <td style="text-align: right; color: #C8732A;"><strong>${formatEmailPrice(order.total, currency, 'fr')}</strong></td>
             </tr>
             <tr>
-              <td>Zahlungsart:</td>
+              <td>Moyen de paiement :</td>
               <td style="text-align: right;">${paymentMethodStr}</td>
             </tr>
+            ${metadata?.locale ? `<tr><td>Langue client :</td><td style="text-align: right;"><strong>${metadata.locale.toUpperCase()}</strong></td></tr>` : ''}
           </table>
         </div>
 
-        <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-top: 30px; padding-top: 25px; padding-bottom: 25px;">
-          <table style="width: 100%; font-size: 12px; color: #333; line-height: 1.4;">
+        <div style="border-top: 1px solid #eee; margin-top: 25px; padding-top: 20px;">
+          <table style="width: 100%; font-size: 12px; color: #333; line-height: 1.5;">
             <tr>
               <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Rechnungsadresse</strong><br/>
-                <div style="margin-top: 8px;">
+                <strong style="font-size: 13px; color: #0E2036;">Adresse de facturation</strong><br/>
+                <div style="margin-top: 6px;">
                   ${billingName}<br/>
                   ${billingAddressHtml}<br/>
-                  ${b.phone ? `<span style="color: #eab308;">${escapeHtml(b.phone)}</span><br/>` : ''}
-                  ${b.email ? `<a href="mailto:${b.email}" style="color: #2563eb; text-decoration: underline;">${escapeHtml(b.email)}</a>` : ''}
+                  ${b.phone ? `<span style="color: #C8732A;">${escapeHtml(b.phone)}</span><br/>` : ''}
                 </div>
               </td>
               <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Lieferadresse</strong><br/>
-                <div style="margin-top: 8px;">
+                <strong style="font-size: 13px; color: #0E2036;">Adresse de livraison</strong><br/>
+                <div style="margin-top: 6px;">
                   ${shippingName}<br/>
                   ${shippingAddressHtml}<br/>
-                  ${s.phone ? `<span style="color: #eab308;">${escapeHtml(s.phone)}</span>` : ''}
+                  ${s.phone ? `<span style="color: #C8732A;">${escapeHtml(s.phone)}</span>` : ''}
                 </div>
               </td>
             </tr>
           </table>
         </div>
         
-        <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 13px;">
-          <p style="margin-bottom: 8px; color: #333;">Herzlichen Glückwunsch zum Verkauf!</p>
-          <p style="color: #666; margin-top: 0;">Verarbeite deine Bestellungen unterwegs. <a href="#" style="color: #eab308; text-decoration: underline;">Hol dir die App</a>.</p>
-        </div>
-        
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 25px; text-align: center; font-size: 11px; color: #94A3B8;">
+          <strong>${escapeHtml(storeName)}</strong> — Notification interne administrateur<br/>
+          ${escapeHtml(storeAddress)}
         </div>
       </div>
     `;
 
     return sendEmail({
       to: adminEmail,
-      subject: `Neue Bestellung #${orderId}`,
-      html
+      subject: `[Nouvelle Commande] #${orderId} - ${formatEmailPrice(order.total, currency, 'fr')} (${escapeHtml(customerDetails?.name || billingName)})`,
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendAdminOrderNotification] Error:', e);
   }
 }
 
-// 3. Client Order Status Update (Cancelled / Shipped / Delivered)
-export async function sendOrderStatusUpdate(order: any, userEmail: string, status: string) {
+// ─────────────────────────────────────────────────────────────
+// 3. Client Order Status Update (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendOrderStatusUpdate(
+  order: any,
+  userEmail: string,
+  status: string,
+  clientLocale?: string
+) {
   try {
-    const { logo, from } = await getTransporter().catch(() => ({ logo: '', from: '' }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : '';
-
-    let title = "Ihre Bestellung wurde aktualisiert";
-    let message = `Der Status Ihrer Bestellung <strong>#${order.id.slice(-6).toUpperCase()}</strong> wurde aktualisiert.`;
-    let color = "#1a1a1a";
-
-    if (status === 'SHIPPED') {
-      title = "Ihre Bestellung ist unterwegs 🚚";
-      message = `Ihre Bestellung <strong>#${order.id.slice(-6).toUpperCase()}</strong> wurde versandt. Sie können die Lieferung in Ihrem Konto verfolgen.`;
-      color = "#16a34a"; // green
-    } else if (status === 'CANCELLED') {
-      title = "Informationen zu Ihrer Bestellung";
-      message = `Wir möchten Sie darüber informieren, dass Ihre Bestellung <strong>#${order.id.slice(-6).toUpperCase()}</strong> leider <strong>storniert</strong> wurde. Falls eine Zahlung getätigt wurde, wird die Rückerstattung derzeit bearbeitet.`;
-      color = "#dc2626"; // red
-    } else if (status === 'DELIVERED') {
-      title = "Ihre Bestellung wurde zugestellt!";
-      message = `Ihre Bestellung <strong>#${order.id.slice(-6).toUpperCase()}</strong> wurde als zugestellt markiert. Wir hoffen, Sie sind zufrieden!`;
-      color = "#16a34a";
-    }
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
     let metadata: any = {};
     if (order.destinationAddress) {
@@ -466,169 +522,112 @@ export async function sendOrderStatusUpdate(order: any, userEmail: string, statu
       } catch (e) {}
     }
 
-    const subTotal = metadata?.subTotal || order.orderItems?.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) || order.total;
-    const shippingCostStr = metadata?.shippingCost === 0 ? "Kostenlos!" : (metadata?.shippingCost ? formatPrice(metadata.shippingCost) : "0,00 €");
-    const shippingMethod = metadata?.shippingMethodName ? `(${metadata.shippingMethodName})` : "";
-    
-    // Addresses
-    const b = metadata?.billing || {};
-    const s = metadata?.shipping || b;
-    const billingName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || 'Kunde');
-    const shippingName = escapeHtml(`${s.firstName || ''} ${s.lastName || ''}`.trim()) || billingName;
-    const billingAddressHtml = `${escapeHtml(b.address1 || '')}<br/>${escapeHtml(b.postalCode || '')} ${escapeHtml(b.city || '')}${b.country ? `, ${escapeHtml(b.country)}` : ''}`;
-    const shippingAddressHtml = `${escapeHtml(s.address1 || '')}<br/>${escapeHtml(s.postalCode || '')} ${escapeHtml(s.city || '')}${s.country ? `, ${escapeHtml(s.country)}` : ''}`;
-    
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
-    const storeEmailMatch = from?.match(/<(.+)>/);
-    const storeEmail = storeEmailMatch ? storeEmailMatch[1] : "info@goldsilversinvest.com";
-    
-    // Payment Method mapping
-    let paymentMethodStr = order.paymentMethod;
-    if (paymentMethodStr === 'BANK_TRANSFER') paymentMethodStr = 'Direkte Banküberweisung';
-    if (paymentMethodStr === 'STRIPE') paymentMethodStr = 'Kreditkarte';
-    if (paymentMethodStr === 'PAYPAL') paymentMethodStr = 'PayPal';
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || metadata?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].orderStatus;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+    const currency = (metadata?.currency as string) || 'EUR';
+
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 40px;"></div>`
+      : '';
 
     const orderId = order.id.slice(-6).toUpperCase();
+    let title: string = T.updatedTitle;
+    let message: string = T.updatedMessage(orderId);
+    let subject: string = T.updatedSubject(orderId, storeName);
+    let color: string = '#0E2036';
 
-    let itemsHtml = '';
-    if (order.orderItems && order.orderItems.length > 0) {
-      itemsHtml = order.orderItems.map((item: any) => {
-        let imageUrl = '';
-        if (item.product?.images && Array.isArray(item.product.images) && item.product.images.length > 0) {
-          imageUrl = typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url;
-        } else if (typeof item.product?.images === 'string') {
-          try {
-            const imgs = JSON.parse(item.product.images);
-            if (imgs.length > 0) imageUrl = imgs[0];
-          } catch(e) {}
-        }
-  
-        const safeImageUrl = imageUrl && /^https?:\/\//i.test(imageUrl) ? escapeHtml(imageUrl) : '';
-        const imgTag = safeImageUrl ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />` : '';
-        let sku = item.product?.sku ? `(#${escapeHtml(item.product.sku)})` : '';
-  
-        return `
-          <tr style="border-bottom: 1px dashed #eee;">
-            <td style="padding: 15px 0;">
-              <table style="width: 100%; border: none;">
-                <tr>
-                  <td style="width: 65px; vertical-align: middle;">${imgTag}</td>
-                  <td style="vertical-align: middle;">
-                    <span style="font-size: 13px; color: #333;">${escapeHtml(item.product?.title || 'Produkt')}</span><br/>
-                    <span style="font-size: 12px; color: #666;">${sku}</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td style="padding: 15px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${item.quantity}</td>
-            <td style="padding: 15px 0; text-align: right; vertical-align: middle; color: #666; font-size: 13px;">${formatPrice(item.price)}</td>
-          </tr>
-        `;
-      }).join('');
+    if (status === 'SHIPPED') {
+      title = T.shippedTitle;
+      message = T.shippedMessage(orderId);
+      subject = T.shippedSubject(orderId, storeName);
+      color = '#16a34a';
+    } else if (status === 'DELIVERED') {
+      title = T.deliveredTitle;
+      message = T.deliveredMessage(orderId);
+      subject = T.deliveredSubject(orderId, storeName);
+      color = '#16a34a';
+    } else if (status === 'CANCELLED') {
+      title = T.cancelledTitle;
+      message = T.cancelledMessage(orderId);
+      subject = T.cancelledSubject(orderId, storeName);
+      color = '#dc2626';
     }
 
+    const b = metadata?.billing || {};
+    const customerName = escapeHtml(`${b.firstName || ''} ${b.lastName || ''}`.trim() || C.defaultCustomer);
+
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: ${color}; margin-top: 0; margin-bottom: 15px;">${title}</h1>
-        <p style="font-size: 13px; color: #666;">Hallo,</p>
-        <p style="font-size: 13px; color: #666;">${message}</p>
+        <h1 style="font-size: 22px; color: ${color}; margin-top: 0; margin-bottom: 15px;">${title}</h1>
+        <p style="font-size: 14px; color: #475569;">${T.greeting(customerName)}</p>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6;">${message}</p>
         
-        <h3 style="font-size: 16px; font-weight: bold; margin-top: 35px; margin-bottom: 5px;">Bestellübersicht</h3>
-        <p style="color: #eab308; font-size: 12px; font-weight: bold; margin-top: 0; margin-bottom: 25px;">Bestellung Nr. ${orderId} (${formatDate(new Date(order.createdAt))})</p>
-        
-        ${itemsHtml ? `
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-          <thead style="text-align: left; border-bottom: 1px solid #eee;">
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 15px; margin: 25px 0;">
+          <table style="width: 100%; font-size: 13px; color: #475569;">
             <tr>
-              <th style="padding-bottom: 10px; font-weight: bold; font-size: 12px; color: #333;">Produkt</th>
-              <th style="padding-bottom: 10px; text-align: center; font-weight: bold; font-size: 12px; color: #333;">Anzahl</th>
-              <th style="padding-bottom: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #333;">Preis</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsHtml}
-          </tbody>
-        </table>
-        ` : ''}
-        
-        <div style="margin-top: 25px;">
-          <table style="width: 100%; font-size: 13px; color: #666; line-height: 2;">
-            <tr>
-              <td>Zwischensumme:</td>
-              <td style="text-align: right;">${formatPrice(subTotal)}</td>
+              <td>Référence :</td>
+              <td style="text-align: right; font-weight: bold; color: #0E2036;">#${orderId}</td>
             </tr>
             <tr>
-              <td>Versand: Gratis Lieferung ${shippingMethod}</td>
-              <td style="text-align: right;">${shippingCostStr}</td>
-            </tr>
-            <tr style="color: #1a1a1a; font-size: 14px;">
-              <td><strong>Gesamt:</strong></td>
-              <td style="text-align: right;"><strong>${formatPrice(order.total)}</strong></td>
+              <td>Montant total :</td>
+              <td style="text-align: right; font-weight: bold; color: #C8732A;">${formatEmailPrice(order.total, currency, locale)}</td>
             </tr>
             <tr>
-              <td>Zahlungsart:</td>
-              <td style="text-align: right;">${paymentMethodStr}</td>
+              <td>Statut actuel :</td>
+              <td style="text-align: right; font-weight: bold; color: ${color};">${status}</td>
             </tr>
           </table>
         </div>
 
-        <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; margin-top: 30px; padding-top: 25px; padding-bottom: 25px;">
-          <table style="width: 100%; font-size: 12px; color: #333; line-height: 1.4;">
-            <tr>
-              <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Rechnungsadresse</strong><br/>
-                <div style="margin-top: 8px;">
-                  ${billingName}<br/>
-                  ${billingAddressHtml}<br/>
-                  ${b.phone ? `<span style="color: #eab308;">${escapeHtml(b.phone)}</span><br/>` : ''}
-                  ${b.email ? `<a href="mailto:${b.email}" style="color: #2563eb; text-decoration: underline;">${escapeHtml(b.email)}</a>` : ''}
-                </div>
-              </td>
-              <td style="vertical-align: top; width: 50%;">
-                <strong style="font-size: 13px;">Lieferadresse</strong><br/>
-                <div style="margin-top: 8px;">
-                  ${shippingName}<br/>
-                  ${shippingAddressHtml}<br/>
-                  ${s.phone ? `<span style="color: #eab308;">${escapeHtml(s.phone)}</span>` : ''}
-                </div>
-              </td>
-            </tr>
-          </table>
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 30px; font-size: 13px; color: #475569;">
+          <p>${T.helpText(storeEmail)}</p>
         </div>
         
-        <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 13px;">
-          <p style="color: #333;">Zögern Sie nicht, uns bei weiteren Fragen unter <a href="mailto:${storeEmail}" style="color: #2563eb; text-decoration: underline;">${storeEmail}</a> zu kontaktieren.</p>
-        </div>
-        
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
 
     return sendEmail({
       to: userEmail,
-      subject: `Aktualisierung Ihrer Bestellung #${orderId}`,
-      html
+      subject,
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendOrderStatusUpdate] Error:', e);
   }
 }
 
-// 4. Abandoned Cart Recovery Email
-export async function sendAbandonedCartRecoveryEmail(cart: any, userEmail: string, userName: string, checkoutUrl: string) {
+// ─────────────────────────────────────────────────────────────
+// 4. Abandoned Cart Recovery Email (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendAbandonedCartRecoveryEmail(
+  cart: any,
+  userEmail: string,
+  userName: string,
+  checkoutUrl: string,
+  clientLocale?: string
+) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 50px;"></div>` : '';
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
-    // USER TODO: Add your coupon code here! For example: "Use code COMEBACK10 for 10% off!"
-    const couponMessage = ""; 
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || cart?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].abandonedCart;
+    const C = EMAIL_TRANSLATIONS[locale].common;
 
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 45px;"></div>`
+      : '';
 
     let itemsHtml = '';
     if (Array.isArray(cart.cartData) && cart.cartData.length > 0) {
@@ -638,111 +637,127 @@ export async function sendAbandonedCartRecoveryEmail(cart: any, userEmail: strin
 
       const dbProducts = await prisma.product.findMany({
         where: { id: { in: productIds }, isDeleted: false },
-        select: { id: true, title: true, price: true, images: true }
+        select: { id: true, title: true, price: true, images: true, translations: { where: { locale } } },
       });
-      const dbMap = new Map(dbProducts.map(p => [p.id, p]));
+      const dbMap = new Map(dbProducts.map((p) => [p.id, p]));
 
       itemsHtml = cart.cartData.map((item: any) => {
         const dbProduct = item?.productId ? dbMap.get(item.productId) : null;
-        const title = dbProduct?.title || item?.title || 'Produkt';
+        const localizedTitle = dbProduct?.translations?.[0]?.title || dbProduct?.title || item?.title || 'Produit';
         const price = dbProduct?.price ?? (Number(item?.price) || 0);
         const rawImages = dbProduct?.images || item?.product?.images;
 
         let imageUrl = '';
         if (Array.isArray(rawImages) && rawImages.length > 0) {
-          imageUrl = typeof rawImages[0] === 'string' ? rawImages[0] : (rawImages[0]?.url || '');
+          imageUrl = typeof rawImages[0] === 'string' ? rawImages[0] : rawImages[0]?.url || '';
         } else if (typeof rawImages === 'string') {
           try {
             const parsed = JSON.parse(rawImages);
             if (Array.isArray(parsed) && parsed.length > 0) imageUrl = parsed[0];
           } catch {}
         }
-  
+
         const safeImageUrl = imageUrl && /^https?:\/\//i.test(imageUrl) ? escapeHtml(imageUrl) : '';
-        const imgTag = safeImageUrl ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />` : '';
+        const imgTag = safeImageUrl
+          ? `<img src="${safeImageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />`
+          : '';
         const qty = Math.min(Math.max(1, Number(item?.quantity) || 1), 999);
-  
+
         return `
           <tr style="border-bottom: 1px dashed #eee;">
-            <td style="padding: 15px 0;">
+            <td style="padding: 12px 0;">
               <table style="width: 100%; border: none;">
                 <tr>
                   <td style="width: 65px; vertical-align: middle;">${imgTag}</td>
                   <td style="vertical-align: middle;">
-                    <span style="font-size: 13px; color: #333;">${escapeHtml(title)}</span>
+                    <span style="font-size: 13px; color: #1a1a1a; font-weight: 500;">${escapeHtml(localizedTitle)}</span>
                   </td>
                 </tr>
               </table>
             </td>
-            <td style="padding: 15px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${qty}</td>
-            <td style="padding: 15px 0; text-align: right; vertical-align: middle; color: #666; font-size: 13px;">${formatPrice(price)}</td>
+            <td style="padding: 12px 0; text-align: center; vertical-align: middle; color: #666; font-size: 13px;">×${qty}</td>
+            <td style="padding: 12px 0; text-align: right; vertical-align: middle; color: #1a1a1a; font-size: 13px; font-weight: 500;">${formatEmailPrice(price, 'EUR', locale)}</td>
           </tr>
         `;
       }).join('');
     }
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Verlassener Warenkorb</h1>
-        <p style="font-size: 13px; color: #666;">Hallo ${escapeHtml(userName) || 'Kunde'},</p>
-        <p style="font-size: 13px; color: #666;">Wir haben festgestellt, dass Sie Artikel in Ihrem Warenkorb gelassen haben. Sie warten auf Sie!</p>
+        <h1 style="font-size: 22px; color: #0E2036; margin-top: 0; margin-bottom: 15px;">${T.title}</h1>
+        <p style="font-size: 14px; color: #475569;">${T.greeting(escapeHtml(userName) || C.defaultCustomer)}</p>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6;">${T.message}</p>
         
-        <div style="margin: 20px 0;">
-          ${couponMessage ? `<p style="font-size: 16px; font-weight: bold; color: #eab308;">${couponMessage}</p>` : ''}
-        </div>
-
-        <h3 style="font-size: 16px; font-weight: bold; margin-top: 35px; margin-bottom: 5px;">Zusammenfassung Ihres Warenkorbs</h3>
+        <h3 style="font-size: 15px; font-weight: bold; margin-top: 30px; margin-bottom: 12px; color: #0E2036;">${T.summaryTitle}</h3>
         
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-          <thead style="text-align: left; border-bottom: 1px solid #eee;">
-            <tr>
-              <th style="padding-bottom: 10px; font-weight: bold; font-size: 12px; color: #333;">Produkt</th>
-              <th style="padding-bottom: 10px; text-align: center; font-weight: bold; font-size: 12px; color: #333;">Anzahl</th>
-              <th style="padding-bottom: 10px; text-align: right; font-weight: bold; font-size: 12px; color: #333;">Preis</th>
-            </tr>
-          </thead>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
           <tbody>
             ${itemsHtml}
           </tbody>
         </table>
         
-        <div style="margin-top: 30px; text-align: center;">
-          <a href="${checkoutUrl}" style="background-color: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-            Bestellung abschließen
+        <div style="margin-top: 35px; text-align: center;">
+          <a href="${checkoutUrl}" style="background-color: #C8732A; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; display: inline-block; letter-spacing: 0.3px;">
+            ${T.button}
           </a>
         </div>
         
-        <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 13px;">
-          <p style="color: #666;">Wenn Sie Fragen haben, zögern Sie nicht, uns zu kontaktieren.</p>
+        <div style="text-align: center; margin-top: 35px; margin-bottom: 25px; font-size: 13px; color: #64748B;">
+          <p>${T.helpText(storeEmail)}</p>
         </div>
         
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
 
     return sendEmail({
       to: userEmail,
-      subject: `Schließen Sie Ihre Bestellung ab`,
-      html
+      subject: T.subject(storeName),
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendAbandonedCartRecoveryEmail] Error:', e);
   }
 }
 
-
-// 5. Review Request Email
-export async function sendReviewRequestEmail(order: any, userEmail: string, userName: string, storeUrl: string) {
+// ─────────────────────────────────────────────────────────────
+// 5. Review Request Email (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendReviewRequestEmail(
+  order: any,
+  userEmail: string,
+  userName: string,
+  storeUrl: string,
+  clientLocale?: string
+) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: "" }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 50px;"></div>` : "";
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+    let metadata: any = {};
+    if (order.destinationAddress) {
+      try {
+        metadata = typeof order.destinationAddress === 'string' ? JSON.parse(order.destinationAddress) : order.destinationAddress;
+      } catch (e) {}
+    }
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || metadata?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].reviewRequest;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 45px;"></div>`
+      : '';
+
+    const orderId = order.id.slice(-6).toUpperCase();
 
     let itemsHtml = '';
     if (order.orderItems && order.orderItems.length > 0) {
@@ -754,26 +769,28 @@ export async function sendReviewRequestEmail(order: any, userEmail: string, user
           try {
             const imgs = JSON.parse(item.product.images);
             if (imgs.length > 0) imageUrl = imgs[0];
-          } catch(e) {}
+          } catch (e) {}
         }
-  
-        const imgTag = imageUrl ? `<img src="${imageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />` : '';
-  
+
+        const imgTag = imageUrl
+          ? `<img src="${imageUrl}" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />`
+          : '';
+
         return `
           <tr style="border-bottom: 1px dashed #eee;">
-            <td style="padding: 15px 0;">
+            <td style="padding: 12px 0;">
               <table style="width: 100%; border: none;">
                 <tr>
                   <td style="width: 65px; vertical-align: middle;">${imgTag}</td>
                   <td style="vertical-align: middle;">
-                    <span style="font-size: 13px; color: #333;">${escapeHtml(item.product?.title || 'Produkt')}</span>
+                    <span style="font-size: 13px; color: #1a1a1a; font-weight: 500;">${escapeHtml(item.product?.title || 'Produit')}</span>
                   </td>
                 </tr>
               </table>
             </td>
-            <td style="padding: 15px 0; text-align: right; vertical-align: middle;">
-              <a href="${storeUrl}/product/${item.product?.slug || item.product?.id}" style="background-color: #ea580c; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block;">
-                Bewerten
+            <td style="padding: 12px 0; text-align: right; vertical-align: middle;">
+              <a href="${storeUrl}/product/${item.product?.slug || item.product?.id}" style="background-color: #0E2036; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block;">
+                ${T.action}
               </a>
             </td>
           </tr>
@@ -782,195 +799,270 @@ export async function sendReviewRequestEmail(order: any, userEmail: string, user
     }
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Wie war Ihre Bestellung?</h1>
-        <p style="font-size: 13px; color: #666;">Hallo ${escapeHtml(userName) || "Kunde"},</p>
-        <p style="font-size: 13px; color: #666;">Wir hoffen, dass Sie die Artikel aus Ihrer letzten Bestellung in unserem Shop genießen!</p>
-        <p style="font-size: 13px; color: #666;">Ihre Meinung ist uns sehr wichtig und hilft anderen Kunden, die richtige Wahl zu treffen.</p>
+        <h1 style="font-size: 22px; color: #0E2036; margin-top: 0; margin-bottom: 15px;">${T.title}</h1>
+        <p style="font-size: 14px; color: #475569;">${T.greeting(escapeHtml(userName) || C.defaultCustomer)}</p>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6;">${T.p1}</p>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6;">${T.p2}</p>
         
-        <h3 style="font-size: 16px; font-weight: bold; margin-top: 35px; margin-bottom: 5px;">Hinterlassen Sie eine Bewertung</h3>
-        
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 25px;">
           <tbody>
             ${itemsHtml}
           </tbody>
         </table>
         
-        <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 13px;">
-          <p style="color: #666;">Vielen Dank, dass Sie sich die Zeit nehmen, Ihre Erfahrung zu teilen.</p>
+        <div style="text-align: center; margin-top: 35px; margin-bottom: 25px; font-size: 13px; color: #64748B;">
+          <p>${T.thankYou}</p>
         </div>
         
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
 
     return sendEmail({
       to: userEmail,
-      subject: `Hinterlassen Sie eine Bewertung zu Ihrer letzten Bestellung #${order.id.slice(-6).toUpperCase()}`,
-      html
+      subject: T.subject(orderId, storeName),
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendReviewRequestEmail] Error:', e);
   }
 }
 
-
-// 6. Admin Low Stock Alert
-export async function sendLowStockAlertEmail(productTitle: string, variationName: string | null, currentStock: number, threshold: number, adminEmail: string, storeUrl: string, productId: string) {
+// ─────────────────────────────────────────────────────────────
+// 6. Newsletter Double Opt-In Email (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendNewsletterDoubleOptInEmail(userEmail: string, confirmUrl: string, clientLocale?: string) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: "" }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : "";
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
-    const productName = variationName ? `${productTitle} (${variationName})` : productTitle;
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale);
+    const T = EMAIL_TRANSLATIONS[locale].newsletter;
+    const C = EMAIL_TRANSLATIONS[locale].common;
 
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 45px;"></div>`
+      : '';
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #dc2626; margin-top: 0; margin-bottom: 15px;">Warnung: Geringer Bestand</h1>
-        <p style="font-size: 13px; color: #666;">Hallo,</p>
-        <p style="font-size: 13px; color: #666;">Der Bestand des folgenden Produkts ist unter die Warnschwelle gefallen (${threshold} Einheiten).</p>
+        <h1 style="font-size: 22px; color: #0E2036; margin-top: 0; margin-bottom: 15px;">${T.doubleOptInTitle}</h1>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 25px;">${T.doubleOptInIntro}</p>
         
-        <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #991b1b;">${escapeHtml(productName)}</h3>
-          <p style="margin-bottom: 0; font-size: 16px;"><strong>Verbleibender Bestand: <span style="color: #dc2626;">${currentStock}</span></strong></p>
-        </div>
-        
-        <p style="margin-top: 30px; text-align: center; margin-bottom: 40px;">
-          <a href="${storeUrl}/admin/products/${productId}/edit" style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-            Bestand verwalten
+        <p style="text-align: center; margin: 30px 0;">
+          <a href="${confirmUrl}" style="background-color: #C8732A; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; display: inline-block;">
+            ${T.doubleOptInButton}
           </a>
         </p>
         
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <p style="font-size: 12px; color: #64748B; margin-top: 25px;">${T.doubleOptInIgnore}</p>
+        
+        <div style="border-top: 1px solid #eee; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: userEmail,
+      subject: T.doubleOptInSubject(storeName),
+      html,
+    });
+  } catch (e) {
+    console.error('[sendNewsletterDoubleOptInEmail] Error:', e);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 7. Newsletter Welcome Email (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendNewsletterWelcomeEmail(userEmail: string, clientLocale?: string) {
+  try {
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale);
+    const T = EMAIL_TRANSLATIONS[locale].newsletter;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+
+    const logoHtml = logo
+      ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 45px;"></div>`
+      : '';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <h1 style="font-size: 22px; color: #0E2036; margin-top: 0; margin-bottom: 15px;">${T.welcomeTitle}</h1>
+        
+        <p style="font-size: 14px; color: #334155; margin-bottom: 15px; line-height: 1.6;">${T.welcomeIntro}</p>
+        <p style="font-size: 14px; color: #334155; margin-bottom: 20px;">${T.welcomeGift}</p>
+        
+        <div style="background-color: #FEF3C7; border: 1px dashed #D97706; padding: 18px; text-align: center; border-radius: 8px; margin-bottom: 25px;">
+          <p style="margin: 0; font-size: 13px; color: #92400E;">Code promotionnel de bienvenue :</p>
+          <p style="margin: 8px 0 0 0; font-size: 22px; font-weight: bold; color: #B45309; letter-spacing: 2px;">🏷️ ${T.welcomeCode}</p>
+        </div>
+        
+        <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #0E2036;">${T.welcomeBenefitsTitle}</h3>
+        <ul style="font-size: 13px; color: #475569; padding-left: 20px; margin-bottom: 25px; line-height: 1.8;">
+          <li>${T.benefit1}</li>
+          <li>${T.benefit2}</li>
+          <li>${T.benefit3}</li>
+        </ul>
+        
+        <p style="font-size: 13px; color: #64748B; margin-top: 25px;">${T.closing}</p>
+        <p style="font-size: 14px; font-weight: bold; color: #C8732A; margin-bottom: 30px;">L’Équipe ${escapeHtml(storeName)}</p>
+        
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: userEmail,
+      subject: T.welcomeSubject,
+      html,
+    });
+  } catch (e) {
+    console.error('[sendNewsletterWelcomeEmail] Error:', e);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 7. Admin Low Stock Alert
+// ─────────────────────────────────────────────────────────────
+export async function sendLowStockAlertEmail(
+  productTitle: string,
+  variationName: string | null,
+  currentStock: number,
+  threshold: number,
+  adminEmail: string,
+  storeUrl: string,
+  productId: string
+) {
+  try {
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : '';
+    const productName = variationName ? `${productTitle} (${variationName})` : productTitle;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <h1 style="font-size: 20px; color: #DC2626; margin-top: 0; margin-bottom: 12px;">⚠️ Alerte : Stock Faible</h1>
+        <p style="font-size: 13px; color: #475569;">Le niveau de stock du produit suivant est descendu sous le seuil d’alerte (${threshold} unités).</p>
+        
+        <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 15px; margin: 20px 0; border-radius: 0 4px 4px 0;">
+          <h3 style="margin-top: 0; color: #991B1B; font-size: 15px;">${escapeHtml(productName)}</h3>
+          <p style="margin-bottom: 0; font-size: 15px; color: #1a1a1a;"><strong>Stock restant : <span style="color: #DC2626;">${currentStock}</span></strong></p>
+        </div>
+        
+        <p style="margin-top: 25px; text-align: center; margin-bottom: 30px;">
+          <a href="${storeUrl}/admin/products" style="background-color: #0E2036; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
+            Gérer le stock en administration
+          </a>
+        </p>
+        
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
+          <strong>${escapeHtml(storeName)}</strong> — Notification interne administration<br/>
+          ${escapeHtml(storeAddress)}
         </div>
       </div>
     `;
 
     return sendEmail({
       to: adminEmail,
-      subject: `[Bestandswarnung] ${productName} - Nur noch ${currentStock} auf Lager`,
-      html
+      subject: `[Alerte Stock] ${productName} - Plus que ${currentStock} en réserve`,
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendLowStockAlertEmail] Error:', e);
   }
 }
 
-
-// 7. Admin New Chat Message Notification
-export async function sendAdminNewChatMessageEmail(guestName: string, guestEmail: string | null, messageContent: string, adminEmail: string, storeUrl: string) {
+// ─────────────────────────────────────────────────────────────
+// 8. Admin New Chat Message Notification
+// ─────────────────────────────────────────────────────────────
+export async function sendAdminNewChatMessageEmail(
+  guestName: string,
+  guestEmail: string | null,
+  messageContent: string,
+  adminEmail: string,
+  storeUrl: string
+) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: "" }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : "";
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
 
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : '';
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">Neue Support-Nachricht</h1>
-        <p style="font-size: 13px; color: #666;">Ein Besucher hat gerade eine Nachricht im Chat Ihres Shops hinterlassen.</p>
+        <h1 style="font-size: 20px; color: #0E2036; margin-top: 0; margin-bottom: 12px;">Nouveau message sur le Live Chat</h1>
+        <p style="font-size: 13px; color: #475569;">Un visiteur vient de vous envoyer un message via le chat d'assistance.</p>
         
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #f9fafb; padding: 15px; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #F8FAFC; padding: 15px; border-radius: 6px; border: 1px solid #E2E8F0;">
           <tr>
-            <td style="padding: 10px; font-size: 13px;"><strong>Von:</strong></td>
-            <td style="padding: 10px; font-size: 13px;">${escapeHtml(guestName) || "Besucher"} ${guestEmail ? `(<a href="mailto:${guestEmail}" style="color: #2563eb;">${escapeHtml(guestEmail)}</a>)` : ""}</td>
+            <td style="padding: 10px; font-size: 13px; color: #64748B; width: 90px;"><strong>Expéditeur :</strong></td>
+            <td style="padding: 10px; font-size: 13px; color: #0E2036;"><strong>${escapeHtml(guestName) || 'Visiteur'}</strong> ${guestEmail ? `(<a href="mailto:${guestEmail}" style="color: #2563eb;">${escapeHtml(guestEmail)}</a>)` : ''}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; vertical-align: top; font-size: 13px;"><strong>Nachricht:</strong></td>
-            <td style="padding: 10px; font-size: 13px; font-style: italic;">"${escapeHtml(messageContent)}"</td>
+            <td style="padding: 10px; vertical-align: top; font-size: 13px; color: #64748B;"><strong>Message :</strong></td>
+            <td style="padding: 10px; font-size: 13px; font-style: italic; color: #334155; line-height: 1.6;">"${escapeHtml(messageContent)}"</td>
           </tr>
         </table>
         
-        <p style="margin-top: 30px; text-align: center; margin-bottom: 40px;">
-          <a href="${storeUrl}/admin/chat" style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-            Admin-Chat öffnen
+        <p style="margin-top: 25px; text-align: center; margin-bottom: 30px;">
+          <a href="${storeUrl}/admin/chat" style="background-color: #C8732A; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
+            Ouvrir la messagerie Live
           </a>
         </p>
         
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
+        <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
+          <strong>${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}
         </div>
       </div>
     `;
 
     return sendEmail({
       to: adminEmail,
-      subject: `[Support-Chat] Neue Nachricht von ${escapeHtml(guestName) || "Besucher"}`,
-      html
+      subject: `[Support Live] Nouveau message de ${escapeHtml(guestName) || 'un visiteur'}`,
+      html,
     });
   } catch (e) {
-    console.error(e);
+    console.error('[sendAdminNewChatMessageEmail] Error:', e);
   }
 }
 
-// 8. Newsletter Welcome Email for Client
-export async function sendNewsletterWelcomeEmail(userEmail: string) {
-  try {
-    const { logo, from } = await getTransporter().catch(() => ({ logo: '', from: '' }));
-    
-    const logoHtml = logo ? `<div style="text-align: left; margin-bottom: 20px;"><img src="${logo}" alt="Logo" style="max-height: 40px;"></div>` : "";
-    
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; padding: 20px;">
-        ${logoHtml}
-        <h1 style="font-size: 24px; color: #1a1a1a; margin-top: 0; margin-bottom: 15px;">🎁 Willkommen! 25 € Rabatt auf Ihren nächsten Einkauf</h1>
-        
-        <p style="font-size: 14px; color: #333; margin-bottom: 20px;">Wir freuen uns sehr, Sie als neuen Abonnenten unseres Newsletters begrüßen zu dürfen! 🌿</p>
-        <p style="font-size: 14px; color: #333; margin-bottom: 25px;">🎁 Als Willkommensgeschenk erhalten Sie <strong>25 € Rabatt</strong> auf Ihren nächsten Einkauf!</p>
-        
-        <div style="background-color: #fef3c7; border: 1px dashed #d97706; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 25px;">
-          <p style="margin: 0; font-size: 14px; color: #92400e;">Verwenden Sie einfach den folgenden exklusiven Aktionscode:</p>
-          <p style="margin: 10px 0 0 0; font-size: 22px; font-weight: bold; color: #b45309; letter-spacing: 2px;">🏷️ BH874XP</p>
-        </div>
-        
-        <p style="font-size: 13px; color: #666; margin-bottom: 30px;">Geben Sie den Code bei Ihrem nächsten Einkauf ein – es gibt keinen Mindestbestellwert! 🛒</p>
-        
-        <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">Als Abonnent(in) unseres Newsletters erhalten Sie regelmäßig:</h3>
-        <ul style="font-size: 14px; color: #333; padding-left: 20px; margin-bottom: 30px; line-height: 1.8;">
-          <li>✨ Exklusive Angebote und Rabatte</li>
-          <li>🔥 Neuigkeiten zu unseren Produkten</li>
-          <li>💡 Praktische Tipps und Informationen rund um unsere Kaminbrennstoffe</li>
-        </ul>
-        
-        <div style="background-color: #f9fafb; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 30px; border-radius: 0 4px 4px 0;">
-          <p style="margin: 0; font-size: 13px; color: #4b5563;">📩 <strong>Tipp:</strong> Speichern Sie unsere E-Mail-Adresse in Ihren Kontakten, damit Sie keine unserer Angebote und Neuigkeiten verpassen!</p>
-        </div>
-        
-        <p style="font-size: 14px; color: #333; margin-bottom: 10px;">Wir freuen uns, bald wieder von Ihnen zu hören, und wünschen Ihnen viel Freude beim Einkaufen! 😊</p>
-        <p style="font-size: 14px; font-weight: bold; color: #ea580c; margin-bottom: 40px;">🔥 Ihr Team von ${storeName}</p>
-        
-        <div style="border-top: 1px solid #eee; padding-top: 25px; text-align: center; font-size: 10px; color: #eab308; text-transform: uppercase;">
-          <strong>${storeName}</strong><br/>
-          DÜNNENRIEDE 3, 30853 LANGENHAGEN, DEUTSCHLAND
-        </div>
-      </div>
-    `;
-
-    return sendEmail({
-      to: userEmail,
-      subject: `Willkommen! Hier ist Ihr 25 € Gutschein 🎁`,
-      html
-    });
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-// 7. Supervision Live Admin Alert Email
+// ─────────────────────────────────────────────────────────────
+// 9. Admin Alert Email (Live Supervision)
+// ─────────────────────────────────────────────────────────────
 export async function sendAdminAlertEmail({
   title,
   message,
@@ -982,10 +1074,10 @@ export async function sendAdminAlertEmail({
 }) {
   try {
     const settingsDb = await prisma.setting.findMany({
-      where: { key: { in: ['CONTACT_RECEIVER_EMAIL', 'SMTP_USER'] } }
+      where: { key: { in: ['CONTACT_RECEIVER_EMAIL', 'SMTP_USER'] } },
     });
     const sMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
-    const recipient = sMap['CONTACT_RECEIVER_EMAIL'] || sMap['SMTP_USER'] || 'info@goldsilversinvest.com';
+    const recipient = sMap['CONTACT_RECEIVER_EMAIL'] || sMap['SMTP_USER'] || DEFAULT_STORE_EMAIL;
 
     let detailsHtml = '';
     if (details && Object.keys(details).length > 0) {
@@ -1006,7 +1098,7 @@ export async function sendAdminAlertEmail({
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1e293b;">
         <div style="background-color: #ef4444; color: white; padding: 12px 20px; border-radius: 6px 6px 0 0; font-size: 16px; font-weight: bold;">
-          ⚠️ Supervision Live Shop : ${escapeHtml(title)}
+          ⚠️ Supervision Live GOLAY INVEST : ${escapeHtml(title)}
         </div>
         <div style="border: 1px solid #e2e8f0; border-top: none; padding: 20px; border-radius: 0 0 6px 6px; background: white;">
           <p style="font-size: 14px; line-height: 1.6; margin-top: 0;">${escapeHtml(message)}</p>
@@ -1020,7 +1112,7 @@ export async function sendAdminAlertEmail({
 
     return sendEmail({
       to: recipient,
-      subject: `🚨 [Alerte Shop] ${title}`,
+      subject: `🚨 [Alerte GOLAY INVEST] ${title}`,
       html,
     });
   } catch (err) {
@@ -1029,153 +1121,176 @@ export async function sendAdminAlertEmail({
 }
 
 // ─────────────────────────────────────────────────────────────
-// 10. Quote Email to Client (Devis d'investissement PDF)
+// 10. Quote Email to Client (Multi-language)
 // ─────────────────────────────────────────────────────────────
-export async function sendQuoteEmailToClient(quote: any, pdfBuffer: Buffer) {
+export async function sendQuoteEmailToClient(quote: any, pdfBuffer: Buffer, clientLocale?: string) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold & Silver Invest';
-    const logoHtml = logo ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 50px;" /></div>` : '';
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || quote?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].quote;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
 
     const quoteId = quote.id.startsWith('#') ? quote.id : `#${quote.id}`;
-    const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(quote.total);
+    const formattedTotal = formatEmailPrice(quote.total, 'EUR', locale);
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
         <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
-          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">Votre Devis d'Investissement</h2>
-          <p style="margin: 6px 0 0 0; color: #E8A63D; font-size: 13px; font-weight: bold;">RÉFÉRENCE : ${quoteId}</p>
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">${T.title}</h2>
+          <p style="margin: 6px 0 0 0; color: #C8732A; font-size: 13px; font-weight: bold;">${T.reference(quoteId)}</p>
         </div>
 
-        <p style="font-size: 14px;">Bonjour <strong>${escapeHtml(quote.customerName || 'Cher Client')}</strong>,</p>
-        <p style="font-size: 14px; color: #475569;">
-          Nous avons le plaisir de vous transmettre votre devis personnalisé pour votre projet d'investissement en métaux précieux physiques certifiés LBMA.
-        </p>
+        <p style="font-size: 14px;">${T.greeting(escapeHtml(quote.customerName || C.defaultCustomer))}</p>
+        <p style="font-size: 14px; color: #475569;">${T.intro}</p>
 
         <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 18px; margin: 25px 0;">
           <table style="width: 100%; font-size: 14px;">
             <tr>
-              <td style="color: #64748B;">Montant total du devis :</td>
+              <td style="color: #64748B;">${T.totalAmount}</td>
               <td style="text-align: right; font-weight: bold; color: #0E2036; font-size: 16px;">${formattedTotal}</td>
             </tr>
             <tr>
-              <td style="color: #64748B;">Régime fiscal :</td>
-              <td style="text-align: right; color: #10B981; font-weight: 500;">TVA 0% (Or d'investissement)</td>
+              <td style="color: #64748B;">${T.taxRegime}</td>
+              <td style="text-align: right; color: #10B981; font-weight: 500;">${T.taxZeroVat}</td>
             </tr>
             <tr>
-              <td style="color: #64748B;">Garantie du cours :</td>
-              <td style="text-align: right; color: #C8732A; font-weight: 500;">72 heures à compter de l'émission</td>
+              <td style="color: #64748B;">${T.rateGuarantee}</td>
+              <td style="text-align: right; color: #C8732A; font-weight: 500;">${T.rateGuarantee72h}</td>
             </tr>
           </table>
         </div>
 
-        <p style="font-size: 13px; color: #475569;">
-          📄 Votre devis officiel au format PDF est <strong>joint à cet email</strong>. Vous pouvez également le consulter et le télécharger à tout moment depuis votre <strong>espace client</strong> dans l'onglet « Mes Devis ».
-        </p>
+        <p style="font-size: 13px; color: #475569;">${T.pdfAttached}</p>
 
         ${quote.notes ? `
           <div style="background-color: #FFFBEB; border-left: 3px solid #F59E0B; padding: 12px 16px; margin: 20px 0; font-size: 13px; color: #92400E;">
-            <strong>Note de votre conseiller :</strong><br/>
+            <strong>${T.advisorNote}</strong><br/>
             ${escapeHtml(quote.notes)}
           </div>
         ` : ''}
 
-        <p style="font-size: 13px; color: #475569;">
-          Pour valider cette offre ou échanger avec votre conseiller dédié, répondez directement à cet email ou contactez notre comptoir au numéro ci-dessous.
-        </p>
+        <p style="font-size: 13px; color: #475569;">${T.howToValidate}</p>
 
-        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
-          <strong>${escapeHtml(storeName)}</strong> — Comptoir Privé des Métaux Précieux<br/>
-          Certification LBMA • Livraison Sécurisée • Stockage en Coffres Haute Sécurité
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
 
     return sendEmail({
       to: quote.customerEmail,
-      subject: `Votre devis officiel ${quoteId} - Gold & Silver Invest`,
+      subject: T.subject(quoteId, storeName),
       html,
       attachments: [{
         filename: `devis-${quote.id.replace('#', '')}.pdf`,
         content: pdfBuffer,
-        contentType: 'application/pdf'
-      }]
+        contentType: 'application/pdf',
+      }],
     });
   } catch (err) {
-    console.error('Failed to send quote email to client:', err);
+    console.error('[sendQuoteEmailToClient] Error:', err);
   }
 }
 
 // ─────────────────────────────────────────────────────────────
-// 11. Direct Invoice Email to Client
+// 11. Direct Invoice Email to Client (Multi-language)
 // ─────────────────────────────────────────────────────────────
-export async function sendDirectInvoiceEmailToClient(order: any, customerEmail: string, customerName: string, pdfBuffer: Buffer) {
+export async function sendDirectInvoiceEmailToClient(
+  order: any,
+  customerEmail: string,
+  customerName: string,
+  pdfBuffer: Buffer,
+  clientLocale?: string
+) {
   try {
-    const { logo } = await getTransporter().catch(() => ({ logo: '' }));
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Gold & Silver Invest';
-    const logoHtml = logo ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 50px;" /></div>` : '';
+    const { logo, storeName, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    let metadata: any = {};
+    if (order.destinationAddress) {
+      try {
+        metadata = typeof order.destinationAddress === 'string' ? JSON.parse(order.destinationAddress) : order.destinationAddress;
+      } catch (e) {}
+    }
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale || metadata?.locale);
+    const T = EMAIL_TRANSLATIONS[locale].directInvoice;
+    const C = EMAIL_TRANSLATIONS[locale].common;
+    const currency = (metadata?.currency as string) || 'EUR';
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
 
     const orderId = order.id.slice(-6).toUpperCase();
-    const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(order.total);
+    const formattedTotal = formatEmailPrice(order.total, currency, locale);
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
         ${logoHtml}
         <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
-          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">Votre Facture d'Achat</h2>
-          <p style="margin: 6px 0 0 0; color: #E8A63D; font-size: 13px; font-weight: bold;">RÉFÉRENCE : #FAC-${orderId}</p>
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">${T.title}</h2>
+          <p style="margin: 6px 0 0 0; color: #C8732A; font-size: 13px; font-weight: bold;">${T.reference(orderId)}</p>
         </div>
 
-        <p style="font-size: 14px;">Bonjour <strong>${escapeHtml(customerName || 'Cher Client')}</strong>,</p>
-        <p style="font-size: 14px; color: #475569;">
-          Veuillez trouver ci-joint votre facture officielle relative à votre acquisition de métaux précieux physiques.
-        </p>
+        <p style="font-size: 14px;">${T.greeting(escapeHtml(customerName || C.defaultCustomer))}</p>
+        <p style="font-size: 14px; color: #475569;">${T.intro}</p>
 
         <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 18px; margin: 25px 0;">
           <table style="width: 100%; font-size: 14px;">
             <tr>
-              <td style="color: #64748B;">N° Facture :</td>
+              <td style="color: #64748B;">${T.invoiceNumber}</td>
               <td style="text-align: right; font-weight: bold; color: #0E2036;">#FAC-${orderId}</td>
             </tr>
             <tr>
-              <td style="color: #64748B;">Montant total :</td>
+              <td style="color: #64748B;">${T.totalAmount}</td>
               <td style="text-align: right; font-weight: bold; color: #C8732A; font-size: 16px;">${formattedTotal}</td>
             </tr>
             <tr>
-              <td style="color: #64748B;">Statut :</td>
+              <td style="color: #64748B;">${T.status}</td>
               <td style="text-align: right; color: ${order.status === 'PAID' ? '#10B981' : '#F59E0B'}; font-weight: bold;">
-                ${order.status === 'PAID' ? 'PAYÉE' : 'EN ATTENTE DE RÈGLEMENT'}
+                ${order.status === 'PAID' ? T.statusPaid : T.statusPending}
               </td>
             </tr>
           </table>
         </div>
 
-        <p style="font-size: 13px; color: #475569;">
-          📄 Votre facture au format PDF est <strong>jointe à cet email</strong>. Elle est également enregistrée et consultable à tout moment dans votre <strong>espace client</strong>.
-        </p>
+        <p style="font-size: 13px; color: #475569;">${T.pdfAttached}</p>
 
-        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8;">
-          <strong>${escapeHtml(storeName)}</strong> — Comptoir Privé des Métaux Précieux<br/>
-          Certification LBMA • TVA 0% Or d'investissement (Art. 262 ter I du CGI)
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${C.footerTagline}</span>
         </div>
       </div>
     `;
 
     return sendEmail({
       to: customerEmail,
-      subject: `Facture d'achat #FAC-${orderId} - Gold & Silver Invest`,
+      subject: T.subject(orderId, storeName),
       html,
       attachments: [{
         filename: `facture-${orderId}.pdf`,
         content: pdfBuffer,
-        contentType: 'application/pdf'
-      }]
+        contentType: 'application/pdf',
+      }],
     });
   } catch (err) {
-    console.error('Failed to send direct invoice email to client:', err);
+    console.error('[sendDirectInvoiceEmailToClient] Error:', err);
   }
 }
-
-
-

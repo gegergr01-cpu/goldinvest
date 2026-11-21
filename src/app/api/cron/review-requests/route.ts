@@ -42,14 +42,28 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, message: 'No eligible orders found' });
     }
 
-    const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.goldsilversinvest.com';
+    const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://golayinvest.com';
     let processedCount = 0;
 
     for (const order of eligibleOrders) {
       if (order.user?.email) {
-        // Send email
-        const userName = 'Client';
-        await sendReviewRequestEmail(order, order.user.email, userName, storeUrl);
+        // Send email in customer's selected language
+        let userName = 'Client';
+        let clientLocale = 'fr';
+        if (order.destinationAddress) {
+          try {
+            const meta = typeof order.destinationAddress === 'string' ? JSON.parse(order.destinationAddress) : order.destinationAddress;
+            const b = meta?.billing || meta?.shipping;
+            if (b?.firstName) {
+              userName = `${b.firstName} ${b.lastName || ''}`.trim();
+            }
+            if (meta?.locale) {
+              clientLocale = meta.locale;
+            }
+          } catch { }
+        }
+
+        await sendReviewRequestEmail(order, order.user.email, userName, storeUrl, clientLocale);
 
         // Update database
         await prisma.order.update({
@@ -60,9 +74,9 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `Successfully sent ${processedCount} review requests.` 
+    return NextResponse.json({
+      success: true,
+      message: `Successfully sent ${processedCount} review requests.`
     });
   } catch (error: any) {
     console.error('Error processing review requests:', error);

@@ -5,7 +5,7 @@ import { FAQ_DATA } from '@/lib/faqData';
 import { safeJsonLd } from '@/lib/security';
 
 export const metadata: Metadata = {
-  title: "Foire Aux Questions (FAQ) | Tout savoir sur l'or d'investissement | Gold Silver Invest",
+  title: "Foire Aux Questions (FAQ) | Tout savoir sur l'or d'investissement | GOLAY INVEST",
   description: "Retrouvez les réponses de nos experts : certification LBMA, fiscalité TVA 0%, régimes de plus-values, garde en coffres sécurisés en Suisse et garanties de rachat permanent.",
   alternates: {
     canonical: '/faq',

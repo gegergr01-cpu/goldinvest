@@ -84,7 +84,7 @@ const FAQ_SLIDES: FaqItem[][] = [
       a: "Nous acceptons les virements bancaires instantanés et SEPA (idéal pour les ordres d'investissement importants), ainsi que les cartes bancaires sécurisées par protocole 3D-Secure 2.0 pour les règlements immédiats."
     },
     {
-      q: "Puis-je revendre des métaux précieux non achetés chez Gold Silver Invest ?",
+      q: "Puis-je revendre des métaux précieux non achetés chez GOLAY INVEST ?",
       a: "Notre service de rachat analyse également les pièces et lingots boursables issus d'autres maisons, sous réserve d'expertise et de conformité aux critères LBMA et de présentation des justificatifs légaux."
     },
     {

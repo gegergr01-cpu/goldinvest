@@ -9,13 +9,13 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
   
   const contactSettings = await getContactSettings();
   if (resolvedParams.slug === contactSettings.slug) {
     return {
       title: `${contactSettings.title} - ${storeName}`,
-      description: "Contactez les conseillers et spécialistes en métaux précieux de Gold Silver Invest. Conseil personnalisé en investissement or et argent physique, gardiennage et achat sécurisé.",
+      description: "Contactez les conseillers et spécialistes en métaux précieux de GOLAY INVEST. Conseil personnalisé en investissement or et argent physique, gardiennage et achat sécurisé.",
     };
   }
 

@@ -33,14 +33,18 @@ export async function finalizeOrder(orderId: string) {
 
     const userEmail = order.user.email;
 
-    // Parse order metadata for customer name
+    // Parse order metadata for customer name and locale
     let customerName = 'Client';
+    let clientLocale = 'fr';
     if (order.destinationAddress) {
       try {
         const metadata = JSON.parse(order.destinationAddress);
         const billing = metadata?.billing;
         if (billing?.firstName) {
           customerName = `${billing.firstName} ${billing.lastName || ''}`.trim();
+        }
+        if (metadata?.locale) {
+          clientLocale = metadata.locale;
         }
       } catch (e) {
         // Metadata parse failed, use default name
@@ -67,7 +71,7 @@ export async function finalizeOrder(orderId: string) {
       (acc, s) => ({ ...acc, [s.key]: s.value }),
       {} as Record<string, string>
     );
-    const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@goldsilversinvest.com';
+    const adminEmail = settingsMap['CONTACT_RECEIVER_EMAIL'] || 'info@golayinvest.com';
 
     // 3. Send emails (non-blocking)
     try {
@@ -75,7 +79,7 @@ export async function finalizeOrder(orderId: string) {
         '@/lib/mailer'
       );
 
-      sendClientOrderConfirmation(order, userEmail, customerName).catch((e) =>
+      sendClientOrderConfirmation(order, userEmail, customerName, clientLocale).catch((e) =>
         console.error('[finalizeOrder] Client email failed', e)
       );
 
@@ -90,7 +94,7 @@ export async function finalizeOrder(orderId: string) {
     // 4. Stock decrement inside a Prisma interactive transaction (race-condition safe)
     try {
       const threshold = parseInt(settingsMap['LOW_STOCK_THRESHOLD'] || '5', 10);
-      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.goldsilversinvest.com';
+      const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://golayinvest.com';
       const { sendLowStockAlertEmail } = await import('@/lib/mailer');
 
       await prisma.$transaction(async (tx) => {

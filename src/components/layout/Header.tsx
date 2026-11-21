@@ -129,7 +129,7 @@ export default function Header({
     { label: t('nav_contact'), url: `${localePrefix}/contact` },
   ];
 
-  const activeNavLinks = menuLinks && menuLinks.length > 0 ? menuLinks : defaultNavLinks;
+  const activeNavLinks = (menuLinks && menuLinks.length > 0 && !menuLinks.some(l => l.label === 'Home' || l.label === 'Pages' || l.label === 'Blogs')) ? menuLinks : defaultNavLinks;
 
   const handleAccountClick = () => {
     if (actualUserRole) {
@@ -170,12 +170,12 @@ export default function Header({
           <div className="max-w-[1180px] mx-auto px-4 sm:px-7 flex items-center justify-between gap-4">
 
             {/* Logo Line (Left) */}
-            <Link href={`${localePrefix || '/'}`} className="flex items-center min-w-0 shrink select-none group">
-              {logoImage ? (
-                <div className="relative flex items-center py-1">
+            <div className="flex items-center min-w-0 shrink select-none">
+              {logoImage && !logoImage.includes('pjeqv4nescp3bc1h2rxv') ? (
+                <Link href={`${localePrefix || '/'}`} className="relative flex items-center py-1 group">
                   <Image
                     src={logoImage}
-                    alt="Logo"
+                    alt="GOLAY INVEST"
                     width={200}
                     height={55}
                     priority
@@ -183,18 +183,11 @@ export default function Header({
                     className="w-auto object-contain transition-transform group-hover:scale-[1.02]"
                     style={{ maxHeight: headerLogoHeight ? `${headerLogoHeight}px` : '50px' }}
                   />
-                </div>
+                </Link>
               ) : (
-                <div className="flex flex-col items-start gap-1">
-                  <span className="font-serif font-bold text-[21px] text-white tracking-[0.01em] leading-none group-hover:text-[#E8A63D] transition-colors">
-                    GOLD<span className="text-[#E8A63D]">INVEST</span>
-                  </span>
-                  <span className="font-mono text-[9.5px] font-medium tracking-[0.16em] text-white/50 uppercase leading-none">
-                    {t('tagline')}
-                  </span>
-                </div>
+                <GoldInvestLogo variant="light" size="md" href={`${localePrefix || '/'}`} />
               )}
-            </Link>
+            </div>
 
             {/* Pill Nav Bar (Center & Right, matching Capture 2 & 3 / AZ Solutions .nav-pill) */}
             <div className="hidden lg:flex items-center justify-between gap-2.5 bg-white/[0.09] border border-white/10 rounded-full pl-7 pr-2 py-2 flex-1 max-w-[820px] mx-auto shadow-sm backdrop-blur-md">

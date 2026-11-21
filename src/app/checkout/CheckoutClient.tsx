@@ -6,7 +6,7 @@ import { useCartStore } from '@/store/cartStore';
 import Link from 'next/link';
 import { processCheckout, validateCoupon } from '@/actions/checkout';
 import { useCurrency } from '@/components/CurrencyProvider';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface CheckoutClientProps {
   settings: {
@@ -26,6 +26,8 @@ interface CheckoutClientProps {
 }
 
 export default function CheckoutClient({ settings, zones }: CheckoutClientProps) {
+  const t = useTranslations('Checkout');
+  const locale = useLocale();
   const router = useRouter();
   const { items: cart, getTotalPrice, clearCart, coupon, setCoupon } = useCartStore();
 
@@ -62,7 +64,6 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
   // appliedCoupon state removed, using coupon from cartStore
   const [couponError, setCouponError] = useState('');
   const { formatPrice, currentCurrency, isConverted, formatReferenceEur } = useCurrency();
-  const t = useTranslations('Checkout');
   const tCountries = useTranslations('Countries');
 
   const cartTotal = getTotalPrice();
@@ -124,6 +125,7 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
       formData.append('couponCode', coupon.code);
     }
     formData.append('currency', currentCurrency);
+    formData.append('locale', locale);
 
     const res = await processCheckout(formData, cart, finalTotal, paymentMethod as any);
 
@@ -179,7 +181,8 @@ export default function CheckoutClient({ settings, zones }: CheckoutClientProps)
               lastName: formData.get('lastName') as string,
               phone: formData.get('phone') as string,
               cartData: cart,
-              totalAmount: finalTotal
+              totalAmount: finalTotal,
+              locale,
             })
           });
         } catch (err) {

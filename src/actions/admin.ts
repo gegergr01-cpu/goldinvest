@@ -704,7 +704,12 @@ export async function updateOrderStatus(orderId: string, status: any) {
       if (status === 'SHIPPED' || status === 'CANCELLED' || status === 'DELIVERED') {
         const { sendOrderStatusUpdate } = await import('@/lib/mailer');
         if (updatedOrder.user?.email) {
-          sendOrderStatusUpdate(updatedOrder, updatedOrder.user.email, status).catch(e => console.error('Status update email failed', e));
+          let clientLocale = 'fr';
+          try {
+            const meta = typeof updatedOrder.destinationAddress === 'string' ? JSON.parse(updatedOrder.destinationAddress) : updatedOrder.destinationAddress;
+            if (meta?.locale) clientLocale = meta.locale;
+          } catch {}
+          sendOrderStatusUpdate(updatedOrder, updatedOrder.user.email, status, clientLocale).catch(e => console.error('Status update email failed', e));
         }
       }
     } catch (e) {
@@ -833,8 +838,9 @@ export async function resendOrderConfirmationEmail(orderId: string) {
       return { error: "Commande introuvable." };
     }
 
-    let customerName = 'Kunde';
+    let customerName = 'Client';
     let customerEmail = order.user?.email || '';
+    let clientLocale = 'fr';
 
     if (order.destinationAddress) {
       try {
@@ -844,6 +850,9 @@ export async function resendOrderConfirmationEmail(orderId: string) {
           customerName = `${billing.firstName || ''} ${billing.lastName || ''}`.trim() || customerName;
           customerEmail = billing.email || customerEmail;
         }
+        if (metadata?.locale) {
+          clientLocale = metadata.locale;
+        }
       } catch (e) {}
     }
 
@@ -852,7 +861,7 @@ export async function resendOrderConfirmationEmail(orderId: string) {
     }
 
     const { sendClientOrderConfirmation } = await import('@/lib/mailer');
-    const result = await sendClientOrderConfirmation(order, customerEmail, customerName);
+    const result = await sendClientOrderConfirmation(order, customerEmail, customerName, clientLocale);
 
     if (result && result.success === false) {
       return { error: "L'envoi de l'e-mail a échoué. Vérifiez la configuration SMTP." };
@@ -951,13 +960,13 @@ export async function testSmtpConnection(targetEmail: string) {
     const { sendEmail } = await import('@/lib/mailer');
     const result = await sendEmail({
       to: targetEmail,
-      subject: 'Test de configuration SMTP - Gold Silver Invest',
+      subject: 'Test de configuration SMTP - GOLAY INVEST',
       html: `
         <div style="font-family: sans-serif; padding: 20px; color: #333;">
           <h2 style="color: #ea580c;">Test de transmission SMTP réussi !</h2>
-          <p>Ce message confirme que votre serveur SMTP et l'envoi d'emails transactionnels pour <strong>Gold Silver Invest</strong> fonctionnent parfaitement.</p>
+          <p>Ce message confirme que votre serveur SMTP et l'envoi d'emails transactionnels pour <strong>GOLAY INVEST</strong> fonctionnent parfaitement.</p>
           <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-          <small style="color: #777;">Envoyé depuis l'administration Gold Silver Invest à ${new Date().toLocaleString('fr-FR')}</small>
+          <small style="color: #777;">Envoyé depuis l'administration GOLAY INVEST à ${new Date().toLocaleString('fr-FR')}</small>
         </div>
       `
     });
@@ -980,12 +989,21 @@ export async function sendRecoveryEmail(id: string) {
     if (!cart.email) return { error: "Email non fourni pour ce panier." };
 
     const { sendAbandonedCartRecoveryEmail } = await import('@/lib/mailer');
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.goldsilversinvest.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://golayinvest.com';
     const checkoutUrl = `${baseUrl}/checkout`;
 
     const name = cart.firstName ? `${cart.firstName} ${cart.lastName || ''}`.trim() : '';
+    let clientLocale = 'fr';
+    try {
+      const rawData = typeof cart.cartData === 'string' ? JSON.parse(cart.cartData) : cart.cartData;
+      if (Array.isArray(rawData) && rawData[0]?.locale) {
+        clientLocale = rawData[0].locale;
+      } else if (rawData?.locale) {
+        clientLocale = rawData.locale;
+      }
+    } catch {}
     
-    await sendAbandonedCartRecoveryEmail(cart, cart.email, name, checkoutUrl);
+    await sendAbandonedCartRecoveryEmail(cart, cart.email, name, checkoutUrl, clientLocale);
     
     // We update the lastActive to prevent spamming too fast
     await prisma.abandonedCart.update({

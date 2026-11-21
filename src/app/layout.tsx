@@ -22,7 +22,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Gold Silver Invest";
+const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settingsDb = await prisma.setting.findMany({
@@ -142,7 +142,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     announcement: settingsMap.HEADER_ANNOUNCEMENT || `Welcome to ${storeName}`,
     logoImage: settingsMap.HEADER_LOGO_IMAGE || '',
     supportPhone: settingsMap.FOOTER_SUPPORT_PHONE ?? settingsMap.HEADER_SUPPORT_PHONE ?? '+32 2 123 45 67',
-    supportEmail: settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL ?? 'info@goldsilversinvest.com',
+    supportEmail: settingsMap.FOOTER_SUPPORT_EMAIL ?? settingsMap.HEADER_SUPPORT_EMAIL ?? 'info@golayinvest.com',
     menuLinks: menuLinks,
     topBarLinks: topBarLinks,
     loginText: settingsMap.LOGIN_TEXT,
@@ -199,10 +199,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         return defaultMenuLinks;
       }
     })(),
-    mobileContactAddress: settingsMap.MOBILE_CONTACT_ADDRESS ?? '123 Main Street',
-    mobileContactPhone: settingsMap.MOBILE_CONTACT_PHONE ?? '+1 234 567 89',
-    mobileContactEmail: settingsMap.MOBILE_CONTACT_EMAIL ?? 'info@goldsilversinvest.com',
-    mobileContactWebsite: settingsMap.MOBILE_CONTACT_WEBSITE ?? 'www.goldsilversinvest.com',
+    mobileContactAddress: settingsMap.MOBILE_CONTACT_ADDRESS ?? 'Chaussée de Tirlemont 110, 5030 Gembloux, Belgique • 100 Pall Mall, London SW1Y 5NQ, UK',
+    mobileContactPhone: settingsMap.MOBILE_CONTACT_PHONE ?? '+32 81 84 92 84',
+    mobileContactEmail: settingsMap.MOBILE_CONTACT_EMAIL ?? 'info@golayinvest.com',
+    mobileContactWebsite: settingsMap.MOBILE_CONTACT_WEBSITE ?? 'https://golayinvest.com',
     mobileHeaderBorderColor: settingsMap.MOBILE_HEADER_BORDER_COLOR || '#d1d5db',
     allCategoriesBgColor: settingsMap.ALL_CATEGORIES_BG_COLOR || '#111827', // text-gray-900 by default
     allCategoriesTextColor: settingsMap.ALL_CATEGORIES_TEXT_COLOR || '#ffffff', // text-white

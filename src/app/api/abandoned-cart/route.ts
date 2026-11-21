@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     const firstName = str(body.firstName, 100);
     const lastName = str(body.lastName, 100);
     const phone = str(body.phone, 40);
+    const locale = str(body.locale, 10) || 'fr';
 
     // Strict validation of cartData to prevent injection
     const cartData = Array.isArray(body.cartData)
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
             productId: item.productId,
             quantity: Math.min(Math.max(1, Number(item.quantity) || 1), 999),
             variationId: typeof item.variationId === 'string' ? item.variationId.slice(0, 100) : null,
+            locale,
           }))
       : [];
 
