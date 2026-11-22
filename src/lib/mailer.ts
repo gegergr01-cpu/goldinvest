@@ -39,6 +39,7 @@ async function getTransporter() {
           'STORE_ADDRESS',
           'CONTACT_ADDRESS',
           'CONTACT_RECEIVER_EMAIL',
+          'CONTACT_FORM_RECIPIENT',
         ],
       },
     },
@@ -61,8 +62,9 @@ async function getTransporter() {
   });
 
   const storeName = settings.NEXT_PUBLIC_STORE_NAME || process.env.NEXT_PUBLIC_STORE_NAME || DEFAULT_STORE_NAME;
-  const storeEmail = settings.CONTACT_RECEIVER_EMAIL || DEFAULT_STORE_EMAIL;
-  const from = settings.SMTP_FROM || `"${storeName}" <${storeEmail}>`;
+  const storeEmail = settings.CONTACT_RECEIVER_EMAIL || settings.CONTACT_FORM_RECIPIENT || DEFAULT_STORE_EMAIL;
+  const defaultFromEmail = (storeEmail.split(',')[0] || DEFAULT_STORE_EMAIL).trim();
+  const from = settings.SMTP_FROM || `"${storeName}" <${defaultFromEmail}>`;
   const logo = settings.HEADER_LOGO_IMAGE || '';
   const storeAddress = settings.STORE_ADDRESS || settings.CONTACT_ADDRESS || DEFAULT_STORE_ADDRESS;
 
@@ -493,7 +495,7 @@ export async function sendAdminOrderNotification(order: any, adminEmail: string,
 
     return sendEmail({
       to: adminEmail,
-      subject: `[Nouvelle Commande] #${orderId} - ${formatEmailPrice(order.total, currency, 'fr')} (${escapeHtml(customerDetails?.name || billingName)})`,
+      subject: `[Nouvelle Commande] #${orderId} - ${formatEmailPrice(order.total, currency, 'fr')} (${customerDetails?.name || billingName})`,
       html,
     });
   } catch (e) {
@@ -1055,7 +1057,7 @@ export async function sendAdminNewChatMessageEmail(
 
     return sendEmail({
       to: adminEmail,
-      subject: `[Support Live] Nouveau message de ${escapeHtml(guestName) || 'un visiteur'}`,
+      subject: `[Support Live] Nouveau message de ${guestName || 'un visiteur'}`,
       html,
     });
   } catch (e) {
@@ -1412,7 +1414,7 @@ export async function sendAdminQuoteNotification(quote: {
     return sendEmail({
       to: storeEmail,
       replyTo: quote.customerEmail,
-      subject: `[GOLAY INVEST] Nouvelle demande de devis #${escapeHtml(quote.id)} — ${escapeHtml(quote.customerName)}`,
+      subject: `[GOLAY INVEST] Nouvelle demande de devis #${quote.id} — ${quote.customerName}`,
       html,
     });
   } catch (err) {
@@ -1655,7 +1657,7 @@ export async function sendAdminContactNotification(data: {
     return sendEmail({
       to: storeEmail,
       replyTo: data.email,
-      subject: data.subject ? `[GOLAY INVEST] ${escapeHtml(data.subject)} — de ${escapeHtml(data.name)}` : `[GOLAY INVEST] Nouveau message de ${escapeHtml(data.name)}`,
+      subject: data.subject ? `[GOLAY INVEST] ${data.subject} — de ${data.name}` : `[GOLAY INVEST] Nouveau message de ${data.name}`,
       html,
     });
   } catch (err) {
