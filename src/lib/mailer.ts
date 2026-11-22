@@ -75,11 +75,13 @@ export async function sendEmail({
   subject,
   html,
   attachments,
+  replyTo,
 }: {
   to: string;
   subject: string;
   html: string;
   attachments?: any[];
+  replyTo?: string;
 }) {
   try {
     const { transporter, from } = await getTransporter();
@@ -90,6 +92,7 @@ export async function sendEmail({
       subject,
       html,
       attachments,
+      replyTo,
     });
 
     return { success: true, messageId: info.messageId };
@@ -1294,3 +1297,457 @@ export async function sendDirectInvoiceEmailToClient(
     console.error('[sendDirectInvoiceEmailToClient] Error:', err);
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// 12. Admin Quote Request Notification
+// ─────────────────────────────────────────────────────────────
+export async function sendAdminQuoteNotification(quote: {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  investmentAmount?: string;
+  metalType?: string;
+  deliveryPreference?: string;
+  message?: string;
+  createdAt?: string;
+}) {
+  try {
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
+
+    const formattedDate = formatEmailDate(new Date(quote.createdAt || Date.now()), 'fr');
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 20px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <span style="font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; color: #E8A63D; display: block; margin-bottom: 5px;">Maison GOLAY INVEST • Savièse</span>
+          <h2 style="margin: 0; font-size: 21px; letter-spacing: 0.5px;">Nouvelle Demande de Devis Reçue</h2>
+          <p style="margin: 8px 0 0 0; color: #C8732A; font-size: 14px; font-weight: bold;">Réf. : ${escapeHtml(quote.id)}</p>
+        </div>
+
+        <p style="font-size: 14px; color: #475569;">
+          Un nouvel investisseur a soumis une demande de devis personnalisée sur la plateforme <strong>${escapeHtml(storeName)}</strong> :
+        </p>
+
+        <!-- Coordonnées Client -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <h3 style="font-size: 14px; color: #0E2036; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px;">Coordonnées de l'Investisseur</h3>
+          <table style="width: 100%; font-size: 13.5px; color: #334155; line-height: 1.8;">
+            <tr>
+              <td style="width: 35%; color: #64748B;">Nom complet :</td>
+              <td style="font-weight: bold; color: #0E2036;">${escapeHtml(quote.customerName)}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Email :</td>
+              <td><a href="mailto:${escapeHtml(quote.customerEmail)}" style="color: #C8732A; font-weight: 600; text-decoration: none;">${escapeHtml(quote.customerEmail)}</a></td>
+            </tr>
+            ${quote.customerPhone ? `
+            <tr>
+              <td style="color: #64748B;">Téléphone :</td>
+              <td style="font-weight: 500;">${escapeHtml(quote.customerPhone)}</td>
+            </tr>` : ''}
+            ${quote.customerAddress ? `
+            <tr>
+              <td style="color: #64748B;">Localisation :</td>
+              <td>${escapeHtml(quote.customerAddress)}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="color: #64748B;">Date & Heure :</td>
+              <td>${formattedDate}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Critères d'Investissement -->
+        <div style="background: #FDF8F3; border: 1px solid #F3DFC6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <h3 style="font-size: 14px; color: #78350F; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #F3DFC6; padding-bottom: 8px;">Critères d'Investissement</h3>
+          <table style="width: 100%; font-size: 13.5px; color: #78350F; line-height: 1.8;">
+            <tr>
+              <td style="width: 40%; color: #92400E;">Métal recherché :</td>
+              <td style="font-weight: bold; color: #0E2036;">${escapeHtml(quote.metalType || "Or d'investissement")}</td>
+            </tr>
+            <tr>
+              <td style="color: #92400E;">Budget envisagé :</td>
+              <td style="font-weight: bold; color: #C8732A; font-size: 15px;">${escapeHtml(quote.investmentAmount || 'À définir')}</td>
+            </tr>
+            <tr>
+              <td style="color: #92400E;">Mode de garde / livraison :</td>
+              <td style="font-weight: 500;">${escapeHtml(quote.deliveryPreference || 'Livraison sécurisée')}</td>
+            </tr>
+          </table>
+        </div>
+
+        ${quote.message ? `
+        <!-- Message client -->
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid #C8732A; border-radius: 6px; padding: 16px 20px; margin: 20px 0;">
+          <p style="margin: 0 0 6px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; font-weight: bold;">Message de l'investisseur :</p>
+          <p style="margin: 0; font-size: 13.5px; color: #1E293B; line-height: 1.6; font-style: italic;">« ${escapeHtml(quote.message).replace(/\n/g, '<br/>')} »</p>
+        </div>` : ''}
+
+        <div style="text-align: center; margin: 30px 0 20px 0;">
+          <a href="https://golayinvest.com/admin/quotes" style="display: inline-block; background-color: #C8732A; color: white; padding: 13px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(200, 115, 42, 0.35);">
+            Traiter ce devis dans l'Administration ↗
+          </a>
+        </div>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">Système de notification automatique • info@golayinvest.com</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: storeEmail,
+      replyTo: quote.customerEmail,
+      subject: `[GOLAY INVEST] Nouvelle demande de devis #${escapeHtml(quote.id)} — ${escapeHtml(quote.customerName)}`,
+      html,
+    });
+  } catch (err) {
+    console.error('[sendAdminQuoteNotification] Error:', err);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 13. Client Quote Request Confirmation (Multi-language)
+// ─────────────────────────────────────────────────────────────
+export async function sendClientQuoteConfirmation(quote: {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  investmentAmount?: string;
+  metalType?: string;
+  deliveryPreference?: string;
+}, clientLocale?: string) {
+  try {
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale);
+
+    const copy = {
+      fr: {
+        badge: 'Maison GOLAY INVEST • Savièse, Suisse',
+        title: 'Confirmation de votre Demande de Devis',
+        ref: `Réf. Devis : ${quote.id}`,
+        greeting: `Bonjour ${escapeHtml(quote.customerName)},`,
+        p1: 'Nous vous remercions pour votre confiance. Votre demande de devis personnalisée a été enregistrée avec succès auprès de notre département patrimonial.',
+        summaryTitle: 'Récapitulatif de votre demande',
+        metalLabel: 'Métaux précieux souhaités :',
+        budgetLabel: 'Budget indicatif :',
+        deliveryLabel: 'Option de livraison / garde :',
+        p2: 'Un conseiller spécialisé en métaux précieux physiques étudie actuellement votre dossier afin d’établir une proposition chiffrée basée sur les cours spot officiels en direct. Vous recevrez votre devis formel par email sous 24 à 48 heures ouvrées.',
+        support: 'Pour toute précision urgente, vous pouvez nous joindre à tout moment à l’adresse',
+        footerTag: 'NÉGOCE DE MÉTAUX PRÉCIEUX PHYSIQUES • TRADITION & RIGUEUR HELVÉTIQUE',
+        subject: `Votre demande de devis #${quote.id} — Maison GOLAY INVEST`
+      },
+      en: {
+        badge: 'Maison GOLAY INVEST • Savièse, Switzerland',
+        title: 'Quote Request Confirmation',
+        ref: `Quote Ref: ${quote.id}`,
+        greeting: `Dear ${escapeHtml(quote.customerName)},`,
+        p1: 'Thank you for your trust. Your personalized bullion quote request has been successfully registered with our wealth advisory department.',
+        summaryTitle: 'Summary of your request',
+        metalLabel: 'Precious metals selected:',
+        budgetLabel: 'Indicative budget:',
+        deliveryLabel: 'Delivery / Custody option:',
+        p2: 'A physical precious metals specialist is currently reviewing your request to prepare a firm quotation benchmarked against real-time LBMA spot prices. You will receive your official quote by email within 24 to 48 business hours.',
+        support: 'For urgent inquiries, please contact our advisors directly at',
+        footerTag: 'PHYSICAL BULLION TRADING • SWISS PRECISION & INTEGRITY',
+        subject: `Your quote request #${quote.id} — Maison GOLAY INVEST`
+      },
+      de: {
+        badge: 'Maison GOLAY INVEST • Savièse, Schweiz',
+        title: 'Bestätigung Ihrer Angebotsanfrage',
+        ref: `Angebots-Ref.: ${quote.id}`,
+        greeting: `Guten Tag ${escapeHtml(quote.customerName)},`,
+        p1: 'Vielen Dank für Ihr Vertrauen. Ihre persönliche Angebotsanfrage für Edelmetalle ist erfolgreich bei unserer Vermögensberatung eingegangen.',
+        summaryTitle: 'Zusammenfassung Ihrer Anfrage',
+        metalLabel: 'Gewählte Edelmetalle:',
+        budgetLabel: 'Anlagebudget:',
+        deliveryLabel: 'Lieferung / Verwahrung:',
+        p2: 'Ein Edelmetall-Spezialist prüft Ihre Angaben, um ein Angebot auf Basis der aktuellen LBMA-Live-Kurse zu erstellen. Sie erhalten Ihr offizielles Angebot innerhalb von 24 bis 48 Stunden per E-Mail.',
+        support: 'Bei dringenden Fragen erreichen Sie uns jederzeit unter',
+        footerTag: 'PHYSISCHER EDELMETALLHANDEL • SCHWEIZER PRÄZISION & SICHERHEIT',
+        subject: `Ihre Angebotsanfrage #${quote.id} — Maison GOLAY INVEST`
+      },
+      es: {
+        badge: 'Maison GOLAY INVEST • Savièse, Suiza',
+        title: 'Confirmación de su Solicitud de Cotización',
+        ref: `Ref. Cotización: ${quote.id}`,
+        greeting: `Estimado/a ${escapeHtml(quote.customerName)},`,
+        p1: 'Gracias por su confianza. Su solicitud de cotización personalizada ha sido registrada con éxito en nuestro departamento patrimonial.',
+        summaryTitle: 'Resumen de su solicitud',
+        metalLabel: 'Metales seleccionados:',
+        budgetLabel: 'Presupuesto indicativo:',
+        deliveryLabel: 'Opción de entrega / custodia:',
+        p2: 'Un asesor especializado en metales preciosos está revisando su solicitud para preparar una propuesta basada en las cotizaciones spot LBMA en tiempo real. Recibirá su cotización en un plazo de 24 a 48 horas.',
+        support: 'Para cualquier consulta urgente, puede contactarnos en',
+        footerTag: 'COMERCIO DE METALES PRECIOSOS FÍSICOS • RIGOR HELVÉTICO',
+        subject: `Su solicitud de cotización #${quote.id} — Maison GOLAY INVEST`
+      },
+      it: {
+        badge: 'Maison GOLAY INVEST • Savièse, Svizzera',
+        title: 'Conferma della Richiesta di Preventivo',
+        ref: `Rif. Preventivo: ${quote.id}`,
+        greeting: `Gentile ${escapeHtml(quote.customerName)},`,
+        p1: 'La ringraziamo per la fiducia accordataci. La sua richiesta di preventivo personalizzato è stata registrata con successo.',
+        summaryTitle: 'Riepilogo della richiesta',
+        metalLabel: 'Metalli selezionati:',
+        budgetLabel: 'Budget indicativo:',
+        deliveryLabel: 'Opzione di consegna / custodia:',
+        p2: 'Un consulente dedicato sta elaborando la sua proposta basata sui corsi spot LBMA in tempo reale. Riceverà il preventivo formale via email entro 24-48 ore lavorative.',
+        support: 'Per qualsiasi richiesta urgente, può contattarci all’indirizzo',
+        footerTag: 'COMMERCIO DI METALLI PREZIOSI FISICI • RIGORE SVIZZERO',
+        subject: `La sua richiesta di preventivo #${quote.id} — Maison GOLAY INVEST`
+      }
+    };
+
+    const T = copy[locale as keyof typeof copy] || copy.en;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 20px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <span style="font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; color: #E8A63D; display: block; margin-bottom: 5px;">${T.badge}</span>
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">${T.title}</h2>
+          <p style="margin: 8px 0 0 0; color: #C8732A; font-size: 14px; font-weight: bold;">${T.ref}</p>
+        </div>
+
+        <p style="font-size: 14px;">${T.greeting}</p>
+        <p style="font-size: 14px; color: #475569;">${T.p1}</p>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; margin: 25px 0;">
+          <h3 style="font-size: 13px; color: #0E2036; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px;">${T.summaryTitle}</h3>
+          <table style="width: 100%; font-size: 13.5px; color: #334155; line-height: 1.8;">
+            <tr>
+              <td style="width: 42%; color: #64748B;">${T.metalLabel}</td>
+              <td style="font-weight: bold; color: #0E2036;">${escapeHtml(quote.metalType || "Or d'investissement")}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">${T.budgetLabel}</td>
+              <td style="font-weight: bold; color: #C8732A;">${escapeHtml(quote.investmentAmount || 'À définir')}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">${T.deliveryLabel}</td>
+              <td style="font-weight: 500;">${escapeHtml(quote.deliveryPreference || 'Livraison sécurisée')}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="font-size: 13.5px; color: #475569; line-height: 1.6;">${T.p2}</p>
+        
+        <p style="font-size: 12.5px; color: #64748B; margin-top: 20px;">
+          ${T.support} <a href="mailto:${storeEmail}" style="color: #C8732A; font-weight: bold; text-decoration: none;">${storeEmail}</a>.
+        </p>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${T.footerTag}</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: quote.customerEmail,
+      subject: T.subject,
+      html,
+    });
+  } catch (err) {
+    console.error('[sendClientQuoteConfirmation] Error:', err);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 14. Admin Contact Notification
+// ─────────────────────────────────────────────────────────────
+export async function sendAdminContactNotification(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  message: string;
+  date?: Date;
+}) {
+  try {
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
+
+    const formattedDate = formatEmailDate(data.date || new Date(), 'fr');
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <span style="font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; color: #E8A63D; display: block; margin-bottom: 5px;">Maison GOLAY INVEST</span>
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">Nouveau Message de Contact</h2>
+          ${data.subject ? `<p style="margin: 6px 0 0 0; color: #C8732A; font-size: 13.5px; font-weight: bold;">Objet : ${escapeHtml(data.subject)}</p>` : ''}
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; margin: 20px 0;">
+          <table style="width: 100%; font-size: 13.5px; color: #334155; line-height: 1.8;">
+            <tr>
+              <td style="width: 30%; color: #64748B;">Expéditeur :</td>
+              <td style="font-weight: bold; color: #0E2036;">${escapeHtml(data.name)}</td>
+            </tr>
+            <tr>
+              <td style="color: #64748B;">Email :</td>
+              <td><a href="mailto:${escapeHtml(data.email)}" style="color: #C8732A; font-weight: 600; text-decoration: none;">${escapeHtml(data.email)}</a></td>
+            </tr>
+            ${data.phone ? `
+            <tr>
+              <td style="color: #64748B;">Téléphone :</td>
+              <td style="font-weight: 500;">${escapeHtml(data.phone)}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="color: #64748B;">Date & Heure :</td>
+              <td>${formattedDate}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid #C8732A; border-radius: 6px; padding: 16px 20px; margin: 20px 0;">
+          <p style="margin: 0 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; font-weight: bold;">Message reçu :</p>
+          <p style="margin: 0; font-size: 14px; color: #1E293B; line-height: 1.6; white-space: pre-line;">${escapeHtml(data.message)}</p>
+        </div>
+
+        <p style="font-size: 12.5px; color: #64748B; margin-top: 25px;">
+          <em>Vous pouvez répondre directement à cet email pour contacter ${escapeHtml(data.name)} à l'adresse ${escapeHtml(data.email)}.</em>
+        </p>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">Formulaire de contact • info@golayinvest.com</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: storeEmail,
+      replyTo: data.email,
+      subject: data.subject ? `[GOLAY INVEST] ${escapeHtml(data.subject)} — de ${escapeHtml(data.name)}` : `[GOLAY INVEST] Nouveau message de ${escapeHtml(data.name)}`,
+      html,
+    });
+  } catch (err) {
+    console.error('[sendAdminContactNotification] Error:', err);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 15. Client Contact Acknowledgment
+// ─────────────────────────────────────────────────────────────
+export async function sendClientContactConfirmation(data: {
+  name: string;
+  email: string;
+  subject?: string;
+}, clientLocale?: string) {
+  try {
+    const { logo, storeName, storeEmail, storeAddress } = await getTransporter().catch(() => ({
+      logo: '',
+      storeName: DEFAULT_STORE_NAME,
+      storeEmail: DEFAULT_STORE_EMAIL,
+      storeAddress: DEFAULT_STORE_ADDRESS,
+    }));
+
+    const logoHtml = logo
+      ? `<div style="text-align: center; margin-bottom: 25px;"><img src="${logo}" alt="${escapeHtml(storeName)}" style="max-height: 48px;" /></div>`
+      : '';
+
+    const locale: EmailLocale = normalizeEmailLocale(clientLocale);
+
+    const copy = {
+      fr: {
+        badge: 'Maison GOLAY INVEST • Savièse, Suisse',
+        title: 'Nous avons bien reçu votre message',
+        greeting: `Bonjour ${escapeHtml(data.name)},`,
+        p1: 'Votre message a bien été transmis à nos spécialistes des métaux précieux d’investissement.',
+        p2: 'Un conseiller étudie actuellement votre demande et reviendra vers vous dans les meilleurs délais (généralement sous 24h ouvrées).',
+        footerTag: 'NÉGOCE DE MÉTAUX PRÉCIEUX PHYSIQUES • TRADITION & RIGUEUR HELVÉTIQUE',
+        subject: 'Maison GOLAY INVEST — Nous avons bien reçu votre message'
+      },
+      en: {
+        badge: 'Maison GOLAY INVEST • Savièse, Switzerland',
+        title: 'We have received your message',
+        greeting: `Dear ${escapeHtml(data.name)},`,
+        p1: 'Your message has been successfully delivered to our bullion investment specialists.',
+        p2: 'An advisor is reviewing your request and will reply shortly (typically within 24 business hours).',
+        footerTag: 'PHYSICAL BULLION TRADING • SWISS PRECISION & INTEGRITY',
+        subject: 'Maison GOLAY INVEST — Message confirmation'
+      },
+      de: {
+        badge: 'Maison GOLAY INVEST • Savièse, Schweiz',
+        title: 'Wir haben Ihre Nachricht erhalten',
+        greeting: `Guten Tag ${escapeHtml(data.name)},`,
+        p1: 'Ihre Nachricht wurde erfolgreich an unsere Edelmetall-Spezialisten übermittelt.',
+        p2: 'Ein Berater prüft Ihr Anliegen und wird sich zeitnah bei Ihnen melden (in der Regel innerhalb von 24 Arbeitsstunden).',
+        footerTag: 'PHYSISCHER EDELMETALLHANDEL • SCHWEIZER PRÄZISION & SICHERHEIT',
+        subject: 'Maison GOLAY INVEST — Eingangsbestätigung Ihrer Nachricht'
+      }
+    };
+
+    const T = copy[locale as keyof typeof copy] || copy.en;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0E2036; line-height: 1.6; padding: 25px; border: 1px solid #E2E8F0; border-radius: 8px;">
+        ${logoHtml}
+        <div style="background-color: #0E2036; color: white; padding: 18px 24px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+          <span style="font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; color: #E8A63D; display: block; margin-bottom: 5px;">${T.badge}</span>
+          <h2 style="margin: 0; font-size: 20px; letter-spacing: 0.5px;">${T.title}</h2>
+        </div>
+
+        <p style="font-size: 14px;">${T.greeting}</p>
+        <p style="font-size: 14px; color: #475569;">${T.p1}</p>
+        <p style="font-size: 14px; color: #475569;">${T.p2}</p>
+
+        <p style="font-size: 12.5px; color: #64748B; margin-top: 25px;">
+          Pour toute question complémentaire, écrivez-nous à <a href="mailto:${storeEmail}" style="color: #C8732A; font-weight: bold; text-decoration: none;">${storeEmail}</a>.
+        </p>
+
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px; text-align: center; font-size: 11px; color: #94A3B8; line-height: 1.6;">
+          <strong style="color: #0E2036; font-size: 12px; letter-spacing: 0.5px;">${escapeHtml(storeName)}</strong><br/>
+          ${escapeHtml(storeAddress)}<br/>
+          <span style="font-size: 10px; color: #C8732A;">${T.footerTag}</span>
+        </div>
+      </div>
+    `;
+
+    return sendEmail({
+      to: data.email,
+      subject: T.subject,
+      html,
+    });
+  } catch (err) {
+    console.error('[sendClientContactConfirmation] Error:', err);
+  }
+}
+

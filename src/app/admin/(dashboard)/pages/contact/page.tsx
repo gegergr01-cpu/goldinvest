@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getContactSettings, updateContactSettings } from '@/actions/contactSettings';
+import { getContactMessages, markContactMessageAsRead, deleteContactMessage, type ContactMessageRecord } from '@/actions/contact';
 import { useTranslations } from 'next-intl';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 
@@ -72,11 +73,10 @@ function FontSizeControl({
             key={px}
             type="button"
             onClick={() => onChange(px.toString())}
-            className={`px-2 py-0.5 rounded text-xs transition-colors cursor-pointer ${
-              numericVal === px
-                ? 'bg-[#0E2036] text-[#E8A63D] font-bold shadow-xs'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-amber-400 hover:text-amber-800'
-            }`}
+            className={`px-2 py-0.5 rounded text-xs transition-colors cursor-pointer ${numericVal === px
+              ? 'bg-[#0E2036] text-[#E8A63D] font-bold shadow-xs'
+              : 'bg-white border border-gray-200 text-gray-600 hover:border-amber-400 hover:text-amber-800'
+              }`}
           >
             {px}px
           </button>
@@ -106,7 +106,14 @@ export default function AdminContactPageForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'content' | 'typography'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'typography' | 'messages'>('content');
+  const [messages, setMessages] = useState<ContactMessageRecord[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const refreshMessages = async () => {
+    const msgs = await getContactMessages();
+    setMessages(msgs);
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -157,6 +164,7 @@ export default function AdminContactPageForm() {
       });
       setLoading(false);
     });
+    refreshMessages();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -207,27 +215,41 @@ export default function AdminContactPageForm() {
         <button
           type="button"
           onClick={() => setActiveTab('content')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-            activeTab === 'content'
-              ? 'bg-[#0E2036] text-[#E8A63D] shadow-sm'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'content'
+            ? 'bg-[#0E2036] text-[#E8A63D] shadow-sm'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
         >
           📝 Textes & Coordonnées
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('typography')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-            activeTab === 'typography'
-              ? 'bg-[#0E2036] text-[#E8A63D] shadow-sm'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${activeTab === 'typography'
+            ? 'bg-[#0E2036] text-[#E8A63D] shadow-sm'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
         >
           <span>🎨 Tailles des Polices</span>
           <span className="text-[10px] bg-amber-500/20 text-amber-900 border border-amber-300 px-1.5 py-0.2 rounded-full font-bold">
             Personnalisable
           </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('messages')}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${activeTab === 'messages'
+            ? 'bg-[#0E2036] text-[#E8A63D] shadow-sm'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+        >
+          <span>📬 Messages reçus</span>
+          {messages.length > 0 && (
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${messages.some(m => !m.isRead) ? 'bg-[#C8732A] text-white' : 'bg-gray-200 text-gray-700'
+              }`}>
+              {messages.filter(m => !m.isRead).length > 0 ? `${messages.filter(m => !m.isRead).length} nouveau(x)` : messages.length}
+            </span>
+          )}
         </button>
       </div>
 
@@ -342,7 +364,7 @@ export default function AdminContactPageForm() {
                   <span>Coordonnées Affichées au Public</span>
                 </h2>
                 <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200/80 rounded-lg p-2.5 mt-2">
-                  💡 <b>Règle d'affichage :</b> Si vous laissez un champ vide (comme le <b>Numéro de téléphone</b>), 
+                  💡 <b>Règle d'affichage :</b> Si vous laissez un champ vide (comme le <b>Numéro de téléphone</b>),
                   la carte correspondante <b>ne s'affichera pas</b> sur la page de contact.
                 </p>
               </div>

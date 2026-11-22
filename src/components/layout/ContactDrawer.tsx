@@ -21,10 +21,10 @@ export default function ContactDrawer({
   isOpen,
   onClose,
   logoImage,
-  phone1 = '+33 6 17 26 47 05',
-  phone2 = '+33 6 05 82 51 96',
-  email = 'azevia.solutions@gmail.com',
-  address = 'Laval, France',
+  phone1 = '+32 81 84 92 84',
+  phone2 = '',
+  email = 'info@golayinvest.com',
+  address = 'Chemin du Grand Roe 11, 1965 Savièse, Suisse',
   description,
 }: ContactDrawerProps) {
   const t = useTranslations('ContactDrawer');

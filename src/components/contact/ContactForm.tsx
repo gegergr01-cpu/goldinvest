@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { submitContactMessage } from '@/actions/contact';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 
 export default function ContactForm({ phonePlaceholder }: { phonePlaceholder?: string }) {
   const t = useTranslations('Contact');
+  const locale = useLocale();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -31,6 +32,7 @@ export default function ContactForm({ phonePlaceholder }: { phonePlaceholder?: s
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input type="hidden" name="locale" value={locale} />
       {status === 'success' && (
         <div className="bg-emerald-50 border border-emerald-200/90 text-emerald-800 p-4 rounded-xl flex items-start gap-3 animate-in fade-in duration-200">
           <svg className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -1,6 +1,11 @@
 import prisma from '@/lib/prisma';
 import { generateQuotePDF, generateInvoicePDF } from '@/lib/pdfGenerator';
-import { sendQuoteEmailToClient, sendDirectInvoiceEmailToClient } from '@/lib/mailer';
+import { 
+  sendQuoteEmailToClient, 
+  sendDirectInvoiceEmailToClient,
+  sendAdminQuoteNotification,
+  sendClientQuoteConfirmation 
+} from '@/lib/mailer';
 
 export interface QuoteItem {
   title: string;
@@ -94,6 +99,7 @@ export async function createClientQuoteRequest(data: {
   deliveryPreference?: string;
   message?: string;
   userId?: string;
+  clientLocale?: string;
 }): Promise<{ success: boolean; quoteId?: string; error?: string }> {
   try {
     const all = await getAllQuotes();
@@ -128,7 +134,7 @@ export async function createClientQuoteRequest(data: {
 
     await saveQuote(newQuote);
 
-    // In-app notification for admin
+    // 1. In-app notification for admin
     try {
       await prisma.notification.create({
         data: {
@@ -140,6 +146,20 @@ export async function createClientQuoteRequest(data: {
       });
     } catch (notifErr) {
       // ignore
+    }
+
+    // 2. Email alert to Admin (info@golayinvest.com) with customer reply-to
+    try {
+      await sendAdminQuoteNotification(newQuote);
+    } catch (emailErr) {
+      console.error('[QUOTES] Failed to send quote alert to admin:', emailErr);
+    }
+
+    // 3. Email confirmation to customer
+    try {
+      await sendClientQuoteConfirmation(newQuote, data.clientLocale);
+    } catch (clientEmailErr) {
+      console.error('[QUOTES] Failed to send quote confirmation to client:', clientEmailErr);
     }
 
     return { success: true, quoteId };

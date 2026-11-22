@@ -121,6 +121,7 @@ export default function DevisPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              <input type="hidden" name="locale" value={activeLocale} />
               
               {/* Identité */}
               <div className="space-y-4">

@@ -1,11 +1,11 @@
 'use server';
 
-import { 
-  createClientQuoteRequest, 
-  adminFinalizeAndSendQuote, 
-  adminCreateDirectInvoice, 
-  getAllQuotes, 
-  getQuoteById, 
+import {
+  createClientQuoteRequest,
+  adminFinalizeAndSendQuote,
+  adminCreateDirectInvoice,
+  getAllQuotes,
+  getQuoteById,
   getUserQuotes,
   QuoteItem
 } from '@/lib/quotes';
@@ -29,6 +29,7 @@ export async function submitQuoteAction(formData: FormData) {
     const metalType = formData.get('metalType') as string;
     const deliveryPreference = formData.get('deliveryPreference') as string;
     const message = formData.get('message') as string;
+    const clientLocale = (formData.get('locale') as string) || 'fr';
 
     if (!customerName || !customerEmail) {
       return { error: 'Veuillez renseigner votre nom et votre adresse email.' };
@@ -43,7 +44,8 @@ export async function submitQuoteAction(formData: FormData) {
       metalType,
       deliveryPreference,
       message,
-      userId: user?.id
+      userId: user?.id,
+      clientLocale,
     });
 
     if (res.success) {
@@ -62,10 +64,10 @@ export async function submitQuoteAction(formData: FormData) {
  * Admin updates and sends quote PDF to client
  */
 export async function adminSendQuoteAction(
-  quoteId: string, 
-  items: QuoteItem[], 
-  total: number, 
-  notes?: string, 
+  quoteId: string,
+  items: QuoteItem[],
+  total: number,
+  notes?: string,
   validityDays?: number
 ) {
   try {
