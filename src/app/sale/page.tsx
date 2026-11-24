@@ -2,17 +2,19 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import ProductCard from '@/components/shop/ProductCard';
+import { PRODUCT_CARD_SELECT } from '@/lib/cache';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default async function SaleProductsPage() {
   const t = await getTranslations('SaleProducts');
 
   const products = await prisma.product.findMany({
     where: {
+      isDeleted: false,
       compareAtPrice: { not: null }
     },
-    include: { categories: true, reviews: { select: { rating: true } } },
+    select: PRODUCT_CARD_SELECT,
     orderBy: { updatedAt: 'desc' },
     take: 50 // Fetch sale products
   });
@@ -39,14 +41,14 @@ export default async function SaleProductsPage() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
             {products.map((product) => (
-              <ProductCard 
-                key={product.id} 
+              <ProductCard
+                key={product.id}
                 product={{
                   ...product,
-                  discountLabel: product.compareAtPrice && product.compareAtPrice > product.price 
-                    ? `${t('sale_badge')} -${Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%` 
+                  discountLabel: product.compareAtPrice && product.compareAtPrice > product.price
+                    ? `${t('sale_badge')} -${Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%`
                     : t('sale_badge')
-                } as any} 
+                } as any}
               />
             ))}
           </div>

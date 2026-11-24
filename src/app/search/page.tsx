@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import Price from '@/components/Price';
 import ProductCard from '@/components/shop/ProductCard';
+import { getCachedSettings, PRODUCT_CARD_SELECT } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,19 +29,16 @@ export default async function SearchPage({
     where.categories = { some: { id: category } };
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    include: { 
-      categories: true,
-      reviews: { select: { rating: true } }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
+  const [products, settingsMap] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      select: PRODUCT_CARD_SELECT,
+      orderBy: { createdAt: 'desc' },
+      take: 40,
+    }),
+    getCachedSettings(),
+  ]);
 
-  const settingsDb = await prisma.setting.findMany({
-    where: { key: { in: ['SHOP_CARD_STYLE', 'SHOP_CARD_BORDER_COLOR'] } }
-  });
-  const settingsMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
   const cardStyle = (settingsMap.SHOP_CARD_STYLE as 'design1' | 'design2') || 'design2';
   const borderColor = settingsMap.SHOP_CARD_BORDER_COLOR || '';
 

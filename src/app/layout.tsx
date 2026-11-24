@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import prisma from "@/lib/prisma";
 import CurrencyProvider from "@/components/CurrencyProvider";
 import { defaultCurrencyOptions } from "@/lib/formatPrice";
 import DeferredWidgets from "@/components/layout/DeferredWidgets";
@@ -25,11 +24,7 @@ const inter = Inter({
 const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settingsDb = await prisma.setting.findMany({
-    where: { key: { in: ['FAVICON_IMAGE', 'HOME_META_TITLE', 'HOME_META_DESCRIPTION', 'HEADER_LOGO_IMAGE', 'OG_IMAGE', 'GOOGLE_SITE_VERIFICATION'] } }
-  });
-
-  const settingsMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
+  const settingsMap = await getCachedSettings();
   const faviconUrl = settingsMap['FAVICON_IMAGE'];
   const title = settingsMap['HOME_META_TITLE'] || `${storeName} | E-commerce`;
   const description = settingsMap['HOME_META_DESCRIPTION'] || "Découvrez notre vaste sélection de produits de haute qualité sur notre boutique en ligne complète.";

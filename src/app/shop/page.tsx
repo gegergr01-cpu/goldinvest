@@ -8,6 +8,12 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { buildInternationalAlternates } from '@/lib/seo';
 import { safeJsonLd } from '@/lib/security';
 import { SITE_URL } from '@/lib/site';
+import { 
+  getCachedSettings, 
+  getCachedShopFilterMetadata, 
+  getCachedCategoryBySlug,
+  PRODUCT_CARD_SELECT 
+} from '@/lib/cache';
 
 const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "GOLAY INVEST";
 
@@ -30,17 +36,7 @@ export async function generateMetadata({
   
   if (categories.length === 1) {
     const rawCat = categories[0];
-    const orCond: any[] = [
-      { slug: rawCat },
-      { translations: { some: { slug: rawCat } } }
-    ];
-    if (isUuid(rawCat)) {
-      orCond.push({ id: rawCat });
-    }
-    const category = await prisma.category.findFirst({
-      where: { OR: orCond },
-      include: { translations: { where: { locale } } }
-    });
+    const category = await getCachedCategoryBySlug(rawCat, locale);
     
     if (category) {
       const ctr = category.translations?.[0];
@@ -142,86 +138,60 @@ export default async function ShopPage({
     if (maxPrice !== undefined && !isNaN(maxPrice)) where.price.lte = maxPrice;
   }
 
-  // Fetch all categories for the filter sidebar with product counts
-  const allCategories = await prisma.category.findMany({
-    include: {
-      translations: { where: { locale } },
-      _count: {
-        select: { products: { where: { isDeleted: false } } }
-      }
-    },
-    orderBy: { name: 'asc' }
-  });
+  // High-performance cached shop filter metadata (categories, brands, price range) & settings
+  const [{ allCategories, globalMinPrice, globalMaxPrice, allBrands }, settingsMap] = await Promise.all([
+    getCachedShopFilterMetadata(locale),
+    getCachedSettings(),
+  ]);
 
-  // Get global min/max price for the slider
-  const priceAgg = await prisma.product.aggregate({
-    where: { isDeleted: false },
-    _min: { price: true },
-    _max: { price: true }
-  });
-  const globalMinPrice = Math.floor(priceAgg._min?.price || 0);
-  const globalMaxPrice = Math.ceil(priceAgg._max?.price || 1000);
-
-  // Fetch all brands for the filter sidebar with product counts
-  const allBrands = await prisma.brand.findMany({
-    include: {
-      _count: {
-        select: { products: { where: { isDeleted: false } } }
-      }
-    },
-    orderBy: { name: 'asc' }
-  });
-
-  // Fetch shop specific settings
-  const settingsDb = await prisma.setting.findMany({
-    where: { key: { in: ['SHOP_CARD_STYLE', 'SHOP_CARD_BORDER_COLOR'] } }
-  });
-  const settingsMap = settingsDb.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as Record<string, string>);
   const cardStyle = (settingsMap.SHOP_CARD_STYLE as 'design1' | 'design2') || 'design2';
   const borderColor = settingsMap.SHOP_CARD_BORDER_COLOR || '';
 
-  // Since filtering by average rating requires relation aggregation not directly supported 
-  // in a simple where clause, we fetch products and filter in memory if ratings filter is active.
-  // For sorting, we can do it in Prisma.
   let orderBy: any = { createdAt: 'desc' }; // default 'newest'
   if (sort === 'price_asc') orderBy = { price: 'asc' };
   if (sort === 'price_desc') orderBy = { price: 'desc' };
 
-  // Fetch products with translations
-  const products = await prisma.product.findMany({
-    where,
-    include: {
-      translations: { where: { locale } },
-      categories: {
-        include: {
-          translations: { where: { locale } }
-        }
-      },
-      reviews: { select: { rating: true } }
-    },
-    orderBy
-  });
+  let totalResults = 0;
+  let paginatedRaw: any[] = [];
 
-  // Filter by rating in memory if needed
-  let filteredProducts = products;
   if (ratings.length > 0) {
-    filteredProducts = products.filter(p => {
+    // When rating filter is active, fetch bounded candidates with minimal projection
+    const candidateProducts = await prisma.product.findMany({
+      where,
+      select: PRODUCT_CARD_SELECT,
+      orderBy,
+      take: 120,
+    });
+    const filtered = candidateProducts.filter(p => {
       const avg = p.reviews.length > 0 
         ? p.reviews.reduce((acc, curr) => acc + curr.rating, 0) / p.reviews.length 
         : 0;
       const roundedAvg = Math.round(avg);
-      // We check if the rounded average rating is within the selected ratings
       return ratings.includes(roundedAvg) || (ratings.includes(0) && p.reviews.length === 0);
     });
+    totalResults = filtered.length;
+    const startIndex = (page - 1) * limit;
+    paginatedRaw = filtered.slice(startIndex, startIndex + limit);
+  } else {
+    // Direct SQL-Level Pagination (Rule #2) & Minimal SQL Projection (Rule #1)
+    const skip = (page - 1) * limit;
+    const [count, items] = await Promise.all([
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        where,
+        select: PRODUCT_CARD_SELECT,
+        orderBy,
+        skip,
+        take: limit,
+      }),
+    ]);
+    totalResults = count;
+    paginatedRaw = items;
   }
 
-  const totalResults = filteredProducts.length;
   const totalPages = Math.ceil(totalResults / limit);
   const startIndex = (page - 1) * limit;
   const endIndex = Math.min(startIndex + limit, totalResults);
-  
-  // Paginate in memory (since we might have filtered in memory)
-  const paginatedRaw = filteredProducts.slice(startIndex, startIndex + limit);
 
   // Overlay localized product and category values
   const paginatedProducts = paginatedRaw.map(p => {
